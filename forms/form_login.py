@@ -569,7 +569,7 @@ class App:
     def __init__(self):
         self.ventana_login = CTk()
         self.ventana_login.title('Inicio de sesion')
-        self.ventana_login.geometry('1280x680+35+15')
+        self.ventana_login.geometry('800x680+35+15')
         self.ventana_login.iconbitmap("imagenes\\letra-r.ico")
         self.ventana_login.resizable()
         self.ventana_login._set_appearance_mode("dark")
