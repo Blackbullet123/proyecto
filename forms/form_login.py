@@ -133,7 +133,7 @@ class App:
                 frame_form_fill.pack(side="bottom",expand=YES,fill=BOTH)
 
                 #USUARIO
-                self.etiqueta_rif = Label(self.lgn_frame, text="Username", bg="#040405", fg="#4f4e4d",
+                self.etiqueta_rif = Label(self.lgn_frame, text="Usuario", bg="#040405", fg="#4f4e4d",
                                             font=("yu gothic ui", 13, "bold"))
                 self.etiqueta_rif.place(x=30, y=100)
                 self.rif = Entry(self.lgn_frame, highlightthickness=0, relief=FLAT, bg="#040405", fg="#6b6a69",
@@ -150,10 +150,10 @@ class App:
                 self.username_icon_label.place(x=30, y=132)
 
                 #Preguntas de seguridad
-                self.label_pregunta = Label(self.lgn_frame, text="Seleccione la pregunata de seguridad", bg="#040405", fg="#4f4e4d",
+                self.label_pregunta = Label(self.lgn_frame, text="Seleccione la pregunta de seguridad", bg="#040405", fg="#4f4e4d",
                                             font=("yu gothic ui", 13, "bold"))
                 self.label_pregunta.place(x=30, y=170)
-                self.lista_pregunta=ctk.CTkComboBox(self.lgn_frame,font=('yu gothic ui',15),values=["Nombre de su primera mascota?","Comida favorita?","Bebida favorita?", "En que ciudad naciste ?"],state="readonly")
+                self.lista_pregunta=ctk.CTkComboBox(self.lgn_frame,font=('yu gothic ui',15),values=["¿Cual es el nombre de su primera mascota?","¿Cual es tu comida favorita?","¿Cual es tu bebida favorita?", "¿En que ciudad naciste?"],state="readonly")
                 self.lista_pregunta.place(x=70, y=205)
                 self.lista_pregunta.configure(width=300)
 
@@ -182,7 +182,7 @@ class App:
 
 
                 #CONTRASEÑA
-                self.etiqueta_contraseña = Label(self.lgn_frame, text="Password", bg="#040405", fg="#4f4e4d",
+                self.etiqueta_contraseña = Label(self.lgn_frame, text="Contraseña", bg="#040405", fg="#4f4e4d",
                                             font=("yu gothic ui", 13, "bold"))
                 self.etiqueta_contraseña.place(x=30, y=315)
                 self.password = Entry(self.lgn_frame, highlightthickness=0, relief=FLAT, bg="#040405", fg="#6b6a69",
@@ -201,7 +201,7 @@ class App:
 
                 
                 #CONFIRMAR CONTRASEÑA
-                self.repetir_password = Label(self.lgn_frame, text="Repetir Password", bg="#040405", fg="#4f4e4d",
+                self.repetir_password = Label(self.lgn_frame, text="Repetir contraseña", bg="#040405", fg="#4f4e4d",
                                             font=("yu gothic ui", 13, "bold"))
                 self.repetir_password.place(x=30, y=385)
                 self.repetir = Entry(self.lgn_frame, highlightthickness=0, relief=FLAT, bg="#040405", fg="#6b6a69",
@@ -591,7 +591,7 @@ class App:
         frame_form.pack(side="right",expand=YES,fill=BOTH)
 
         #CUADRO SUPERIOR/TITULO DE INICIO
-        self.title = "Iniciar Sesión"
+        self.title = "Inicio de Sesion"
         self.heading = Label(self.lgn_frame, text=self.title, font=('yu gothic ui', 25, "bold"), bg="#040405",
                              fg='white',
                              bd=5,
