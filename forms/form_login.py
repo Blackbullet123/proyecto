@@ -569,7 +569,7 @@ class App:
     def __init__(self):
         self.ventana_login = CTk()
         self.ventana_login.title('Inicio de sesion')
-        self.ventana_login.geometry('800x680+35+15')
+        self.ventana_login.geometry('1280x680+35+15')
         self.ventana_login.iconbitmap("imagenes\\letra-r.ico")
         self.ventana_login.resizable()
         self.ventana_login._set_appearance_mode("dark")
@@ -606,7 +606,7 @@ class App:
         self.side_image_label.place(x=5, y=100)
 
         #CUADRO SUPERIOR/TITULO DE INICIO
-        self.sing_ing = CTkLabel(self.lgn_frame, text="Sing in", font=('yu gothic ui', 23, "bold"))
+        self.sing_ing = CTkLabel(self.lgn_frame, text="Perfil", font=('yu gothic ui', 23, "bold"))
         self.sing_ing.place(x=650, y=242)
 
         self.sign_imagen = Image.open('imagenes\\usuario.png')
@@ -621,7 +621,7 @@ class App:
 
 
         #USUARIO
-        self.etiqueta_usuario = Label(self.lgn_frame, text="Username", bg="#040405", fg="#4f4e4d",
+        self.etiqueta_usuario = Label(self.lgn_frame, text="Usuario", bg="#040405", fg="#4f4e4d",
                                     font=("yu gothic ui", 13, "bold"))
         self.etiqueta_usuario.place(x=550, y=300)
 
@@ -641,7 +641,7 @@ class App:
         self.username_icon_label.place(x=550, y=332)
 
         #CONTRASEÑA
-        self.etiqueta_password = Label(self.lgn_frame, text="Password", bg="#040405", fg="#4f4e4d",
+        self.etiqueta_password = Label(self.lgn_frame, text="Contraseña", bg="#040405", fg="#4f4e4d",
                                     font=("yu gothic ui", 13, "bold"))
         self.etiqueta_password.place(x=550, y=380)
 
@@ -671,14 +671,14 @@ class App:
 
 
         #CAMBIAR CONTRASEÑA
-        self.boton_recuperar_password = Button(self.lgn_frame, text="Olvido su Contraseña ?",
+        self.boton_recuperar_password = Button(self.lgn_frame, text="¿Olvido su Contraseña ?",
                                     font=("yu gothic ui", 13), command=self.recuperar_password, fg="white", relief=FLAT,
                                     activebackground="#040405"
                                     , borderwidth=0, background="#040405", cursor="hand2")
         self.boton_recuperar_password.place(x=620, y=510)
 
         #CAMBIAR PREGUNTAS
-        self.boton_recuperar_preguntas = Button(self.lgn_frame, command=self.recuperar_preguntas,text="Olvido sus Preguntas ?",
+        self.boton_recuperar_preguntas = Button(self.lgn_frame, command=self.recuperar_preguntas,text="¿Olvido sus Preguntas ?",
                                             font=("yu gothic ui", 13), fg="white", relief=FLAT,
                                             activebackground="#040405"
                                             , borderwidth=0, background="#040405", cursor="hand2")
