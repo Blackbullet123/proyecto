@@ -389,7 +389,7 @@ class App:
                 self.username_icon_label.place(x=30, y=132)
 
                 #Preguntas de seguridad
-                self.primera_pregunta = Label(self.lgn_frame, text="Nombre de su primera mascota?", bg="#040405", fg="#4f4e4d",
+                self.primera_pregunta = Label(self.lgn_frame, text="¿Cual es el nombre de su primera mascota?", bg="#040405", fg="#4f4e4d",
                                             font=("yu gothic ui", 13, "bold"))
                 self.primera_pregunta.place(x=30, y=170)
                 self.primera = Entry(self.lgn_frame, highlightthickness=0, relief=FLAT, bg="#040405", fg="#6b6a69",
@@ -406,7 +406,7 @@ class App:
                 self.icon_primera_label.place(x=30, y=198)
 
                 #SEGUNDA
-                self.segunda_pregunta = Label(self.lgn_frame, text="Comida Favorita?", bg="#040405", fg="#4f4e4d",
+                self.segunda_pregunta = Label(self.lgn_frame, text="¿Cual es su comida Favorita?", bg="#040405", fg="#4f4e4d",
                                             font=("yu gothic ui", 13, "bold"))
                 self.segunda_pregunta.place(x=30, y=240)
                 self.segunda = Entry(self.lgn_frame, highlightthickness=0, relief=FLAT, bg="#040405", fg="#6b6a69",
@@ -424,7 +424,7 @@ class App:
 
 
                 #CONTRASEÑA
-                self.tercera_pregunta = Label(self.lgn_frame, text="Bebida Favorita?", bg="#040405", fg="#4f4e4d",
+                self.tercera_pregunta = Label(self.lgn_frame, text="¿Cual es su bebida Favorita?", bg="#040405", fg="#4f4e4d",
                                             font=("yu gothic ui", 13, "bold"))
                 self.tercera_pregunta.place(x=30, y=315)
                 self.tercera = Entry(self.lgn_frame, highlightthickness=0, relief=FLAT, bg="#040405", fg="#6b6a69",
@@ -451,7 +451,7 @@ class App:
 
                 
                 #Cuarta
-                self.cuarta_pregunta = Label(self.lgn_frame, text="En que ciudad naciste?", bg="#040405", fg="#4f4e4d",
+                self.cuarta_pregunta = Label(self.lgn_frame, text="¿En que ciudad naciste?", bg="#040405", fg="#4f4e4d",
                                             font=("yu gothic ui", 13, "bold"))
                 self.cuarta_pregunta.place(x=30, y=385)
                 self.cuarta = Entry(self.lgn_frame, highlightthickness=0, relief=FLAT, bg="#040405", fg="#6b6a69",
