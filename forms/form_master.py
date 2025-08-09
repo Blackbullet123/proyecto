@@ -10,7 +10,10 @@ from PIL import Image
 from datetime import datetime, timedelta
 import os
 from forms.insercion_vehiculos import insertar
+from pathlib import Path
 
+def get_project_root() -> Path:
+    return Path(__file__).parent if "__file__" in locals() else Path.cwd()
 
 class Principal:
     def __init__(self):
@@ -99,7 +102,8 @@ class Principal:
         frame_top2 = CTkFrame(frame_top, fg_color="transparent", height=80)
         frame_top2.pack(side="top",fill=X)
 
-        imglogo = Image.open("imagenes\\logoapp.png")
+        imglogo_path = get_project_root() / "imagenes" / "logoapp.png"
+        imglogo = Image.open(imglogo_path)
 
         logo_frame = CTkFrame(frame_top2,fg_color="transparent",width=50, height=50)
         logo_frame.pack(side="top",fill=X, padx=5)
@@ -644,7 +648,7 @@ class Principal:
                     frame_top2 = CTkFrame(frame_top, fg_color="transparent", height=80)
                     frame_top2.pack(side="top",fill=X)
 
-                    imglogo = Image.open("imagenes\\logoapp.png")
+                    imglogo = Image.open(imglogo_path)
 
                     logo_frame = CTkFrame(frame_top2,fg_color="transparent",width=50, height=50)
                     logo_frame.pack(side="top",fill=X, padx=5)
@@ -1006,8 +1010,10 @@ class Principal:
 
                     #BOTONES
 
-                    limpiar = Image.open("imagenes\\limpiar.png")
-                    added = Image.open("imagenes\\add.png")
+                    limpiar_path = get_project_root() / "imagenes" / "limpiar.png"
+                    add_path = get_project_root() / "imagenes" / "add.png"
+                    limpiar = Image.open(limpiar_path)
+                    added = Image.open(add_path)
 
                     add_button = CTkButton(button_frame,text="Agregar",command=lambda:(ADD(), actualizar_tree()),corner_radius=15, 
                                            text_color="white",width=200,height=50,cursor='hand2',
@@ -1037,10 +1043,14 @@ class Principal:
             Principal2()
 
 
-        actu = Image.open("imagenes\\update.png")
-        dele = Image.open("imagenes\\eliminar.png")
-        selet = Image.open("imagenes\\limpiar.png")
-        rent = Image.open("imagenes\\rentarbox.png")
+        actu_path = get_project_root() / "imagenes" / "update.png"
+        dele_path = get_project_root() / "imagenes" / "eliminar.png"
+        selet_path = get_project_root() / "imagenes" / "limpiar.png"
+        rent_path = get_project_root() / "imagenes" / "rentarbox.png"
+        actu = Image.open(actu_path)
+        dele = Image.open(dele_path)
+        selet = Image.open(selet_path)
+        rent = Image.open(rent_path)
 
         update_button = CTkButton(button_frame,text="Actualizar",command=update,corner_radius=15, text_color="white",width=200,height=50,cursor='hand2',
                              fg_color="#005954",hover_color="#57bd9e", font=("Impact", 20),
@@ -1077,5 +1087,6 @@ class Principal:
 def abrir_pdf():
     if os.path.exists(ruta_pdf):
         os.system(f'start {ruta_pdf}')
-        
-ruta_pdf = "PDF\\manual.pdf"
+
+pdf_path = get_project_root() / "PDF" / "manual.pdf"        
+ruta_pdf = pdf_path

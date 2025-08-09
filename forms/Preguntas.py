@@ -3,19 +3,25 @@ from tkinter import *
 from customtkinter import *
 from PIL import Image, ImageTk
 from tkinter import END, ttk, messagebox
+from pathlib import Path
 
+def get_project_root() -> Path:
+    return Path(__file__).parent if "__file__" in locals() else Path.cwd()
 
 class preguntas:
             db_name='database_proyecto.db'
 
             def __init__(self):
+                image_path = get_project_root() / "imagenes" / "letra-r.ico"
                 self.window = CTk()
                 self.window.title('Recuperar Preguntas')
                 self.window.geometry('580x630+390+40')
-                self.window.iconbitmap("imagenes\\letra-r.ico")
+                image = Image.open(image_path)
+                icon = ImageTk.PhotoImage(image)
                 self.window.resizable(0,0)
 
-                self.frame_logo = Image.open('imagenes\\fondo.jpg')
+                fondo_path = get_project_root() / "imagenes" / "fondo.jpg"
+                self.frame_logo = Image.open(fondo_path)
                 photo = ImageTk.PhotoImage(self.frame_logo)
                 self.bg_recuperar = CTkLabel(self.window, image=photo)
                 self.bg_recuperar.image = photo
@@ -38,7 +44,8 @@ class preguntas:
                 self.heading.place(x=50, y=7, width=350, height=35)
 
 
-                self.sign_imagen = Image.open('imagenes\\preguntas_logo.png')
+                preguntas_path = get_project_root() / "imagenes" / "preguntas_logo.png"
+                self.sign_imagen = Image.open(preguntas_path)
                 photo = ImageTk.PhotoImage(self.sign_imagen)
                 self.sign_imagen_label = Label(self.lgn_frame, image=photo, bg='#040405')
                 self.sign_imagen_label.image = photo
@@ -59,7 +66,8 @@ class preguntas:
                 self.coigo_linea = Canvas(self.lgn_frame, width=350, height=2.0, bg="#bdb9b1", highlightthickness=0)
                 self.coigo_linea.place(x=30, y=159)
 
-                self.username_icon = Image.open('imagenes\\password_icon.png')
+                password_icon_path = get_project_root() / "imagenes" / "password_icon.png"
+                self.username_icon = Image.open(password_icon_path)
                 photo = ImageTk.PhotoImage(self.username_icon)
                 self.username_icon_label = Label(self.lgn_frame, image=photo, bg='#040405')
                 self.username_icon_label.image = photo
@@ -76,7 +84,8 @@ class preguntas:
                 self.primera_linea = Canvas(self.lgn_frame, width=350, height=2.0, bg="#bdb9b1", highlightthickness=0)
                 self.primera_linea.place(x=30, y=234)
 
-                self.icon_combobox = Image.open('imagenes\\1.png')
+                number_1_path = get_project_root() / "imagenes" / "1.png"
+                self.icon_combobox = Image.open(number_1_path)
                 photo = ImageTk.PhotoImage(self.icon_combobox)
                 self.icon_primera_label = Label(self.lgn_frame, image=photo, bg='#040405')
                 self.icon_primera_label.image = photo
@@ -93,7 +102,8 @@ class preguntas:
                 self.segunda_linea = Canvas(self.lgn_frame, width=350, height=2.0, bg="#bdb9b1", highlightthickness=0)
                 self.segunda_linea.place(x=30, y=304)
 
-                self.icon_respuesta = Image.open('imagenes\\2.png')
+                number_2_path = get_project_root() / "imagenes" / "2.png"
+                self.icon_respuesta = Image.open(number_2_path)
                 photo = ImageTk.PhotoImage(self.icon_respuesta)
                 self.icon_segunda_label = Label(self.lgn_frame, image=photo, bg='#040405')
                 self.icon_segunda_label.image = photo
@@ -112,14 +122,16 @@ class preguntas:
                 self.tercera_linea = Canvas(self.lgn_frame, width=350, height=2.0, bg="#bdb9b1", highlightthickness=0)
                 self.tercera_linea.place(x=30, y=375)
 
-                self.password_icon = Image.open('imagenes\\3.png')
+                number_3_path = get_project_root() / "imagenes" / "3.png"
+                self.password_icon = Image.open(number_3_path)
                 photo = ImageTk.PhotoImage(self.password_icon)
                 self.tercer_icon_label = Label(self.lgn_frame, image=photo, bg='#040405')
                 self.tercer_icon_label.image = photo
                 self.tercer_icon_label.place(x=30, y=339)
                 
+                salir_path = get_project_root() / "imagenes" / "salir.png"
                 self.salir_image = ImageTk.PhotoImage \
-                    (file='imagenes\\salir.png')
+                    (file=str(salir_path))
 
                 #SALIR
                 self.salir = Button(self.lgn_frame, image=self.salir_image, command=self.regresar, relief=FLAT,
@@ -138,7 +150,8 @@ class preguntas:
                 self.cuarta_linea = Canvas(self.lgn_frame, width=350, height=2.0, bg="#bdb9b1", highlightthickness=0)
                 self.cuarta_linea.place(x=30, y=446)
 
-                self.password_repetir = Image.open('imagenes\\4.png')
+                number_4_path = get_project_root() / "imagenes" / "4.png"
+                self.password_repetir = Image.open(number_4_path)
                 photo = ImageTk.PhotoImage(self.password_repetir)
                 self.cuarto_icon = Label(self.lgn_frame, image=photo, bg='#040405')
                 self.cuarto_icon.image = photo

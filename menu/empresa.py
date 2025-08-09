@@ -12,7 +12,10 @@ from forms.imprimir import imprimir_todos
 from forms.vista_previa import vista_previa_1
 from tkinter import messagebox
 import pandas as pd
+from pathlib import Path
 
+def get_project_root() -> Path:
+    return Path(__file__).parent if "__file__" in locals() else Path.cwd()
 
 
 def detallado():
@@ -34,7 +37,8 @@ def detallado():
                 for item in selected_item:
                     values = my_tree.item(item, "values")
                 
-                doc = SimpleDocTemplate("PDF/datos de vehiculos detallado.pdf", pagesize=letter)
+                doc_path = get_project_root() / "PDF" / "datos de vehiculos detallado.pdf"
+                doc = SimpleDocTemplate(doc_path, pagesize=letter)
                 elements = []
                 
                 data = [
@@ -61,14 +65,17 @@ def detallado():
                 title = "<b>Datos Detallados</b>"
                 p_title = Paragraph(title, styles['Title'])
                 
-                imagen_path = "IMAGENES/membrete.jpg"
+                imagen_path = get_project_root() / "imagenes" / "membrete.jpg"
+                if not imagen_path.exists():
+                    messagebox.showerror("Error", "La imagen no se encuentra en la ruta especificada.")
+                    return
                 imagen = Image(imagen_path, width=570, height=70)
                 
                 # Definir las coordenadas x y y para posicionar la imagen en el PDF
                 pdx = 20
                 pdy = 715
                 
-                imagen_2 = "IMAGENES/logoapp.png"
+                imagen_2 = get_project_root() / "imagenes" / "logoapp.png"
                 imagen_alq = Image(imagen_2, width=130, height=110)
                 
                 # Definir las coordenadas x y y para posicionar la imagen en el PDF
@@ -111,7 +118,7 @@ def detallado():
             )
 
             cursor = conn.cursor()
-            cursor.execute("SELECT a.COD_Alquiler, c.RIF, c.Nombre, c.telefono, c.direccion, r.CI, r.nombre_r, r.apellido, v.Placa, v.Color,v.Año, m.Nombre, o.Nombre FROM contratista c INNER JOIN alquiler a ON c.RIF = a.RIF_Empresa INNER JOIN representante r ON c.Representante_CI = r.CI INNER JOIN vehiculo v ON a.Placa_Vehiculo = v.Placa INNER JOIN marca m ON v.ID_Marca = m.ID INNER JOIN modelo o ON o.ID_Marca = m.ID;")
+            cursor.execute("SELECT a.COD_Alquiler, c.RIF, c.Nombre, c.telefono, c.direccion, r.CI, r.nombre, r.apellido, v.Placa, v.Color,v.Año, m.Nombre, o.Nombre FROM contratista c INNER JOIN alquiler a ON c.RIF = a.RIF_Empresa INNER JOIN representante r ON c.Representante_CI = r.CI INNER JOIN vehiculo v ON a.Placa_Vehiculo = v.Placa INNER JOIN marca m ON v.ID_Marca = m.ID INNER JOIN modelo o ON o.ID_Marca = m.ID;")
             rows = cursor.fetchall()
 
 

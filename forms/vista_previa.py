@@ -4,7 +4,11 @@ from PIL import Image, ImageTk
 import tkinter as tk
 import os
 from customtkinter import *
+from pathlib import Path
 
+def get_project_root() -> Path:
+    return Path(__file__).parent if "__file__" in locals() else Path.cwd()
+    
 def vista_previa_1():
     
     def previsualizar_pdf(pdf_path):
@@ -14,7 +18,10 @@ def vista_previa_1():
         pdf.close()
         return imagen_bytes
     
-    imagen_bytes = previsualizar_pdf("PDF\datos de vehiculos detallado.pdf")
+    pdf_path = get_project_root() / "PDF" / "datos de vehiculos detallado.pdf"
+    if not pdf_path.exists():
+        raise FileNotFoundError(f"El archivo {pdf_path} no existe.")
+    imagen_bytes = previsualizar_pdf(pdf_path)
 
     root=tk.Toplevel()
     root.title("Imprimir")
@@ -53,7 +60,10 @@ def vista_previa_2():
         pdf.close()
         return imagen_bytes
     
-    imagen_bytes = previsualizar_pdf("PDF\Vehiculos.pdf")
+    pdf_path = get_project_root() / "PDF" / "Vehiculos.pdf"
+    if not pdf_path.exists():
+        raise FileNotFoundError(f"El archivo {pdf_path} no existe.")
+    imagen_bytes = previsualizar_pdf(pdf_path)
 
     root=tk.Toplevel()
     root.title("Imprimir")
@@ -93,7 +103,10 @@ def vista_previa_3():
         pdf.close()
         return imagen_bytes
     
-    imagen_bytes = previsualizar_pdf("PDF\Todos los alquilados.pdf")
+    pdf_path = get_project_root() / "PDF" / "Todos los alquilados.pdf"
+    if not pdf_path.exists():
+        raise FileNotFoundError(f"El archivo {pdf_path} no existe.")
+    imagen_bytes = previsualizar_pdf(pdf_path)
 
     root=tk.Toplevel()
     root.title("Imprimir")

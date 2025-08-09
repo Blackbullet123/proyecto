@@ -8,6 +8,10 @@ from forms.form_master import Principal
 from forms.master_usuario_2 import usuario
 import sqlite3
 import bcrypt
+from pathlib import Path
+
+def get_project_root() -> Path:
+    return Path(__file__).parent if "__file__" in locals() else Path.cwd()
 
 class App:
     db_name='database_proyecto.db'
@@ -90,15 +94,18 @@ class App:
             db_name='database_proyecto.db'
 
             def __init__(self):
+                image_path = get_project_root() / "imagenes" / "letra-r.ico"
                 self.window = Toplevel()
                 self.window.title('Recuperar Contraseña')
                 self.window.geometry('580x630+390+40')
-                self.window.iconbitmap("imagenes\\letra-r.ico")
+                image = Image.open(image_path)
+                icon = ImageTk.PhotoImage(image)
+                self.window.tk.call('wm', 'iconphoto', self.window._w, icon)
                 self.window.resizable(0,0)
                 self.window.config(bg="#145A32")
 
-
-                self.frame_logo = Image.open('imagenes\\fondo.jpg')
+                logo_path = get_project_root() / "imagenes" / "fondo.jpg"
+                self.frame_logo = Image.open(logo_path)
                 photo = ImageTk.PhotoImage(self.frame_logo)
                 self.bg_recuperar = CTkLabel(self.window, image=photo)
                 self.bg_recuperar.image = photo
@@ -121,8 +128,8 @@ class App:
                                     relief=FLAT)
                 self.heading.place(x=50, y=8, width=350, height=30)
 
-
-                self.sign_imagen = Image.open('imagenes\\codigo.png')
+                sign_path = get_project_root() / "imagenes" / "codigo.png"
+                self.sign_imagen = Image.open(sign_path)
                 photo = ImageTk.PhotoImage(self.sign_imagen)
                 self.sign_imagen_label = Label(self.lgn_frame, image=photo, bg='#040405')
                 self.sign_imagen_label.image = photo
@@ -143,7 +150,8 @@ class App:
                 self.usuario_linea = Canvas(self.lgn_frame, width=350, height=2.0, bg="#bdb9b1", highlightthickness=0)
                 self.usuario_linea.place(x=30, y=159)
 
-                self.username_icon = Image.open('imagenes\\username_icon.png')
+                icon_path = get_project_root() / "imagenes" / "username_icon.png"
+                self.username_icon = Image.open(icon_path)
                 photo = ImageTk.PhotoImage(self.username_icon)
                 self.username_icon_label = Label(self.lgn_frame, image=photo, bg='#040405')
                 self.username_icon_label.image = photo
@@ -157,7 +165,8 @@ class App:
                 self.lista_pregunta.place(x=70, y=205)
                 self.lista_pregunta.configure(width=300)
 
-                self.icon_combobox = Image.open('imagenes\\pregunta.png')
+                pregunta_icon_path = get_project_root() / "imagenes" / "pregunta.png"
+                self.icon_combobox = Image.open(pregunta_icon_path)
                 photo = ImageTk.PhotoImage(self.icon_combobox)
                 self.icon_combobox_label = Label(self.lgn_frame, image=photo, bg='#040405')
                 self.icon_combobox_label.image = photo
@@ -174,7 +183,8 @@ class App:
                 self.respuesta_linea = Canvas(self.lgn_frame, width=350, height=2.0, bg="#bdb9b1", highlightthickness=0)
                 self.respuesta_linea.place(x=30, y=305)
 
-                self.icon_respuesta = Image.open('imagenes\\respuesta.png')
+                respuesta_icon_path = get_project_root() / "imagenes" / "respuesta.png"
+                self.icon_respuesta = Image.open(respuesta_icon_path)
                 photo = ImageTk.PhotoImage(self.icon_respuesta)
                 self.icon_respuesta_label = Label(self.lgn_frame, image=photo, bg='#040405')
                 self.icon_respuesta_label.image = photo
@@ -193,7 +203,8 @@ class App:
                 self.password_linea = Canvas(self.lgn_frame, width=350, height=2.0, bg="#bdb9b1", highlightthickness=0)
                 self.password_linea.place(x=30, y=375)
 
-                self.password_icon = Image.open('imagenes\\password_icon.png')
+                password_icon_path = get_project_root() / "imagenes" / "password_icon.png"
+                self.password_icon = Image.open(password_icon_path)
                 photo = ImageTk.PhotoImage(self.password_icon)
                 self.password_icon_label = Label(self.lgn_frame, image=photo, bg='#040405')
                 self.password_icon_label.image = photo
@@ -211,20 +222,24 @@ class App:
                 self.password_linea_2 = Canvas(self.lgn_frame, width=350, height=2.0, bg="#bdb9b1", highlightthickness=0)
                 self.password_linea_2.place(x=30, y=446)
 
-                self.password_repetir = Image.open('imagenes\\password_icon.png')
+                password_repetir_icon_path = get_project_root() / "imagenes" / "password_icon.png"
+                self.password_repetir = Image.open(password_repetir_icon_path)
                 photo = ImageTk.PhotoImage(self.password_repetir)
                 self.password_icon_repetir = Label(self.lgn_frame, image=photo, bg='#040405')
                 self.password_icon_repetir.image = photo
                 self.password_icon_repetir.place(x=30, y=419)
 
+                image_path_open = get_project_root() / "imagenes" / "ojo-abierto.png"
+                image_path_closed = get_project_root() / "imagenes" / "ojo.png"
+                image_path_exit = get_project_root() / "imagenes" / "salir.png"
                 self.show_image = ImageTk.PhotoImage \
-                    (file='imagenes\\ojo-abierto.png')
+                    (file=str(image_path_open))
 
                 self.hide_image = ImageTk.PhotoImage \
-                    (file='imagenes\\ojo.png')
+                    (file=str(image_path_closed))
                 
                 self.salir_image = ImageTk.PhotoImage \
-                    (file='imagenes\\salir.png')
+                    (file=str(image_path_exit))
 
                 #MOSTRAR CONTRASEÑAS
                 self.mostrar_password = Button(self.lgn_frame, image=self.show_image, command=self.show, relief=FLAT,
@@ -332,13 +347,17 @@ class App:
             db_name='database_proyecto.db'
 
             def __init__(self):
+                image_path = get_project_root() / "imagenes" / "letra-r.ico"
                 self.window = Toplevel()
                 self.window.title('Recuperar Preguntas')
                 self.window.geometry('580x630+390+40')
-                self.window.iconbitmap("imagenes\\letra-r.ico")
+                image = Image.open(image_path)
+                icon = ImageTk.PhotoImage(image)
+                self.window.tk.call('wm', 'iconphoto', self.window._w, icon)
                 self.window.resizable(0,0)
 
-                self.frame_logo = Image.open('imagenes\\fondo.jpg')
+                fondo_path = get_project_root() / "imagenes" / "fondo.jpg"
+                self.frame_logo = Image.open(fondo_path)
                 photo = ImageTk.PhotoImage(self.frame_logo)
                 self.bg_recuperar = CTkLabel(self.window, image=photo)
                 self.bg_recuperar.image = photo
@@ -361,7 +380,8 @@ class App:
                 self.heading.place(x=50, y=7, width=350, height=35)
 
 
-                self.sign_imagen = Image.open('imagenes\\preguntas_logo.png')
+                preguntas_logo_path = get_project_root() / "imagenes" / "preguntas_logo.png"
+                self.sign_imagen = Image.open(preguntas_logo_path)
                 photo = ImageTk.PhotoImage(self.sign_imagen)
                 self.sign_imagen_label = Label(self.lgn_frame, image=photo, bg='#040405')
                 self.sign_imagen_label.image = photo
@@ -382,7 +402,8 @@ class App:
                 self.coigo_linea = Canvas(self.lgn_frame, width=350, height=2.0, bg="#bdb9b1", highlightthickness=0)
                 self.coigo_linea.place(x=30, y=159)
 
-                self.username_icon = Image.open('imagenes\\password_icon.png')
+                password_icon_path = get_project_root() / "imagenes" / "password_icon.png"
+                self.username_icon = Image.open(password_icon_path)
                 photo = ImageTk.PhotoImage(self.username_icon)
                 self.username_icon_label = Label(self.lgn_frame, image=photo, bg='#040405')
                 self.username_icon_label.image = photo
@@ -399,7 +420,8 @@ class App:
                 self.primera_linea = Canvas(self.lgn_frame, width=350, height=2.0, bg="#bdb9b1", highlightthickness=0)
                 self.primera_linea.place(x=30, y=234)
 
-                self.icon_combobox = Image.open('imagenes\\1.png')
+                number_1_path = get_project_root() / "imagenes" / "1.png"
+                self.icon_combobox = Image.open(number_1_path)
                 photo = ImageTk.PhotoImage(self.icon_combobox)
                 self.icon_primera_label = Label(self.lgn_frame, image=photo, bg='#040405')
                 self.icon_primera_label.image = photo
@@ -416,7 +438,8 @@ class App:
                 self.segunda_linea = Canvas(self.lgn_frame, width=350, height=2.0, bg="#bdb9b1", highlightthickness=0)
                 self.segunda_linea.place(x=30, y=304)
 
-                self.icon_respuesta = Image.open('imagenes\\2.png')
+                number_2_path = get_project_root() / "imagenes" / "2.png"
+                self.icon_respuesta = Image.open(number_2_path)
                 photo = ImageTk.PhotoImage(self.icon_respuesta)
                 self.icon_segunda_label = Label(self.lgn_frame, image=photo, bg='#040405')
                 self.icon_segunda_label.image = photo
@@ -435,14 +458,16 @@ class App:
                 self.tercera_linea = Canvas(self.lgn_frame, width=350, height=2.0, bg="#bdb9b1", highlightthickness=0)
                 self.tercera_linea.place(x=30, y=375)
 
-                self.password_icon = Image.open('imagenes\\3.png')
+                number_3_path = get_project_root() / "imagenes" / "3.png"
+                self.password_icon = Image.open(number_3_path)
                 photo = ImageTk.PhotoImage(self.password_icon)
                 self.tercer_icon_label = Label(self.lgn_frame, image=photo, bg='#040405')
                 self.tercer_icon_label.image = photo
                 self.tercer_icon_label.place(x=30, y=339)
                 
+                salir_path = get_project_root() / "imagenes" / "salir.png"
                 self.salir_image = ImageTk.PhotoImage \
-                    (file='imagenes\\salir.png')
+                    (file=str(salir_path))
 
                 #SALIR
                 self.salir = Button(self.lgn_frame, image=self.salir_image, command=self.regresar, relief=FLAT,
@@ -461,7 +486,8 @@ class App:
                 self.cuarta_linea = Canvas(self.lgn_frame, width=350, height=2.0, bg="#bdb9b1", highlightthickness=0)
                 self.cuarta_linea.place(x=30, y=446)
 
-                self.password_repetir = Image.open('imagenes\\4.png')
+                number_4_path = get_project_root() / "imagenes" / "4.png"
+                self.password_repetir = Image.open(number_4_path)
                 photo = ImageTk.PhotoImage(self.password_repetir)
                 self.cuarto_icon = Label(self.lgn_frame, image=photo, bg='#040405')
                 self.cuarto_icon.image = photo
@@ -570,12 +596,16 @@ class App:
         self.ventana_login = CTk()
         self.ventana_login.title('Inicio de sesion')
         self.ventana_login.geometry('1280x680+35+15')
-        self.ventana_login.iconbitmap("imagenes\\letra-r.ico")
+        icon_path = get_project_root() / "imagenes" / "letra-r.ico"
+        image = Image.open(icon_path)
+        icon = ImageTk.PhotoImage(image)
+        self.ventana_login.tk.call('wm', 'iconphoto', self.ventana_login._w, icon)
         self.ventana_login.resizable()
         self.ventana_login._set_appearance_mode("dark")
 
 
-        self.frame_logo = Image.open('imagenes\\fondo.jpg')
+        fondo_path = get_project_root() / "imagenes" / "fondo.jpg"
+        self.frame_logo = Image.open(fondo_path)
         photo = ImageTk.PhotoImage(self.frame_logo)
         self.bg_panel = CTkLabel(self.ventana_login, image=photo, fg_color="#040405", bg_color="#040405")
         self.bg_panel.image = photo
@@ -599,7 +629,8 @@ class App:
         self.heading.place(x=80, y=30, width=300, height=30)
 
 
-        self.side_image = Image.open('imagenes\\Reych.png')
+        Reych_path = get_project_root() / "imagenes" / "Reych.png"
+        self.side_image = Image.open(Reych_path)
         photo = ImageTk.PhotoImage(self.side_image)
         self.side_image_label = Label(self.lgn_frame, image=photo, bg='#040405')
         self.side_image_label.image = photo
@@ -609,7 +640,8 @@ class App:
         self.sing_ing = CTkLabel(self.lgn_frame, text="Perfil", font=('yu gothic ui', 23, "bold"))
         self.sing_ing.place(x=650, y=242)
 
-        self.sign_imagen = Image.open('imagenes\\usuario.png')
+        usuario_path = get_project_root() / "imagenes" / "usuario.png"
+        self.sign_imagen = Image.open(usuario_path)
         photo = ImageTk.PhotoImage(self.sign_imagen)
         self.sign_imagen_label = Label(self.lgn_frame, image=photo, bg='#040405')
         self.sign_imagen_label.image = photo
@@ -634,7 +666,8 @@ class App:
         self.username_line = Canvas(self.lgn_frame, width=300, height=2.0, bg="#bdb9b1", highlightthickness=0)
         self.username_line.place(x=550, y=359)
 
-        self.username_icon = Image.open('imagenes\\username_icon.png')
+        username_icon_path = get_project_root() / "imagenes" / "username_icon.png"
+        self.username_icon = Image.open(username_icon_path)
         photo = ImageTk.PhotoImage(self.username_icon)
         self.username_icon_label = Label(self.lgn_frame, image=photo, bg='#040405')
         self.username_icon_label.image = photo
@@ -652,17 +685,20 @@ class App:
         self.password_line = Canvas(self.lgn_frame, width=300, height=2.0, bg="#bdb9b1", highlightthickness=0)
         self.password_line.place(x=550, y=440)
 
-        self.password_icon = Image.open('imagenes\\password_icon.png')
+        password_icon_path = get_project_root() / "imagenes" / "password_icon.png"
+        self.password_icon = Image.open(password_icon_path)
         photo = ImageTk.PhotoImage(self.password_icon)
         self.password_icon_label = Label(self.lgn_frame, image=photo, bg='#040405')
         self.password_icon_label.image = photo
         self.password_icon_label.place(x=550, y=412)
 
+        image_path_open = get_project_root() / "imagenes" / "ojo-abierto.png"
+        ojo_path = get_project_root() / "imagenes" / "ojo.png"
         self.show_image = ImageTk.PhotoImage \
-            (file='imagenes\\ojo-abierto.png')
+            (file=str(image_path_open))
 
         self.hide_image = ImageTk.PhotoImage \
-            (file='imagenes\\ojo.png')
+            (file=str(ojo_path))
 
         self.show_button = Button(self.lgn_frame, image=self.show_image, command=self.show, relief=FLAT,
                                 borderwidth=0, cursor="hand2",bg="black",activebackground="black", background="black")

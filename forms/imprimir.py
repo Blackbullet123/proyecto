@@ -8,7 +8,10 @@ import mysql.connector
 from tkinter import messagebox
 import pandas as pd
 from forms.vista_previa import vista_previa_3,vista_previa_2
-        
+from pathlib import Path
+
+def get_project_root() -> Path:
+    return Path(__file__).parent if "__file__" in locals() else Path.cwd()        
         
 def imprimir_todos():
         conn = mysql.connector.connect(
@@ -19,11 +22,12 @@ def imprimir_todos():
         )
 
         # Consulta a la base de datos
-        query = ("SELECT a.COD_Alquiler, c.RIF, c.Nombre, c.telefono, c.direccion, r.CI, r.nombre_r, r.apellido, v.Placa, v.Color,v.Año, m.Nombre, o.Nombre FROM contratista c INNER JOIN alquiler a ON c.RIF = a.RIF_Empresa INNER JOIN representante r ON c.Representante_CI = r.CI INNER JOIN vehiculo v ON a.Placa_Vehiculo = v.Placa INNER JOIN marca m ON v.ID_Marca = m.ID INNER JOIN modelo o ON o.ID_Marca = m.ID;")
+        query = ("SELECT a.COD_Alquiler, c.RIF, c.Nombre, c.telefono, c.direccion, r.CI, r.nombre, r.apellido, v.Placa, v.Color,v.Año, m.Nombre, o.Nombre FROM contratista c INNER JOIN alquiler a ON c.RIF = a.RIF_Empresa INNER JOIN representante r ON c.Representante_CI = r.CI INNER JOIN vehiculo v ON a.Placa_Vehiculo = v.Placa INNER JOIN marca m ON v.ID_Marca = m.ID INNER JOIN modelo o ON o.ID_Marca = m.ID;")
         df = pd.read_sql(query, conn)
         
         # Crear el PDF
-        doc = SimpleDocTemplate("PDF\Todos los alquilados.pdf", pagesize=letter)
+        doc_path = get_project_root() / "PDF" / "Todos los alquilados.pdf"
+        doc = SimpleDocTemplate(doc_path, pagesize=letter)
         data = [df.columns[:,].tolist()] + df.values.tolist()
         
         # Crear los textos que funcionarán como etiquetas
@@ -46,14 +50,14 @@ def imprimir_todos():
         p_title = Paragraph(title, styles['Title'])
         
         
-        imagen_path = "IMAGENES/membrete.jpg"
+        imagen_path = get_project_root() / "imagenes" / "membrete.jpg"
         imagen = Image(imagen_path, width=570, height=70)
         
         # Definir las coordenadas x y y para posicionar la imagen en el PDF
         pdx = 20
         pdy = 715
         
-        imagen_2 = "IMAGENES/logoapp.png"
+        imagen_2 = get_project_root() / "imagenes" / "logoapp.png"
         imagen_alq = Image(imagen_2, width=130, height=110)
         
         # Definir las coordenadas x y y para posicionar la imagen en el PDF
@@ -123,14 +127,14 @@ def imprimir_vehiculos():
         p_title = Paragraph(title, styles['Title'])
         
         
-        imagen_path = "IMAGENES/membrete.jpg"
+        imagen_path = get_project_root() / "imagenes" / "membrete.jpg"
         imagen = Image(imagen_path, width=570, height=70)
         
         # Definir las coordenadas x y y para posicionar la imagen en el PDF
         pdx = 20
         pdy = 715
         
-        imagen_2 = "IMAGENES/logoapp.png"
+        imagen_2 = get_project_root() / "imagenes" / "logoapp.png"
         imagen_alq = Image(imagen_2, width=130, height=110)
         
         # Definir las coordenadas x y y para posicionar la imagen en el PDF
