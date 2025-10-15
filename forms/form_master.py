@@ -22,7 +22,7 @@ class Principal:
         self.root = CTk()
         self.root.title('ALQUITECH')
         self.root.geometry("1250x520")
-        self.root.iconbitmap("imagenes//letra-r.ico")
+        self.root.iconbitmap("imagenes/letra-r.ico")
         self.root.config(background="#EEEEEE")
 
         self.barra_visible = True
@@ -111,7 +111,7 @@ class Principal:
         frame_top2 = CTkFrame(frame_top, fg_color="transparent", border_width=0,height=80)
         frame_top2.pack(side="top",fill=X)
 
-        imglogo = Image.open("imagenes\\Reych.png")
+        imglogo = Image.open("imagenes/Reych.png")
         imglogo = imglogo.crop(imglogo.getbbox())
 
         logo_frame = CTkFrame(frame_top2, fg_color="transparent",width=10, height=10)#fg_color="transparent",
@@ -123,7 +123,7 @@ class Principal:
         frame_botones = CTkFrame(self.frame_form_l, fg_color="transparent")
         frame_botones.pack(side="top",fill=X, pady=20)
 
-        img = Image.open("imagenes//hogar.png")
+        img = Image.open("imagenes/hogar.png")
         inicio_icon = CTkImage(dark_image=img, light_image=img, size=(24,24))
         inicio = CTkButton(frame_botones, text="Inicio",fg_color="transparent",text_color="white",
                                   width=150, height=30,hover_color="#00501B",
@@ -131,7 +131,7 @@ class Principal:
                                   command=self.mostrar_contenido_principal)
         inicio.pack(pady=5, padx=2, fill=X)
 
-        img = Image.open("imagenes//alquiler.png")
+        img = Image.open("imagenes/alquiler.png")
         alquilar_icon = CTkImage(dark_image=img, light_image=img, size=(24,24))
         alquilar = CTkButton(frame_botones, text="Alquilar",fg_color="transparent",text_color="white",
                                   width=150, height=30,hover_color="#00501B",
@@ -139,7 +139,7 @@ class Principal:
                                     command=self.mostrar_vehiculos_disponibles)
         alquilar.pack(pady=5, padx=2, fill=X)
 
-        img = Image.open("imagenes//registro.png")
+        img = Image.open("imagenes/registro.png")
         datos_icon = CTkImage(dark_image=img, light_image=img, size=(24,24))
         date_detalles = CTkButton(frame_botones, text="Datos detallados",fg_color="transparent",text_color="white",
                                   width=150, height=40,hover_color="#00501B",
@@ -147,28 +147,28 @@ class Principal:
                                   command=self.mostrar_datos_detallados)
         date_detalles.pack(pady=5, padx=2, fill=X)
 
-        '''img = Image.open("imagenes//nuevo.png")
+        '''img = Image.open("imagenes/nuevo.png")
         nuevo_vehiculo_icon = CTkImage(dark_image=img, light_image=img, size=(24,24))
         nuevo_vehiculo = CTkButton(frame_botones, text="Nuevo Vehiculo",fg_color="transparent",text_color="white",
                                   width=150, height=40,hover_color="#00501B",
                                   font=("Ubuntu",17), anchor=W, image=nuevo_vehiculo_icon, compound="left")
         nuevo_vehiculo.pack(pady=5, padx=2, fill=X)'''
 
-        img = Image.open("imagenes//backup.png")
+        img = Image.open("imagenes/backup.png")
         backup_restore_icon = CTkImage(dark_image=img, light_image=img, size=(24,24))
         backup_restore = CTkButton(frame_botones, text="Backup y Restore",fg_color="transparent",text_color="white",
                                   width=150, height=40,hover_color="#00501B",
                                   font=("Ubuntu",17), anchor=W, image=backup_restore_icon, compound="left")
         backup_restore.pack(pady=5, padx=2, fill=X)
 
-        img = Image.open("imagenes//mantenimiento.png")
+        img = Image.open("imagenes/mantenimiento.png")
         mantenimiento_icon = CTkImage(dark_image=img, light_image=img, size=(24,24))
         mantenimiento = CTkButton(frame_botones, text="Mantenimiento",fg_color="transparent",text_color="white",
                                   width=150, height=40,hover_color="#00501B",
                                   font=("Ubuntu",17), anchor=W, image=mantenimiento_icon, compound="left")
         mantenimiento.pack(pady=5, padx=2, fill=X)
 
-        img = Image.open("imagenes//ayuda.png")
+        img = Image.open("imagenes/ayuda.png")
         ayuda_icon = CTkImage(dark_image=img, light_image=img, size=(24,24))
         ayuda = CTkButton(frame_botones, text="Ayuda",fg_color="transparent",text_color="white",
                                   width=150, height=40,hover_color="#00501B",
@@ -196,7 +196,7 @@ class Principal:
         frame_botones2 = CTkFrame(self.frame_form_l, fg_color="transparent")
         frame_botones2.pack(side="bottom",fill=X, pady=20)
 
-        img = Image.open("imagenes//salir.png")
+        img = Image.open("imagenes/salir.png")
         salir = CTkImage(dark_image=img, light_image=img, size=(24,24))
         boton = CTkButton(frame_botones2, text="Cerrar Sesión",fg_color="transparent", text_color="white",
                                   width=100, height=30,hover_color="#00501B",
