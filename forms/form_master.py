@@ -13,6 +13,7 @@ from forms.frame_respaldo import FrameBackup
 from datetime import datetime, timedelta
 import os
 from pathlib import Path
+import webbrowser
 
 
 
@@ -23,8 +24,12 @@ class Principal:
     def __init__(self):
         self.root = CTk()
         self.root.title('ALQUITECH')
+<<<<<<< HEAD
         self.root.geometry("1280x650+35+15")
         self.root.iconbitmap("imagenes/letra-r.ico")
+=======
+        self.root.geometry("1250x520")
+>>>>>>> 5b4d08b38b50d750e2ab7c147ce332698de5a810
         self.root.config(background="#EEEEEE")
 
         self.barra_visible = True
@@ -689,6 +694,8 @@ class Principal:
 
 
 def abrir_pdf():
+    ruta_pdf = get_project_root() / "PDF" / "manual.pdf"
+    
     if os.path.exists(ruta_pdf):
         os.system(f'start {ruta_pdf}')
 
