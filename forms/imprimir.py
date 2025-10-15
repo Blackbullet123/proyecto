@@ -57,7 +57,7 @@ def imprimir_todos():
         pdx = 20
         pdy = 715
         
-        imagen_2 = get_project_root() / "imagenes" / "logoapp.png"
+        imagen_2 = get_project_root() / "imagenes" / "Reych.png"
         imagen_alq = Image(imagen_2, width=130, height=110)
         
         # Definir las coordenadas x y y para posicionar la imagen en el PDF
@@ -134,7 +134,7 @@ def imprimir_vehiculos():
         pdx = 20
         pdy = 715
         
-        imagen_2 = get_project_root() / "imagenes" / "logoapp.png"
+        imagen_2 = get_project_root() / "imagenes" / "Reych.png"
         imagen_alq = Image(imagen_2, width=130, height=110)
         
         # Definir las coordenadas x y y para posicionar la imagen en el PDF

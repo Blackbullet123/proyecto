@@ -8,6 +8,8 @@ from customtkinter import *
 from PIL import Image
 from forms.frame_datos import FrameDatosDetallados
 from forms.frame_vehiculos import FrameVehiculos
+from forms.frame_mantenimiento import FrameMantenimiento
+from forms.frame_respaldo import FrameBackup
 from datetime import datetime, timedelta
 import os
 from pathlib import Path
@@ -21,7 +23,7 @@ class Principal:
     def __init__(self):
         self.root = CTk()
         self.root.title('ALQUITECH')
-        self.root.geometry("1250x520")
+        self.root.geometry("1280x650+35+15")
         self.root.iconbitmap("imagenes/letra-r.ico")
         self.root.config(background="#EEEEEE")
 
@@ -101,6 +103,9 @@ class Principal:
 
         self.frame_datos_detallados = FrameDatosDetallados(self.frame_main, self)
         self.frame_vehiculos_disponibles = FrameVehiculos(self.frame_main, self)
+        self.frame_mantenimeinto = FrameMantenimiento(self.frame_main, self)
+        self.frame_backup = FrameBackup(self.frame_main, self)
+
 
         frame_top = CTkFrame(self.frame_form_l, fg_color="#000000")
         frame_top.pack(side="top",fill=X, padx=10)
@@ -158,14 +163,16 @@ class Principal:
         backup_restore_icon = CTkImage(dark_image=img, light_image=img, size=(24,24))
         backup_restore = CTkButton(frame_botones, text="Backup y Restore",fg_color="transparent",text_color="white",
                                   width=150, height=40,hover_color="#00501B",
-                                  font=("Ubuntu",17), anchor=W, image=backup_restore_icon, compound="left")
+                                  font=("Ubuntu",17), anchor=W, image=backup_restore_icon, compound="left",
+                                  command=self.mostrar_respaldo)
         backup_restore.pack(pady=5, padx=2, fill=X)
 
         img = Image.open("imagenes/mantenimiento.png")
         mantenimiento_icon = CTkImage(dark_image=img, light_image=img, size=(24,24))
         mantenimiento = CTkButton(frame_botones, text="Mantenimiento",fg_color="transparent",text_color="white",
                                   width=150, height=40,hover_color="#00501B",
-                                  font=("Ubuntu",17), anchor=W, image=mantenimiento_icon, compound="left")
+                                  font=("Ubuntu",17), anchor=W, image=mantenimiento_icon, compound="left",
+                                  command=self.mostrar_mantenimiento)
         mantenimiento.pack(pady=5, padx=2, fill=X)
 
         img = Image.open("imagenes/ayuda.png")
@@ -353,8 +360,11 @@ class Principal:
             return all(checks)
         
         #Frame de los inferior
-        data_frame = Frame(self.frame_principal,bg="#EEEEEE")
-        data_frame.pack(fill="x", expand=True, padx=70, side="bottom")
+        frame_inferior = Frame(self.frame_principal,bg="#EEEEEE")
+        frame_inferior.pack(fill="x", expand=True, padx=70, side="bottom")
+
+        data_frame = CTkFrame(frame_inferior, fg_color="transparent")
+        data_frame.pack(anchor="center")
 
         COD_frame = CTkFrame(data_frame, fg_color="transparent",corner_radius=6, width=100, height=20)
         COD_frame.grid(row=1, column=4, padx=25,pady=4, ipady=3)
@@ -512,16 +522,6 @@ class Principal:
             finally:
                 actualizar_tree()
 
-            COD_entry.delete(0,END)
-            fi_entry.delete(0,END)
-            ff_entry.delete(0,END)
-            rif_entry.delete(0,END)
-            em_entry.delete(0,END)
-            tlf_entry.delete(0,END)
-            ci_entry.delete(0,END)
-            placa_entry.delete(0,END)
-            marca_entry.delete(0,END)
-            model_entry.delete(0,END)
 
         def clear_entries():
             COD_entry.delete(0,END)
@@ -654,19 +654,38 @@ class Principal:
 
     def mostrar_datos_detallados(self):
         self.frame_principal.pack_forget()
+        self.frame_mantenimeinto.pack_forget()
+        self.frame_backup.pack_forget()
         self.frame_vehiculos_disponibles.pack_forget()
         self.frame_datos_detallados.pack(expand=True, fill=BOTH)
 
     def mostrar_vehiculos_disponibles(self):
         self.frame_principal.pack_forget()
+        self.frame_backup.pack_forget()
+        self.frame_mantenimeinto.pack_forget()
         self.frame_datos_detallados.pack_forget()
         self.frame_vehiculos_disponibles.pack(expand=True, fill=BOTH)
+
+    def mostrar_mantenimiento(self):
+        self.frame_principal.pack_forget()
+        self.frame_backup.pack_forget()
+        self.frame_datos_detallados.pack_forget()
+        self.frame_vehiculos_disponibles.pack_forget()
+        self.frame_mantenimeinto.pack(expand=True, fill=BOTH)
+
+    def mostrar_respaldo(self):
+        self.frame_principal.pack_forget()
+        self.frame_mantenimeinto.pack_forget()
+        self.frame_datos_detallados.pack_forget()
+        self.frame_vehiculos_disponibles.pack_forget()
+        self.frame_backup.pack(expand=True, fill=BOTH)
 
     def mostrar_contenido_principal(self):
         self.frame_vehiculos_disponibles.pack_forget()
         self.frame_datos_detallados.pack_forget()
+        self.frame_backup.pack_forget()
+        self.frame_mantenimeinto.pack_forget()
         self.frame_principal.pack(expand=True, fill=BOTH)
-
 
 
 def abrir_pdf():
@@ -675,3 +694,4 @@ def abrir_pdf():
 
 pdf_path = get_project_root() / "PDF" / "manual.pdf"        
 ruta_pdf = pdf_path
+
