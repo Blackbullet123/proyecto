@@ -11,6 +11,7 @@ from forms.frame_vehiculos import FrameVehiculos
 from datetime import datetime, timedelta
 import os
 from pathlib import Path
+import webbrowser
 
 
 
@@ -22,7 +23,6 @@ class Principal:
         self.root = CTk()
         self.root.title('ALQUITECH')
         self.root.geometry("1250x520")
-        self.root.iconbitmap("imagenes/letra-r.ico")
         self.root.config(background="#EEEEEE")
 
         self.barra_visible = True
@@ -670,8 +670,10 @@ class Principal:
 
 
 def abrir_pdf():
+    ruta_pdf = get_project_root() / "PDF" / "manual.pdf"
+    
     if os.path.exists(ruta_pdf):
-        os.system(f'start {ruta_pdf}')
-
-pdf_path = get_project_root() / "PDF" / "manual.pdf"        
-ruta_pdf = pdf_path
+        url_pdf = f"file://{ruta_pdf.absolute()}"
+        webbrowser.open_new(url_pdf)
+    else:
+        print(f"Archivo no encontrado: {ruta_pdf}")
