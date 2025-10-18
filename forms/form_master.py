@@ -6,10 +6,10 @@ import mysql.connector
 from tkinter import messagebox
 from customtkinter import *
 from PIL import Image
-from forms.frame_datos import FrameDatosDetallados
-from forms.frame_vehiculos import FrameVehiculos
-from forms.frame_mantenimiento import FrameMantenimiento
-from forms.frame_respaldo import FrameBackup
+from frame_datos import FrameDatosDetallados
+from frame_vehiculos import FrameVehiculos
+from frame_mantenimiento import FrameMantenimiento
+from frame_respaldo import FrameBackup
 from datetime import datetime, timedelta
 import os
 from pathlib import Path
@@ -80,7 +80,164 @@ class Principal:
 
         style.map('Treeview',
                 background=[('selected',"#00501B")])
+        
+        def update():
+                        
+            mydb = mysql.connector.connect(
+                host = "localhost",
+                user = "root",
+                password = "123456",
+                port = "3306",
+                database = "control_alquiler_Reych"
+            )
+            my_cursor = mydb.cursor()
+            conn = mydb
+            sql = "UPDATE alquiler SET COD_Alquiler='{0}',Fecha='{1}',Fecha_Expiracion='{2}' WHERE COD_Alquiler = '{0}'"
+            #my_cursor.execute(sql.format(COD_entry.get(),fi_entry.get(),ff_entry.get()))
+            #conn.commit()
+            #conn.close()
 
+            mydb = mysql.connector.connect(
+                host = "localhost",
+                user = "root",
+                password = "123456",
+                port = "3306",
+                database = "control_alquiler_Reych"
+            )
+            my_cursor = mydb.cursor()
+            conn = mydb
+            sql2 = "UPDATE contratista SET RIF='{0}', nombre='{1}', telefono='{2}' WHERE RIF='{0}'"
+            #my_cursor.execute(sql.format(rif_entry.get(),em_entry.get(),tlf_entry.get(),rif_entry.get()))
+            #conn.commit()
+            #conn.close()
+
+            try:
+                my_cursor.execute(sql.format(COD_entry.get(),fi_entry.get(),ff_entry.get()))
+                conn.commit()
+                #conn.close()
+                my_cursor.execute(sql2.format(rif_entry.get(),em_entry.get(),tlf_entry.get(),rif_entry.get()))
+                conn.commit()
+                #conn.close()
+                titulo = 'Alquilado'
+                mensaje = 'Actualizado con exito'
+                messagebox.showinfo(titulo, mensaje)
+            except:
+                titulo = 'Alquilado'
+                mensaje = 'Ocurrio un problema'
+                messagebox.showinfo(titulo, mensaje)
+            finally:
+                actualizar_tree()
+
+            
+
+            COD_entry.delete(0,END)
+            fi_entry.delete(0,END)
+            ff_entry.delete(0,END)
+            rif_entry.delete(0,END)
+            em_entry.delete(0,END)
+            tlf_entry.delete(0,END)
+            ci_entry.delete(0,END)
+            placa_entry.delete(0,END)
+            marca_entry.delete(0,END)
+            model_entry.delete(0,END)
+
+        def remove_one():
+            mydb = mysql.connector.connect(
+                host = "localhost",
+                user = "root",
+                password = "123456",
+                port = "3306",
+                database = "control_alquiler_Reych"
+            )
+            my_cursor = mydb.cursor()
+            conn = mydb
+            sql = "DELETE FROM alquiler WHERE COD_Alquiler = '{0}'"
+
+
+            mydb = mysql.connector.connect(
+                host = "localhost",
+                user = "root",
+                password = "123456",
+                port = "3306",
+                database = "control_alquiler_Reych"
+            )
+            my_cursor = mydb.cursor()
+            conn = mydb
+            sql2 = "DELETE FROM contratista WHERE RIF = '{0}'"
+            #my_cursor.execute(sql2.format(rif_entry.get()))
+            #conn.commit()
+            #conn.close()
+            
+            mydb = mysql.connector.connect(
+                host = "localhost",
+                user = "root",
+                password = "123456",
+                port = "3306",
+                database = "control_alquiler_Reych"
+            )
+            my_cursor = mydb.cursor()
+            conn = mydb
+            sql3 = "DELETE FROM representante WHERE CI = '{0}'"
+
+            try:
+                my_cursor.execute(sql.format(COD_entry.get()))
+                conn.commit()
+                #conn.close()
+                my_cursor.execute(sql2.format(rif_entry.get()))
+                conn.commit()
+                #conn.close()
+                my_cursor.execute(sql3.format(ci_entry.get()))
+                conn.commit()
+                #conn.close()
+                titulo = 'Alquilado'
+                mensaje = 'Vehiculo eliminado con exito'
+                messagebox.showinfo(titulo, mensaje)
+            except:
+                titulo = 'Alquilado'
+                mensaje = 'Ocurrio un problema'
+                messagebox.showinfo(titulo, mensaje)
+            finally:
+                actualizar_tree()
+
+        def clear_entries():
+            COD_entry.delete(0,END)
+            fi_entry.delete(0,END)
+            ff_entry.delete(0,END)
+            rif_entry.delete(0,END)
+            em_entry.delete(0,END)
+            tlf_entry.delete(0,END)
+            ci_entry.delete(0,END)
+            placa_entry.delete(0,END)
+            marca_entry.delete(0,END)
+            model_entry.delete(0,END)
+            self.ocultar_botones()
+
+        def select_record(e):
+            COD_entry.delete(0,END)
+            fi_entry.delete(0,END)
+            ff_entry.delete(0,END)
+            rif_entry.delete(0,END)
+            em_entry.delete(0,END)
+            tlf_entry.delete(0,END)
+            ci_entry.delete(0,END)
+            placa_entry.delete(0,END)
+            marca_entry.delete(0,END)
+            model_entry.delete(0,END)
+
+            selected = my_tree.focus()
+            values = my_tree.item(selected,'values')
+
+            COD_entry.insert(0,values[0])
+            fi_entry.insert(0, values[1])
+            ff_entry.insert(0, values[2])
+            rif_entry.insert(0, values[3])
+            em_entry.insert(0, values[4])
+            tlf_entry.insert(0, values[5])
+            ci_entry.insert(0, values[6])
+            placa_entry.insert(0, values[7])
+            marca_entry.insert(0, values[8])
+            model_entry.insert(0, values[9])
+            self.mostrar_btn()
 
         
         frame_form = Frame(self.root,bd=0,relief=SOLID,bg="#000000",height=50)
@@ -285,7 +442,7 @@ class Principal:
         buscar.pack(side="left", padx=5)
 
         searh = CTkButton(button_frame, text="Buscar",
-                               fg_color="#0E0F0F", text_color="white",
+                               fg_color="#0E0F0F", font=("Ubuntu",13), text_color="white", hover_color="#00501B",
                                width=100, height=30, command=search_now)
         searh.pack(side="left", padx=10)
 
@@ -364,8 +521,11 @@ class Principal:
         frame_inferior = Frame(self.frame_principal,bg="#EEEEEE")
         frame_inferior.pack(fill="x", expand=True, padx=70, side="bottom")
 
+        self.frame_botones_inferiores = CTkFrame(frame_inferior, fg_color="#EEEEEE", width=100, height=40)
+        self.frame_botones_inferiores.pack( anchor="center", expand=True)
+
         data_frame = CTkFrame(frame_inferior, fg_color="transparent")
-        data_frame.pack(anchor="center")
+        data_frame.pack(anchor="center", expand=True)
 
         COD_frame = CTkFrame(data_frame, fg_color="transparent",corner_radius=6, width=100, height=20)
         COD_frame.grid(row=1, column=4, padx=25,pady=4, ipady=3)
@@ -464,182 +624,33 @@ class Principal:
         model_entry = CTkEntry(model_frame,justify=CENTER, fg_color="transparent", text_color="black",width=130, border_color="#00501B",)
         model_entry.grid(row=1,column=0, padx=10, pady=1)
 
-        
-        def remove_one():
-            mydb = mysql.connector.connect(
-                host = "localhost",
-                user = "root",
-                password = "123456",
-                port = "3306",
-                database = "control_alquiler_Reych"
-            )
-            my_cursor = mydb.cursor()
-            conn = mydb
-            sql = "DELETE FROM alquiler WHERE COD_Alquiler = '{0}'"
+        self.update_button = CTkButton(self.frame_botones_inferiores, text="Actualizar", command=update,
+                          corner_radius=15, text_color="white", width=150, height=40,
+                          fg_color="#00A86B", font=("Impact", 16))
+        self.update_button.grid(row=0, column=0, padx=20, pady=5)
 
 
-            mydb = mysql.connector.connect(
-                host = "localhost",
-                user = "root",
-                password = "123456",
-                port = "3306",
-                database = "control_alquiler_Reych"
-            )
-            my_cursor = mydb.cursor()
-            conn = mydb
-            sql2 = "DELETE FROM contratista WHERE RIF = '{0}'"
-            #my_cursor.execute(sql2.format(rif_entry.get()))
-            #conn.commit()
-            #conn.close()
-            
-            mydb = mysql.connector.connect(
-                host = "localhost",
-                user = "root",
-                password = "123456",
-                port = "3306",
-                database = "control_alquiler_Reych"
-            )
-            my_cursor = mydb.cursor()
-            conn = mydb
-            sql3 = "DELETE FROM representante WHERE CI = '{0}'"
+        self.limpiar = CTkButton(self.frame_botones_inferiores, text="Limpiar", command=clear_entries,
+                            corner_radius=15, text_color="white", width=150, height=40,
+                            fg_color="#E0DC00", font=("Impact", 16))
+        self.limpiar.grid(row=0, column=1, padx=20, pady=5)
 
-            try:
-                my_cursor.execute(sql.format(COD_entry.get()))
-                conn.commit()
-                #conn.close()
-                my_cursor.execute(sql2.format(rif_entry.get()))
-                conn.commit()
-                #conn.close()
-                my_cursor.execute(sql3.format(ci_entry.get()))
-                conn.commit()
-                #conn.close()
-                titulo = 'Alquilado'
-                mensaje = 'Vehiculo eliminado con exito'
-                messagebox.showinfo(titulo, mensaje)
-            except:
-                titulo = 'Alquilado'
-                mensaje = 'Ocurrio un problema'
-                messagebox.showinfo(titulo, mensaje)
-            finally:
-                actualizar_tree()
+        self.remove_one_button = CTkButton(self.frame_botones_inferiores, text="Eliminar", command=remove_one,
+                                    corner_radius=15, text_color="white", width=150, height=40,
+                                    fg_color="#D32F2F", font=("Impact", 16))
+        self.remove_one_button.grid(row=0, column=2, padx=20, pady=5)
 
-
-        def clear_entries():
-            COD_entry.delete(0,END)
-            fi_entry.delete(0,END)
-            ff_entry.delete(0,END)
-            rif_entry.delete(0,END)
-            em_entry.delete(0,END)
-            tlf_entry.delete(0,END)
-            ci_entry.delete(0,END)
-            placa_entry.delete(0,END)
-            marca_entry.delete(0,END)
-            model_entry.delete(0,END)
-
-        def select_record(e):
-            COD_entry.delete(0,END)
-            fi_entry.delete(0,END)
-            ff_entry.delete(0,END)
-            rif_entry.delete(0,END)
-            em_entry.delete(0,END)
-            tlf_entry.delete(0,END)
-            ci_entry.delete(0,END)
-            placa_entry.delete(0,END)
-            marca_entry.delete(0,END)
-            model_entry.delete(0,END)
-
-            selected = my_tree.focus()
-            values = my_tree.item(selected,'values')
-
-            COD_entry.insert(0,values[0])
-            fi_entry.insert(0, values[1])
-            ff_entry.insert(0, values[2])
-            rif_entry.insert(0, values[3])
-            em_entry.insert(0, values[4])
-            tlf_entry.insert(0, values[5])
-            ci_entry.insert(0, values[6])
-            placa_entry.insert(0, values[7])
-            marca_entry.insert(0, values[8])
-            model_entry.insert(0, values[9])
-
-        def update():
-                        
-            mydb = mysql.connector.connect(
-                host = "localhost",
-                user = "root",
-                password = "123456",
-                port = "3306",
-                database = "control_alquiler_Reych"
-            )
-            my_cursor = mydb.cursor()
-            conn = mydb
-            sql = "UPDATE alquiler SET COD_Alquiler='{0}',Fecha='{1}',Fecha_Expiracion='{2}' WHERE COD_Alquiler = '{0}'"
-            #my_cursor.execute(sql.format(COD_entry.get(),fi_entry.get(),ff_entry.get()))
-            #conn.commit()
-            #conn.close()
-
-            mydb = mysql.connector.connect(
-                host = "localhost",
-                user = "root",
-                password = "123456",
-                port = "3306",
-                database = "control_alquiler_Reych"
-            )
-            my_cursor = mydb.cursor()
-            conn = mydb
-            sql2 = "UPDATE contratista SET RIF='{0}', nombre='{1}', telefono='{2}' WHERE RIF='{0}'"
-            #my_cursor.execute(sql.format(rif_entry.get(),em_entry.get(),tlf_entry.get(),rif_entry.get()))
-            #conn.commit()
-            #conn.close()
-
-            try:
-                my_cursor.execute(sql.format(COD_entry.get(),fi_entry.get(),ff_entry.get()))
-                conn.commit()
-                #conn.close()
-                my_cursor.execute(sql2.format(rif_entry.get(),em_entry.get(),tlf_entry.get(),rif_entry.get()))
-                conn.commit()
-                #conn.close()
-                titulo = 'Alquilado'
-                mensaje = 'Actualizado con exito'
-                messagebox.showinfo(titulo, mensaje)
-            except:
-                titulo = 'Alquilado'
-                mensaje = 'Ocurrio un problema'
-                messagebox.showinfo(titulo, mensaje)
-            finally:
-                actualizar_tree()
-
-            
-
-            COD_entry.delete(0,END)
-            fi_entry.delete(0,END)
-            ff_entry.delete(0,END)
-            rif_entry.delete(0,END)
-            em_entry.delete(0,END)
-            tlf_entry.delete(0,END)
-            ci_entry.delete(0,END)
-            placa_entry.delete(0,END)
-            marca_entry.delete(0,END)
-            model_entry.delete(0,END)
+        self.ocultar_botones()
 
 
         titulo = CTkLabel(button_frame, text="ALQUITECH",
                         text_color="#00501B", font=("Impact", 45))
         titulo.pack(pady=0, padx=60 ,side=RIGHT)
-        '''
-        update_button = CTkButton(button_frame,text="Actualizar",command=update,corner_radius=15, text_color="white",width=200,height=50,cursor='hand2',
-                             fg_color="#00501B",hover_color="#57bd9e", font=("Impact", 20),
-                             border_color="lightgreen",border_width=2)
-        update_button.grid(row=1,column=0,padx=30,pady=20)
-
-        remove_one_button = CTkButton(button_frame,text="Eliminar",corner_radius=15, command=remove_one,text_color="white",width=200,height=50,cursor='hand2',
-                             fg_color="#00501B",hover_color="#57bd9e", font=("Impact", 20),
-                             border_color="lightgreen",border_width=2)
-        remove_one_button.grid(row=1,column=3,padx=30,pady=20)'''
 
         my_tree.bind("<ButtonRelease-1>", select_record)
 
         query_db()
+
 
         self.root.mainloop()
 
@@ -688,6 +699,13 @@ class Principal:
         self.frame_mantenimeinto.pack_forget()
         self.frame_principal.pack(expand=True, fill=BOTH)
 
+    def ocultar_botones(self):
+        self.frame_botones_inferiores.pack_forget()
+        
+
+    def mostrar_btn(self):
+        self.frame_botones_inferiores.pack()
+
 
 def abrir_pdf():
     ruta_pdf = get_project_root() / "PDF" / "manual.pdf"
@@ -698,3 +716,6 @@ def abrir_pdf():
 pdf_path = get_project_root() / "PDF" / "manual.pdf"        
 ruta_pdf = pdf_path
 
+
+
+Principal()

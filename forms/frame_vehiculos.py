@@ -3,7 +3,7 @@ from tkinter import ttk, messagebox
 from datetime import datetime
 import mysql.connector
 from PIL import Image
-from forms.imprimir import imprimir_vehiculos
+#from forms.imprimir import imprimir_vehiculos
 import os
 
 
@@ -139,7 +139,7 @@ class FrameVehiculos(CTkFrame):
         self.buscar = CTkEntry(frame_superior, width=250)
         self.buscar.pack(side="left", padx=5)
 
-        searh = CTkButton(frame_superior, text="Buscar",
+        searh = CTkButton(frame_superior, text="Buscar", font=("Ubuntu",13),
                                fg_color="#0E0F0F", text_color="white",
                                width=100, height=30, command=search_now)
         searh.pack(side="left", padx=10)
@@ -148,7 +148,7 @@ class FrameVehiculos(CTkFrame):
         img = Image.open("imagenes/imprimir.png")
         imprimir_icon = CTkImage(dark_image=img, light_image=img, size=(40,40))
         imprimir = CTkButton(frame_superior, hover_color="#EEEEEE" ,image=imprimir_icon , text="", fg_color="transparent",
-                               width=30, height=30, command=imprimir_vehiculos)
+                               width=30, height=30,) #command=imprimir_vehiculos)
         imprimir.pack(side="right", padx=3)
 
 
