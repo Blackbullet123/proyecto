@@ -3,7 +3,7 @@ from tkinter import ttk, messagebox
 from datetime import datetime
 import mysql.connector
 from PIL import Image
-#from forms.imprimir import imprimir_vehiculos
+from forms.imprimir import imprimir_vehiculos
 import os
 
 
@@ -148,7 +148,7 @@ class FrameVehiculos(CTkFrame):
         img = Image.open("imagenes/imprimir.png")
         imprimir_icon = CTkImage(dark_image=img, light_image=img, size=(40,40))
         imprimir = CTkButton(frame_superior, hover_color="#EEEEEE" ,image=imprimir_icon , text="", fg_color="transparent",
-                               width=30, height=30,) #command=imprimir_vehiculos)
+                               width=30, height=30,command=imprimir_vehiculos)
         imprimir.pack(side="right", padx=3)
 
 

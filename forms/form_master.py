@@ -6,10 +6,10 @@ import mysql.connector
 from tkinter import messagebox
 from customtkinter import *
 from PIL import Image
-from frame_datos import FrameDatosDetallados
-from frame_vehiculos import FrameVehiculos
-from frame_mantenimiento import FrameMantenimiento
-from frame_respaldo import FrameBackup
+from forms.frame_datos import FrameDatosDetallados
+from forms.frame_vehiculos import FrameVehiculos
+from forms.frame_mantenimiento import FrameMantenimiento
+from forms.frame_respaldo import FrameBackup
 from datetime import datetime, timedelta
 import os
 from pathlib import Path
@@ -715,7 +715,3 @@ def abrir_pdf():
 
 pdf_path = get_project_root() / "PDF" / "manual.pdf"        
 ruta_pdf = pdf_path
-
-
-
-Principal()
