@@ -6,10 +6,11 @@ import mysql.connector
 from tkinter import messagebox
 from customtkinter import *
 from PIL import Image
-from forms.frame_datos import FrameDatosDetallados
-from forms.frame_vehiculos import FrameVehiculos
-from forms.frame_mantenimiento import FrameMantenimiento
-from forms.frame_respaldo import FrameBackup
+from frame_datos import FrameDatosDetallados
+from frame_vehiculos import FrameVehiculos
+from frame_nuevo_vehiculo import FrameNuevoVehiculo
+from frame_mantenimiento import FrameMantenimiento
+from frame_respaldo import FrameBackup
 from datetime import datetime, timedelta
 import os
 from pathlib import Path
@@ -112,7 +113,7 @@ class Principal:
             #conn.close()
 
             try:
-                my_cursor.execute(sql.format(COD_entry.get(),fi_entry.get(),ff_entry.get()))
+                my_cursor.execute(sql.format(COD_entry.get(),))#fi_entry.get(),ff_entry.get()))
                 conn.commit()
                 #conn.close()
                 my_cursor.execute(sql2.format(rif_entry.get(),em_entry.get(),tlf_entry.get(),rif_entry.get()))
@@ -131,8 +132,8 @@ class Principal:
             
 
             COD_entry.delete(0,END)
-            fi_entry.delete(0,END)
-            ff_entry.delete(0,END)
+            #fi_entry.delete(0,END)
+            #ff_entry.delete(0,END)
             rif_entry.delete(0,END)
             em_entry.delete(0,END)
             tlf_entry.delete(0,END)
@@ -201,8 +202,8 @@ class Principal:
 
         def clear_entries():
             COD_entry.delete(0,END)
-            fi_entry.delete(0,END)
-            ff_entry.delete(0,END)
+            #fi_entry.delete(0,END)
+            #ff_entry.delete(0,END)
             rif_entry.delete(0,END)
             em_entry.delete(0,END)
             tlf_entry.delete(0,END)
@@ -214,8 +215,8 @@ class Principal:
 
         def select_record(e):
             COD_entry.delete(0,END)
-            fi_entry.delete(0,END)
-            ff_entry.delete(0,END)
+            #fi_entry.delete(0,END)
+            #ff_entry.delete(0,END)
             rif_entry.delete(0,END)
             em_entry.delete(0,END)
             tlf_entry.delete(0,END)
@@ -228,8 +229,8 @@ class Principal:
             values = my_tree.item(selected,'values')
 
             COD_entry.insert(0,values[0])
-            fi_entry.insert(0, values[1])
-            ff_entry.insert(0, values[2])
+            #fi_entry.insert(0, values[1])
+            #ff_entry.insert(0, values[2])
             rif_entry.insert(0, values[3])
             em_entry.insert(0, values[4])
             tlf_entry.insert(0, values[5])
@@ -242,6 +243,9 @@ class Principal:
         
         frame_form = Frame(self.root,bd=0,relief=SOLID,bg="#000000",height=50)
         frame_form.pack(side="top",expand=NO,fill=BOTH)
+        
+        frame_ocultar = Frame(frame_form, bd=0, bg="#000000" )
+        frame_ocultar.pack(side="top",expand=NO,fill=BOTH)
 
         frame_form_top = Frame(frame_form, bd=0, relief=SOLID,bg='#000000')
         frame_form_top.pack(side="top",fill=X)
@@ -259,7 +263,8 @@ class Principal:
         self.frame_principal = CTkFrame(self.frame_main, fg_color="#EEEEEE")
         self.frame_principal.pack(side="left", fill="both", expand=True)
 
-        self.frame_datos_detallados = FrameDatosDetallados(self.frame_main, self)
+        self.frame_nuevo_vehiculo = FrameNuevoVehiculo(self.frame_main, self)
+        self.frame_datos_detallados = FrameDatosDetallados(self.frame_principal, self)
         self.frame_vehiculos_disponibles = FrameVehiculos(self.frame_main, self)
         self.frame_mantenimeinto = FrameMantenimiento(self.frame_main, self)
         self.frame_backup = FrameBackup(self.frame_main, self)
@@ -302,20 +307,20 @@ class Principal:
                                     command=self.mostrar_vehiculos_disponibles)
         alquilar.pack(pady=5, padx=2, fill=X)
 
-        img = Image.open("imagenes/registro.png")
+        '''img = Image.open("imagenes/registro.png")
         datos_icon = CTkImage(dark_image=img, light_image=img, size=(24,24))
         date_detalles = CTkButton(frame_botones, text="Datos detallados",fg_color="transparent",text_color="white",
                                   width=150, height=40,hover_color="#00501B",
                                   font=("Ubuntu",17), anchor=W, image=datos_icon, compound="left",
                                   command=self.mostrar_datos_detallados)
-        date_detalles.pack(pady=5, padx=2, fill=X)
+        date_detalles.pack(pady=5, padx=2, fill=X)'''
 
-        '''img = Image.open("imagenes/nuevo.png")
+        img = Image.open("imagenes/nuevo.png")
         nuevo_vehiculo_icon = CTkImage(dark_image=img, light_image=img, size=(24,24))
         nuevo_vehiculo = CTkButton(frame_botones, text="Nuevo Vehiculo",fg_color="transparent",text_color="white",
-                                  width=150, height=40,hover_color="#00501B",
+                                  width=150, height=40,hover_color="#00501B", command=self.mostrar_nuevo_vehiculo,
                                   font=("Ubuntu",17), anchor=W, image=nuevo_vehiculo_icon, compound="left")
-        nuevo_vehiculo.pack(pady=5, padx=2, fill=X)'''
+        nuevo_vehiculo.pack(pady=5, padx=2, fill=X)
 
         img = Image.open("imagenes/backup.png")
         backup_restore_icon = CTkImage(dark_image=img, light_image=img, size=(24,24))
@@ -339,13 +344,12 @@ class Principal:
                                   width=150, height=40,hover_color="#00501B",
                                   font=("Ubuntu",17), anchor=W, image=ayuda_icon, compound="left"
                                   , command=abrir_pdf)
-        ayuda.pack(pady=5, padx=2, fill=X)
+        ayuda.pack(pady=5,padx=2, fill=X)
 
-
-        self.ocultar_btn = CTkButton(frame_form, text="☰ Ocultar",
+        self.ocultar_btn = CTkButton(frame_ocultar, text="☰ Ocultar",
                                      text_color="white", fg_color="#0E0F0F",hover_color="#00501B",
                                      command=self.toggle_barra)
-        self.ocultar_btn.pack(anchor="nw", padx=10, pady=10)
+        self.ocultar_btn.pack(anchor="nw", padx=10, pady=10, side=LEFT)
 
 
 
@@ -373,6 +377,16 @@ class Principal:
         #frame superior de botones
         button_frame = Frame(self.frame_principal, bg="#EEEEEE")
         button_frame.pack(expand=True,padx=20, pady=0,fill=X)
+
+        titulo = CTkLabel(button_frame, text="ALQUITECH",
+                        text_color="#00501B", font=("Impact", 45))
+        titulo.pack(pady=0, padx=60 ,side=RIGHT)
+
+        frame_contenedor_ver = Frame(self.frame_principal,bg="#EEEEEE",width=30, height=30)
+        frame_contenedor_ver.pack(fill="x", expand=NO, padx=20)
+
+        frame_ver_mas = Frame(frame_contenedor_ver,bg="#EEEEEE",width=90, height=30)
+        frame_ver_mas.pack(expand=NO, side=RIGHT)
 
         def actualizar_tree():
             for item in my_tree.get_children():
@@ -446,6 +460,12 @@ class Principal:
                                width=100, height=30, command=search_now)
         searh.pack(side="left", padx=10)
 
+        img = Image.open("imagenes/imprimir.png")
+        imprimir_icon = CTkImage(dark_image=img, light_image=img, size=(40,40))
+        imprimir = CTkButton(button_frame, hover_color="#EEEEEE" ,image=imprimir_icon , text="", fg_color="transparent",
+                               width=30, height=30, )#command=imprimir_vehiculos)
+        imprimir.pack(side="right", padx=3)
+
         #treeview
         self.tree_frame = Frame(self.frame_principal, bg="#EEEEEE")
         self.tree_frame.pack(pady=0, expand=True, fill=BOTH)
@@ -462,7 +482,6 @@ class Principal:
         my_tree.pack(fill=BOTH, expand=True)
 
         tree_scroll.config(command=my_tree.yview)
-
 
         tree_scroll.config(command=my_tree.yview)
 
@@ -481,12 +500,12 @@ class Principal:
         my_tree.column("Marca",anchor=CENTER,width=120)
 
         my_tree.heading("COD", text="Cod.",anchor=CENTER)
-        my_tree.heading("FechaI", text="Fecha I.",anchor=CENTER)
-        my_tree.heading("FechaF", text="Fecha F.",anchor=CENTER)
+        my_tree.heading("FechaI", text="Fecha Inicial",anchor=CENTER)
+        my_tree.heading("FechaF", text="Fecha Final",anchor=CENTER)
         my_tree.heading("RIF", text="RIF",anchor=CENTER)
         my_tree.heading("Empresa", text="Empresa",anchor=CENTER)
         my_tree.heading("TLF", text="Teléfono",anchor=CENTER)
-        my_tree.heading("CI", text="C.I",anchor=CENTER)
+        my_tree.heading("CI", text="Cedula",anchor=CENTER)
         my_tree.heading("Placa", text="Placa",anchor=CENTER)
         my_tree.heading("Modelo", text="Vehículo Modelo",anchor=CENTER)
         my_tree.heading("Marca", text="Vehículo Marca",anchor=CENTER)
@@ -517,7 +536,8 @@ class Principal:
                     checks.append(char.isdecimal())
             return all(checks)
         
-        #Frame de los inferior
+        #Frame de los inferior    
+
         frame_inferior = Frame(self.frame_principal,bg="#EEEEEE")
         frame_inferior.pack(fill="x", expand=True, padx=70, side="bottom")
 
@@ -533,11 +553,11 @@ class Principal:
         COD_label = CTkLabel(COD_frame, text="Cod.",fg_color="transparent",text_color="#00501B",
                                     font=("Ubuntu",16))
         COD_label.grid(row=0, column=0, padx=10, pady=1)
-        COD_entry = CTkEntry(COD_frame,justify=CENTER,width=130,fg_color="transparent",text_color="black", border_color="#00501B",
+        COD_entry = CTkEntry(COD_frame,justify=CENTER,width=130, state=DISABLED ,fg_color="transparent",text_color="black", border_color="#00501B",
                              validate="key", validatecommand=(data_frame.register(validate_entry2), "%S","%P"))
         COD_entry.grid(row=1,column=0, padx=10, pady=1)
 
-        fecha1_frame = CTkFrame(data_frame, fg_color="transparent",corner_radius=6, width=100, height=20)
+        """fecha1_frame = CTkFrame(data_frame, fg_color="transparent",corner_radius=6, width=100, height=20)
         fecha1_frame.grid(row=0, column=0,padx=25,pady=4, ipady=3)
 
         fi_label = CTkLabel(fecha1_frame, text="Fecha Inicial",fg_color="transparent",text_color="#00501B",
@@ -555,10 +575,10 @@ class Principal:
         ff_label.grid(row=0,column=0, padx=10, pady=1)
         ff_entry = CTkEntry(fecha2_frame, justify=CENTER,fg_color="transparent",text_color="black", width=130, border_color="#00501B",
                             validate="key", validatecommand=(data_frame.register(validate_fecha), "%P"))
-        ff_entry.grid(row=1,column=0, padx=10, pady=1)
+        ff_entry.grid(row=1,column=0, padx=10, pady=1)"""
 
         rif_frame = CTkFrame(data_frame, fg_color="transparent",corner_radius=6,  width=50, height=20,)
-        rif_frame.grid(row=0, column=2,padx=25,pady=4, ipady=3)
+        rif_frame.grid(row=0, column=1,padx=25,pady=4, ipady=3)
 
         rif_label = CTkLabel(rif_frame, text="RIF",fg_color="transparent",text_color="#00501B",
                                     font=("Ubuntu",16))
@@ -568,7 +588,7 @@ class Principal:
         rif_entry.grid(row=1,column=0, padx=10, pady=1)
 
         empresa_frame = CTkFrame(data_frame, fg_color="transparent",corner_radius=6, width=35, height=20,)
-        empresa_frame.grid(row=0, column=3,padx=25,pady=4, ipady=3)
+        empresa_frame.grid(row=0, column=2,padx=25,pady=4, ipady=3)
 
         em_label = CTkLabel(empresa_frame, text="Empresa",fg_color="transparent",text_color="#00501B",
                                     font=("Ubuntu",16))
@@ -580,7 +600,7 @@ class Principal:
         ci_frame = CTkFrame(data_frame, fg_color="transparent",corner_radius=6, width=50, height=20)
         ci_frame.grid(row=0, column=4, padx=25,pady=4, ipady=3)
 
-        ci_label = CTkLabel(ci_frame, text="C.I",fg_color="transparent",text_color="#00501B",
+        ci_label = CTkLabel(ci_frame, text="Cedula",fg_color="transparent",text_color="#00501B",
                                     font=("Ubuntu",16))
         ci_label.grid(row=0, column=0, padx=10, pady=1)
         ci_entry = CTkEntry(ci_frame,justify=CENTER,width=130,fg_color="transparent",text_color="black", border_color="#00501B",
@@ -588,9 +608,9 @@ class Principal:
         ci_entry.grid(row=1,column=0, padx=10, pady=1)
 
         tlf_frame = CTkFrame(data_frame, fg_color="transparent",corner_radius=6, width=50, height=20,)
-        tlf_frame.grid(row=1, column=0,padx=25,pady=4, ipady=3)
+        tlf_frame.grid(row=0, column=3,padx=25,pady=4, ipady=3)
 
-        tlf_label = CTkLabel(tlf_frame, text="Tfno",fg_color="transparent",text_color="#00501B",
+        tlf_label = CTkLabel(tlf_frame, text="Teléfono",fg_color="transparent",text_color="#00501B",
                                     font=("Ubuntu",16))
         tlf_label.grid(row=0,column=0, padx=10, pady=1)
         tlf_entry = CTkEntry(tlf_frame,justify=CENTER, fg_color="transparent",text_color="black", width=130, border_color="#00501B",
@@ -624,6 +644,17 @@ class Principal:
         model_entry = CTkEntry(model_frame,justify=CENTER, fg_color="transparent", text_color="black",width=130, border_color="#00501B",)
         model_entry.grid(row=1,column=0, padx=10, pady=1)
 
+        self.ver_menos = CTkButton(frame_ver_mas, text="Ver menos",text_color="#00501B", width=20,
+                                  height=30,cursor="hand2",command=self.ocultar_datos_detallados,
+                                    hover_color="#EEEEEE",fg_color="#EEEEEE", font=("Impact", 16))
+        self.ver_menos.place(x=10, y=2)
+        self.ocultar_ver_menos()
+
+        self.ver_mas = CTkButton(frame_ver_mas, text="Ver mas",text_color="#00501B", width=20,
+                                  height=30,cursor="hand2",command=self.mostrar_datos_detallados,
+                                    hover_color="#EEEEEE",fg_color="#EEEEEE", font=("Impact", 16))
+        self.ver_mas.place(x=10, y=2)
+
         self.update_button = CTkButton(self.frame_botones_inferiores, text="Actualizar", command=update,
                           corner_radius=15, text_color="white", width=150, height=40,
                           fg_color="#00A86B", font=("Impact", 16))
@@ -643,16 +674,13 @@ class Principal:
         self.ocultar_botones()
 
 
-        titulo = CTkLabel(button_frame, text="ALQUITECH",
-                        text_color="#00501B", font=("Impact", 45))
-        titulo.pack(pady=0, padx=60 ,side=RIGHT)
-
         my_tree.bind("<ButtonRelease-1>", select_record)
 
         query_db()
 
 
         self.root.mainloop()
+
 
     def toggle_barra(self):
         if self.barra_visible:
@@ -663,39 +691,48 @@ class Principal:
             self.ocultar_btn.configure(text="☰ Ocultar")
         self.barra_visible = not self.barra_visible
 
-
     def mostrar_datos_detallados(self):
-        self.frame_principal.pack_forget()
-        self.frame_mantenimeinto.pack_forget()
-        self.frame_backup.pack_forget()
-        self.frame_vehiculos_disponibles.pack_forget()
+        self.tree_frame.pack_forget()
         self.frame_datos_detallados.pack(expand=True, fill=BOTH)
+        self.no_ver()
+
+    def ocultar_datos_detallados(self):
+        self.frame_datos_detallados.pack_forget()
+        self.tree_frame.pack(expand=True, fill=BOTH)
+        self.ver()
 
     def mostrar_vehiculos_disponibles(self):
         self.frame_principal.pack_forget()
         self.frame_backup.pack_forget()
         self.frame_mantenimeinto.pack_forget()
-        self.frame_datos_detallados.pack_forget()
+        self.frame_nuevo_vehiculo.pack_forget()
         self.frame_vehiculos_disponibles.pack(expand=True, fill=BOTH)
+
+    def mostrar_nuevo_vehiculo(self):
+        self.frame_principal.pack_forget()
+        self.frame_backup.pack_forget()
+        self.frame_mantenimeinto.pack_forget()
+        self.frame_vehiculos_disponibles.pack_forget()
+        self.frame_nuevo_vehiculo.pack(expand=True, fill=BOTH)
 
     def mostrar_mantenimiento(self):
         self.frame_principal.pack_forget()
+        self.frame_nuevo_vehiculo.pack_forget()
         self.frame_backup.pack_forget()
-        self.frame_datos_detallados.pack_forget()
         self.frame_vehiculos_disponibles.pack_forget()
         self.frame_mantenimeinto.pack(expand=True, fill=BOTH)
 
     def mostrar_respaldo(self):
-        self.frame_principal.pack_forget()
         self.frame_mantenimeinto.pack_forget()
-        self.frame_datos_detallados.pack_forget()
+        self.frame_principal.pack_forget()
+        self.frame_nuevo_vehiculo.pack_forget()
         self.frame_vehiculos_disponibles.pack_forget()
         self.frame_backup.pack(expand=True, fill=BOTH)
 
     def mostrar_contenido_principal(self):
         self.frame_vehiculos_disponibles.pack_forget()
-        self.frame_datos_detallados.pack_forget()
         self.frame_backup.pack_forget()
+        self.frame_nuevo_vehiculo.pack_forget()
         self.frame_mantenimeinto.pack_forget()
         self.frame_principal.pack(expand=True, fill=BOTH)
 
@@ -706,6 +743,17 @@ class Principal:
     def mostrar_btn(self):
         self.frame_botones_inferiores.pack()
 
+    def ocultar_ver_menos(self):
+        self.ver_menos.place_forget()
+
+    def ver(self):
+        self.ver_menos.place_forget()
+        self.ver_mas.place(x=10, y=2)
+
+    def no_ver(self):
+        self.ver_mas.place_forget()
+        self.ver_menos.place(x=10, y=2)
+
 
 def abrir_pdf():
     ruta_pdf = get_project_root() / "PDF" / "manual.pdf"
@@ -715,3 +763,5 @@ def abrir_pdf():
 
 pdf_path = get_project_root() / "PDF" / "manual.pdf"        
 ruta_pdf = pdf_path
+
+Principal()

@@ -3,7 +3,7 @@ from tkinter import ttk
 import mysql.connector
 from customtkinter import *
 from tkinter import messagebox
-from forms.insercion_marca import vehiculo_marca
+from insercion_marca import vehiculo_marca
 
 def insertar():
     class Datos:
@@ -214,16 +214,6 @@ def insertar():
             codigo_marca = CTkEntry(frame_entry, fg_color="#003d3c", border_color="#00bfae")
             codigo_marca.pack(padx=15)
 
-            '''name_marca = CTkLabel(frame_entry, text="Marca")
-            name_marca.pack()
-            nombre_marca = CTkEntry(frame_entry)
-            nombre_marca.pack()
-
-            name_modelo = CTkLabel(frame_entry, text="Modelo")
-            name_modelo.pack()
-            nombre_modelo = CTkEntry(frame_entry)
-            nombre_modelo.pack()'''
-
             placa_label = CTkLabel(frame_entry, text="Placa")
             placa_label.pack()
             placa_entry = CTkEntry(frame_entry, fg_color="#003d3c", border_color="#00bfae")
@@ -293,3 +283,4 @@ def insertar():
 
             self.root.mainloop()
     Datos()
+insertar()
