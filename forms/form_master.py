@@ -26,7 +26,7 @@ class Principal:
         self.root = CTk()
         self.root.title('ALQUITECH')
         self.root.geometry("1280x650+35+15")
-        self.root.iconbitmap("imagenes/letra-r.ico")
+        # self.root.iconbitmap("imagenes/letra-r.ico")
         self.root.config(background="#EEEEEE")
 
         self.barra_visible = True

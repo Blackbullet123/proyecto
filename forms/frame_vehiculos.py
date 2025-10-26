@@ -336,18 +336,18 @@ class FrameVehiculos(CTkFrame):
 
             my_cursor = mydb.cursor()
 
-            sql = "INSERT INTO representante (CI,nombre_r,apellido) VALUES (%s,%s,%s)"
+            sql = "INSERT INTO representante (CI,nombre,apellido) VALUES (%s,%s,%s)"
             values = (ci_entry.get(),r_name_entry.get(),apell_entry.get())
-            #my_cursor.execute(sql,values)
-            #mydb.commit()
+            my_cursor.execute(sql,values)
+            mydb.commit()
             sql2 = "INSERT INTO contratista (RIF, nombre, direccion, telefono, Representante_CI) VALUES (%s,%s,%s,%s,%s)"
             values2 = (J_entry.get(),e_name_entry.get(),dir_entry.get(),cell_entry.get(),ci_entry.get())
-            #my_cursor.execute(sql2,values2)
-            #mydb.commit()
+            my_cursor.execute(sql2,values2)
+            mydb.commit()
             sql3 = "INSERT INTO alquiler (Fecha, RIF_Empresa, Placa_Vehiculo, Fecha_Expiracion) VALUES (%s,%s,%s,%s)"
             values3 = (f1_entry.get(),J_entry.get(),plac_entry.get(),f2_entry.get())
-            #my_cursor.execute(sql3,values3)
-            #mydb.commit()
+            my_cursor.execute(sql3,values3)
+            mydb.commit()
             try:
                 my_cursor.execute(sql,values)
                 mydb.commit()

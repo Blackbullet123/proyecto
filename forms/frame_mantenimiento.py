@@ -150,7 +150,7 @@ class FrameMantenimiento(CTkFrame):
         ventana = CTkToplevel(self)
         ventana.title(f"Registrar mantenimiento - {placa}")
         ventana.geometry("400x400")
-        ventana.grab_set()
+        # ventana.grab_set()
 
         CTkLabel(ventana, text=f"Registrar mantenimiento para {placa}",
                  font=("Ubuntu", 16, "bold"), text_color="#00501B").pack(pady=10)
