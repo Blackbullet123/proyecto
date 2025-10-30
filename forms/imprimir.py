@@ -17,7 +17,7 @@ def imprimir_todos():
         conn = mysql.connector.connect(
             host='localhost',
             user='root',
-            password='123456',
+            password='tu_nueva_contraseña',
             database='control_alquiler_Reych'
         )
 
@@ -95,7 +95,7 @@ def imprimir_vehiculos():
         conn = mysql.connector.connect(
             host='localhost',
             user='root',
-            password='123456',
+            password='tu_nueva_contraseña',
             database='control_alquiler_Reych'
         )
 

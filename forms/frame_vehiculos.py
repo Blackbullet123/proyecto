@@ -15,7 +15,7 @@ class FrameVehiculos(CTkFrame):
         mydb = mysql.connector.connect(
             host = "localhost",
             user = "root",
-            password = "123456",
+            password = "tu_nueva_contraseña",
             port = "3306",
             database = "control_alquiler_Reych"
         )
@@ -43,7 +43,7 @@ class FrameVehiculos(CTkFrame):
             mydb = mysql.connector.connect(
                 host = "localhost",
                 user = "root",
-                password = "123456",
+                password = "tu_nueva_contraseña",
                 port = "3306",
                 database = "control_alquiler_Reych"
             )
@@ -112,7 +112,7 @@ class FrameVehiculos(CTkFrame):
                 mydb = mysql.connector.connect(
                     host = "localhost",
                     user = "root",
-                    password = "123456",
+                    password = "tu_nueva_contraseña",
                     port = "3306",
                     database = "control_alquiler_Reych"
                 )
@@ -141,7 +141,7 @@ class FrameVehiculos(CTkFrame):
                 mydb = mysql.connector.connect(
                 host = "localhost",
                 user = "root",
-                password = "123456",
+                password = "tu_nueva_contraseña",
                 port = "3306",
                 database = "control_alquiler_Reych"
             )
