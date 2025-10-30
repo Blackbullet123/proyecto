@@ -5,6 +5,7 @@ from tkinter import messagebox, filedialog
 import subprocess
 import datetime
 import os
+import platform
 
 class FrameBackup(CTkFrame):
     def __init__(self, parent, controlador):
@@ -84,8 +85,33 @@ class FrameBackup(CTkFrame):
             ruta_completa = os.path.join(ruta_backup, nombre_archivo)
 
             try:
+                        # Detectar sistema operativo y definir la ruta de mysqldump
+                sistema_operativo = platform.system()
+                
+                if sistema_operativo == "Windows":
+                    # Rutas comunes de MySQL en Windows
+                    rutas_posibles = [
+                        r"C:\Program Files\MySQL\MySQL Server 8.0\bin\mysqldump.exe",
+                        r"C:\Program Files\MySQL\MySQL Server 5.7\bin\mysqldump.exe",
+                        r"C:\Program Files (x86)\MySQL\MySQL Server 8.0\bin\mysqldump.exe",
+                        r"C:\Program Files (x86)\MySQL\MySQL Server 5.7\bin\mysqldump.exe",
+                    ]
+                    
+                    mysqldump_path = None
+                    for ruta in rutas_posibles:
+                        if os.path.exists(ruta):
+                            mysqldump_path = ruta
+                            break
+                    
+                    if not mysqldump_path:
+                        # Si no encuentra en rutas comunes, buscar en PATH
+                        mysqldump_path = "mysqldump.exe"
+                        
+                else:  # Linux, macOS, etc.
+                    mysqldump_path = "mysqldump"
+
                 comando = [
-                    r"C:\Program Files\MySQL\MySQL Server 8.0\bin\mysqldump.exe",
+                    mysqldump_path,
                     f"-h{HOST}",
                     f"-P{port}",
                     f"-u{USUARIO}",
@@ -100,7 +126,8 @@ class FrameBackup(CTkFrame):
                     messagebox.showinfo("Éxito", f"✅ Backup creado en:\n{ruta_completa}")
                     guardar_historial("backup")
                 else:
-                    messagebox.showerror("Error", f"Error al crear backup:\n{resultado.stderr.decode('utf-8')}")
+                    error_msg = resultado.stderr.decode('utf-8') if resultado.stderr else "Error desconocido"
+                    messagebox.showerror("Error", f"Error al crear backup:\n{error_msg}")
 
             except Exception as e:
                 messagebox.showerror("Error", f"Excepción inesperada:\n{str(e)}")
@@ -121,8 +148,34 @@ class FrameBackup(CTkFrame):
                 return
 
             try:
+                # Detectar sistema operativo y definir la ruta de mysql
+                sistema_operativo = platform.system()
+                
+                if sistema_operativo == "Windows":
+                    # Rutas comunes de MySQL en Windows
+                    rutas_posibles = [
+                        r"C:\Program Files\MySQL\MySQL Server 8.0\bin\mysql.exe",
+                        r"C:\Program Files\MySQL\MySQL Server 5.7\bin\mysql.exe",
+                        r"C:\Program Files (x86)\MySQL\MySQL Server 8.0\bin\mysql.exe",
+                        r"C:\Program Files (x86)\MySQL\MySQL Server 5.7\bin\mysql.exe",
+                    ]
+                    
+                    mysql_path = None
+                    for ruta in rutas_posibles:
+                        if os.path.exists(ruta):
+                            mysql_path = ruta
+                            break
+                    
+                    if not mysql_path:
+                        # Si no encuentra en rutas comunes, buscar en PATH
+                        mysql_path = "mysql.exe"
+                        
+                else:  # Linux, macOS, etc.
+                    mysql_path = "mysql"
+
+                # Comando para crear la base de datos si no existe
                 comando_crear = [
-                    r"C:\Program Files\MySQL\MySQL Server 8.0\bin\mysql.exe",
+                    mysql_path,
                     f"-h{HOST}",
                     f"-P{port}",
                     f"-u{USUARIO}",
@@ -132,8 +185,9 @@ class FrameBackup(CTkFrame):
                 ]
                 subprocess.run(comando_crear, stderr=subprocess.PIPE)
 
+                # Comando para restaurar el backup
                 comando_restore = [
-                    r"C:\Program Files\MySQL\MySQL Server 8.0\bin\mysql.exe",
+                    mysql_path,
                     f"-h{HOST}",
                     f"-P{port}",
                     f"-u{USUARIO}",
@@ -142,13 +196,13 @@ class FrameBackup(CTkFrame):
                 ]
 
                 with open(archivo_sql, "rb") as archivo:
-                    resultado = subprocess.run(comando_restore, stdin=archivo, stderr=subprocess.PIPE)
+                        resultado = subprocess.run(comando_restore, stdin=archivo, stderr=subprocess.PIPE)
 
-                if resultado.returncode == 0:
-                    messagebox.showinfo("Éxito", f"✅ Base de datos '{BASEDATOS}' restaurada desde:\n{archivo_sql}")
-                    guardar_historial("restore")
-                else:
-                    messagebox.showerror("Error", f"Error al restaurar backup:\n{resultado.stderr.decode('utf-8')}")
+                        if resultado.returncode == 0:
+                            messagebox.showinfo("Éxito", f"✅ Base de datos '{BASEDATOS}' restaurada desde:\n{archivo_sql}")
+                            guardar_historial("restore")
+                        else:
+                            messagebox.showerror("Error", f"Error al restaurar backup:\n{resultado.stderr.decode('utf-8')}")
 
             except Exception as e:
                 messagebox.showerror("Error", f"Excepción inesperada:\n{str(e)}")

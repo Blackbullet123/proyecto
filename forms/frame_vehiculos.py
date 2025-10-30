@@ -21,6 +21,7 @@ class FrameVehiculos(CTkFrame):
         )
 
         my_cursor = mydb.cursor()
+        
 
         def clear_entries_2():
             f1_entry.delete(0,END)
@@ -36,6 +37,47 @@ class FrameVehiculos(CTkFrame):
             mar_entry.delete(0,END)
             modelo_entry.delete(0,END)
             mostrar_imagen("default")
+
+        def ADD():
+
+            mydb = mysql.connector.connect(
+                host = "localhost",
+                user = "root",
+                password = "123456",
+                port = "3306",
+                database = "control_alquiler_Reych"
+            )
+
+            my_cursor = mydb.cursor()
+
+            sql = "INSERT INTO representante (CI,nombre,apellido) VALUES (%s,%s,%s)"
+            values = (ci_entry.get(),r_name_entry.get(),apell_entry.get())
+            #my_cursor.execute(sql,values)
+            #mydb.commit()
+            sql2 = "INSERT INTO contratista (RIF, nombre, direccion, telefono, Representante_CI) VALUES (%s,%s,%s,%s,%s)"
+            values2 = (J_entry.get(),e_name_entry.get(),dir_entry.get(),cell_entry.get(),ci_entry.get())
+            #my_cursor.execute(sql2,values2)
+            #mydb.commit()
+            sql3 = "INSERT INTO alquiler (Fecha, RIF_Empresa, Placa_Vehiculo, Fecha_Expiracion) VALUES (%s,%s,%s,%s)"
+            values3 = (f1_entry.get(),J_entry.get(),plac_entry.get(),f2_entry.get())
+            #my_cursor.execute(sql3,values3)
+            #mydb.commit()
+            try:
+                my_cursor.execute(sql,values)
+                mydb.commit()
+                #conn.close()
+                my_cursor.execute(sql2,values2)
+                mydb.commit()
+                #conn.close()
+                my_cursor.execute(sql3,values3)
+                mydb.commit()
+                titulo = 'Alquilado'
+                mensaje = 'Vehiculo alquilado con exito'
+                messagebox.showinfo(titulo, mensaje)
+            except:
+                titulo = 'Alquilado'
+                mensaje = 'Ocurrio un problema'
+                messagebox.showinfo(titulo, mensaje)
 
         def query_db():
                 conn = mydb
@@ -175,7 +217,7 @@ class FrameVehiculos(CTkFrame):
         self.img_label.pack(pady=30, padx=10)
 
         alquilar = CTkButton(frame_barra_derecha, text="Alquilar", fg_color="#00A86B", text_color="white",
-                command=lambda:(ADD(), actualizar_tree_2()))
+                command=ADD)
         alquilar.pack(pady=5)
 
         limpiar = CTkButton(frame_barra_derecha, text="Limpiar", fg_color="#D32F2F",text_color="white",command=clear_entries_2)
@@ -323,47 +365,6 @@ class FrameVehiculos(CTkFrame):
         modelo_entry.grid(row=2,column=7,padx=10,pady=10)
 
         get_current_date()
-
-        def ADD():
-
-            mydb = mysql.connector.connect(
-                host = "localhost",
-                user = "root",
-                password = "123456",
-                port = "3306",
-                database = "control_alquiler_Reych"
-            )
-
-            my_cursor = mydb.cursor()
-
-            sql = "INSERT INTO representante (CI,nombre,apellido) VALUES (%s,%s,%s)"
-            values = (ci_entry.get(),r_name_entry.get(),apell_entry.get())
-            my_cursor.execute(sql,values)
-            mydb.commit()
-            sql2 = "INSERT INTO contratista (RIF, nombre, direccion, telefono, Representante_CI) VALUES (%s,%s,%s,%s,%s)"
-            values2 = (J_entry.get(),e_name_entry.get(),dir_entry.get(),cell_entry.get(),ci_entry.get())
-            my_cursor.execute(sql2,values2)
-            mydb.commit()
-            sql3 = "INSERT INTO alquiler (Fecha, RIF_Empresa, Placa_Vehiculo, Fecha_Expiracion) VALUES (%s,%s,%s,%s)"
-            values3 = (f1_entry.get(),J_entry.get(),plac_entry.get(),f2_entry.get())
-            my_cursor.execute(sql3,values3)
-            mydb.commit()
-            try:
-                my_cursor.execute(sql,values)
-                mydb.commit()
-                #conn.close()
-                my_cursor.execute(sql2,values2)
-                mydb.commit()
-                #conn.close()
-                my_cursor.execute(sql3,values3)
-                mydb.commit()
-                titulo = 'Alquilado'
-                mensaje = 'Vehiculo alquilado con exito'
-                messagebox.showinfo(titulo, mensaje)
-            except:
-                titulo = 'Alquilado'
-                mensaje = 'Ocurrio un problema'
-                messagebox.showinfo(titulo, mensaje)
 
 
         def select_record(e):#Esta funcion estaba comentanda
