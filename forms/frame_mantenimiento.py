@@ -42,7 +42,7 @@ class FrameMantenimiento(CTkFrame):
             mydb = mysql.connector.connect(
                 host="localhost",
                 user="root",
-                password="123456",
+                password="tu_nueva_contraseña",
                 port="3306",
                 database="control_alquiler_Reych"
             )
@@ -113,7 +113,7 @@ class FrameMantenimiento(CTkFrame):
             mydb = mysql.connector.connect(
                 host="localhost",
                 user="root",
-                password="123456",
+                password="tu_nueva_contraseña",
                 port="3306",
                 database="control_alquiler_Reych"
             )
@@ -150,7 +150,7 @@ class FrameMantenimiento(CTkFrame):
         ventana = CTkToplevel(self)
         ventana.title(f"Registrar mantenimiento - {placa}")
         ventana.geometry("400x400")
-        ventana.grab_set()
+        # ventana.grab_set()
 
         CTkLabel(ventana, text=f"Registrar mantenimiento para {placa}",
                  font=("Ubuntu", 16, "bold"), text_color="#00501B").pack(pady=10)
@@ -181,7 +181,7 @@ class FrameMantenimiento(CTkFrame):
                 mydb = mysql.connector.connect(
                     host="localhost",
                     user="root",
-                    password="123456",
+                    password="tu_nueva_contraseña",
                     port="3306",
                     database="control_alquiler_Reych"
                 )

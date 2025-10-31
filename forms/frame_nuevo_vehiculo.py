@@ -16,7 +16,7 @@ class FrameNuevoVehiculo(CTkFrame):
         mydb = mysql.connector.connect(
             host = "localhost",
             user = "root",
-            password = "123456",
+            password = "tu_nueva_contraseña",
             port = "3306",
             database = "control_alquiler_Reych"
         )
@@ -52,7 +52,7 @@ class FrameNuevoVehiculo(CTkFrame):
                 mydb = mysql.connector.connect(
                 host = "localhost",
                 user = "root",
-                password = "123456",
+                password = "tu_nueva_contraseña",
                 port = "3306",
                 database = "control_alquiler_Reych"
             )
@@ -94,12 +94,12 @@ class FrameNuevoVehiculo(CTkFrame):
         
         def agregar():
             mydb = mysql.connector.connect(
-                host = "localhost",
-                user = "root",
-                password = "123456",
-                port = "3306",
-                database = "control_alquiler_Reych"
-            )
+                        host = "localhost",
+                        user = "root",
+                        password = "123456",
+                        port = "3306",
+                        database = "control_alquiler_Reych"
+                    )
 
             my_cursor = mydb.cursor()
 
@@ -141,7 +141,7 @@ class FrameNuevoVehiculo(CTkFrame):
             mydb = mysql.connector.connect(
                         host = "localhost",
                         user = "root",
-                        password = "123456",
+                        password = "tu_nueva_contraseña",
                         port = "3306",
                         database = "control_alquiler_Reych"
                     )

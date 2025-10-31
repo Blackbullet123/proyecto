@@ -13,7 +13,7 @@ class FrameDatosDetallados(CTkFrame):
         conn = mysql.connector.connect(
             host="localhost",
             user="root",
-            password="123456",
+            password="tu_nueva_contraseña",
             database="control_alquiler_Reych"
         )
 

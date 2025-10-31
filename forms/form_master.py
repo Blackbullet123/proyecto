@@ -26,7 +26,7 @@ class Principal:
         self.root = CTk()
         self.root.title('ALQUITECH')
         self.root.geometry("1280x650+35+15")
-        self.root.iconbitmap("imagenes/letra-r.ico")
+        # self.root.iconbitmap("imagenes/letra-r.ico")
         self.root.config(background="#EEEEEE")
 
         self.barra_visible = True
@@ -37,7 +37,7 @@ class Principal:
         mydb = mysql.connector.connect(
             host = "localhost",
             user = "root",
-            password = "123456",
+            password = "tu_nueva_contraseña",
             port = "3306",
             database = "control_alquiler_Reych"
         )
@@ -87,7 +87,7 @@ class Principal:
             mydb = mysql.connector.connect(
                 host = "localhost",
                 user = "root",
-                password = "123456",
+                password = "tu_nueva_contraseña",
                 port = "3306",
                 database = "control_alquiler_Reych"
             )
@@ -101,7 +101,7 @@ class Principal:
             mydb = mysql.connector.connect(
                 host = "localhost",
                 user = "root",
-                password = "123456",
+                password = "tu_nueva_contraseña",
                 port = "3306",
                 database = "control_alquiler_Reych"
             )
@@ -146,7 +146,7 @@ class Principal:
             mydb = mysql.connector.connect(
                 host = "localhost",
                 user = "root",
-                password = "123456",
+                password = "tu_nueva_contraseña",
                 port = "3306",
                 database = "control_alquiler_Reych"
             )
@@ -158,7 +158,7 @@ class Principal:
             mydb = mysql.connector.connect(
                 host = "localhost",
                 user = "root",
-                password = "123456",
+                password = "tu_nueva_contraseña",
                 port = "3306",
                 database = "control_alquiler_Reych"
             )
@@ -172,7 +172,7 @@ class Principal:
             mydb = mysql.connector.connect(
                 host = "localhost",
                 user = "root",
-                password = "123456",
+                password = "tu_nueva_contraseña",
                 port = "3306",
                 database = "control_alquiler_Reych"
             )
@@ -395,7 +395,7 @@ class Principal:
                 mydb = mysql.connector.connect(
                 host = "localhost",
                 user = "root",
-                password = "123456",
+                password = "tu_nueva_contraseña",
                 port = "3306",
                 database = "control_alquiler_Reych"
             )
@@ -428,7 +428,7 @@ class Principal:
                 mydb = mysql.connector.connect(
                     host = "localhost",
                     user = "root",
-                    password = "123456",
+                    password = "tu_nueva_contraseña",
                     port = "3306",
                     database = "control_alquiler_Reych"
                 )
@@ -544,50 +544,55 @@ class Principal:
         self.frame_botones_inferiores = CTkFrame(frame_inferior, fg_color="#EEEEEE", width=100, height=40)
         self.frame_botones_inferiores.pack( anchor="center", expand=True)
 
-        data_frame = CTkFrame(frame_inferior, fg_color="transparent")
-        data_frame.pack(anchor="center", expand=True)
+        self.data_frame = CTkFrame(frame_inferior, fg_color="transparent")
+        self.data_frame.pack(anchor="center", expand=True)
 
-        COD_frame = CTkFrame(data_frame, fg_color="transparent",corner_radius=6, width=100, height=20)
+        self.frame_contenedor_entry = CTkFrame(frame_inferior, fg_color="transparent")
+        self.frame_contenedor_entry.pack(anchor="center", expand=True)
+
+        COD_frame = CTkFrame(self.data_frame, fg_color="transparent",corner_radius=6, width=100, height=20)
         COD_frame.grid(row=1, column=4, padx=25,pady=4, ipady=3)
 
         COD_label = CTkLabel(COD_frame, text="Cod.",fg_color="transparent",text_color="#00501B",
                                     font=("Ubuntu",16))
         COD_label.grid(row=0, column=0, padx=10, pady=1)
         COD_entry = CTkEntry(COD_frame,justify=CENTER,width=130, state=DISABLED ,fg_color="transparent",text_color="black", border_color="#00501B",
-                             validate="key", validatecommand=(data_frame.register(validate_entry2), "%S","%P"))
+                             validate="key", validatecommand=(self.data_frame.register(validate_entry2), "%S","%P"))
         COD_entry.grid(row=1,column=0, padx=10, pady=1)
 
-        """fecha1_frame = CTkFrame(data_frame, fg_color="transparent",corner_radius=6, width=100, height=20)
-        fecha1_frame.grid(row=0, column=0,padx=25,pady=4, ipady=3)
+        fecha1_frame = CTkFrame(self.frame_contenedor_entry, fg_color="transparent",corner_radius=6, width=100, height=20)
+        fecha1_frame.grid(row=0, column=1,padx=25,pady=4, ipady=3)
 
         fi_label = CTkLabel(fecha1_frame, text="Fecha Inicial",fg_color="transparent",text_color="#00501B",
                                     font=("Ubuntu",16))
         fi_label.grid(row=0,column=0, padx=10, pady=1)
         fi_entry = CTkEntry(fecha1_frame,justify=CENTER,fg_color="transparent",text_color="black", width=130, border_color="#00501B",
-                            validate="key", validatecommand=(data_frame.register(validate_fecha), "%P"))
+                            validate="key", validatecommand=(self.data_frame.register(validate_fecha), "%P"))
         fi_entry.grid(row=1,column=0, padx=10, pady=1)
 
-        fecha2_frame = CTkFrame(data_frame, fg_color="transparent",corner_radius=6, width=50, height=20,)
-        fecha2_frame.grid(row=0, column=1,padx=25,pady=4, ipady=3)
+        fecha2_frame = CTkFrame(self.frame_contenedor_entry, fg_color="transparent",corner_radius=6, width=50, height=20,)
+        fecha2_frame.grid(row=0, column=2,padx=25,pady=4, ipady=3)
 
         ff_label = CTkLabel(fecha2_frame, text="Fecha Final",fg_color="transparent",text_color="#00501B",
                                     font=("Ubuntu",16))
         ff_label.grid(row=0,column=0, padx=10, pady=1)
         ff_entry = CTkEntry(fecha2_frame, justify=CENTER,fg_color="transparent",text_color="black", width=130, border_color="#00501B",
-                            validate="key", validatecommand=(data_frame.register(validate_fecha), "%P"))
-        ff_entry.grid(row=1,column=0, padx=10, pady=1)"""
+                            validate="key", validatecommand=(self.data_frame.register(validate_fecha), "%P"))
+        ff_entry.grid(row=1,column=0, padx=10, pady=1)
 
-        rif_frame = CTkFrame(data_frame, fg_color="transparent",corner_radius=6,  width=50, height=20,)
+        self.ocultar_entry()
+
+        rif_frame = CTkFrame(self.data_frame, fg_color="transparent",corner_radius=6,  width=50, height=20,)
         rif_frame.grid(row=0, column=1,padx=25,pady=4, ipady=3)
 
         rif_label = CTkLabel(rif_frame, text="RIF",fg_color="transparent",text_color="#00501B",
                                     font=("Ubuntu",16))
         rif_label.grid(row=0,column=0, padx=10, pady=1)
         rif_entry = CTkEntry(rif_frame, justify=CENTER,fg_color="transparent", text_color="black", width=130,  border_color="#00501B",
-                             validate="key", validatecommand=(data_frame.register(validate_entry), "%S","%P"))
+                             validate="key", validatecommand=(self.data_frame.register(validate_entry), "%S","%P"))
         rif_entry.grid(row=1,column=0, padx=10, pady=1)
 
-        empresa_frame = CTkFrame(data_frame, fg_color="transparent",corner_radius=6, width=35, height=20,)
+        empresa_frame = CTkFrame(self.data_frame, fg_color="transparent",corner_radius=6, width=35, height=20,)
         empresa_frame.grid(row=0, column=2,padx=25,pady=4, ipady=3)
 
         em_label = CTkLabel(empresa_frame, text="Empresa",fg_color="transparent",text_color="#00501B",
@@ -597,27 +602,27 @@ class Principal:
                             width=130)
         em_entry.grid(row=1,column=0, padx=10, pady=1)
         
-        ci_frame = CTkFrame(data_frame, fg_color="transparent",corner_radius=6, width=50, height=20)
+        ci_frame = CTkFrame(self.data_frame, fg_color="transparent",corner_radius=6, width=50, height=20)
         ci_frame.grid(row=0, column=4, padx=25,pady=4, ipady=3)
 
         ci_label = CTkLabel(ci_frame, text="Cedula",fg_color="transparent",text_color="#00501B",
                                     font=("Ubuntu",16))
         ci_label.grid(row=0, column=0, padx=10, pady=1)
         ci_entry = CTkEntry(ci_frame,justify=CENTER,width=130,fg_color="transparent",text_color="black", border_color="#00501B",
-                             validate="key", validatecommand=(data_frame.register(validate_entry), "%S","%P"))
+                             validate="key", validatecommand=(self.data_frame.register(validate_entry), "%S","%P"))
         ci_entry.grid(row=1,column=0, padx=10, pady=1)
 
-        tlf_frame = CTkFrame(data_frame, fg_color="transparent",corner_radius=6, width=50, height=20,)
+        tlf_frame = CTkFrame(self.data_frame, fg_color="transparent",corner_radius=6, width=50, height=20,)
         tlf_frame.grid(row=0, column=3,padx=25,pady=4, ipady=3)
 
         tlf_label = CTkLabel(tlf_frame, text="Teléfono",fg_color="transparent",text_color="#00501B",
                                     font=("Ubuntu",16))
         tlf_label.grid(row=0,column=0, padx=10, pady=1)
         tlf_entry = CTkEntry(tlf_frame,justify=CENTER, fg_color="transparent",text_color="black", width=130, border_color="#00501B",
-                             validate="key", validatecommand=(data_frame.register(validate_entry), "%S","%P"))
+                             validate="key", validatecommand=(self.data_frame.register(validate_entry), "%S","%P"))
         tlf_entry.grid(row=1,column=0, padx=10, pady=1)
 
-        placa_frame = CTkFrame(data_frame, fg_color="transparent",corner_radius=6, width=50, height=20,)
+        placa_frame = CTkFrame(self.data_frame, fg_color="transparent",corner_radius=6, width=50, height=20,)
         placa_frame.grid(row=1, column=1,padx=10,pady=4, ipady=3)
 
         placa_label = CTkLabel(placa_frame, text="Placa",fg_color="transparent",text_color="#00501B",
@@ -626,7 +631,7 @@ class Principal:
         placa_entry = CTkEntry(placa_frame, justify=CENTER,fg_color="transparent", text_color="black", width=130, border_color="#00501B",)
         placa_entry.grid(row=1,column=0, padx=10, pady=1)
 
-        marca_frame = CTkFrame(data_frame, fg_color="transparent",corner_radius=6, width=50, height=20,)
+        marca_frame = CTkFrame(self.data_frame, fg_color="transparent",corner_radius=6, width=50, height=20,)
         marca_frame.grid(row=1, column=2,padx=10,pady=4, ipady=3)
 
         marca_label = CTkLabel(marca_frame, text="Marca",fg_color="transparent",text_color="#00501B",
@@ -635,7 +640,7 @@ class Principal:
         marca_entry = CTkEntry(marca_frame, justify=CENTER,fg_color="transparent", text_color="black",width=130, border_color="#00501B",)
         marca_entry.grid(row=1,column=0, padx=10, pady=1)
 
-        model_frame = CTkFrame(data_frame, fg_color="transparent",corner_radius=6, width=50, height=20,)
+        model_frame = CTkFrame(self.data_frame, fg_color="transparent",corner_radius=6, width=50, height=20,)
         model_frame.grid(row=1, column=3,padx=10,pady=4, ipady=3)
 
         model_label = CTkLabel(model_frame, text="Modelo",fg_color="transparent",text_color="#00501B",
@@ -664,14 +669,20 @@ class Principal:
         self.limpiar = CTkButton(self.frame_botones_inferiores, text="Limpiar", command=clear_entries,
                             corner_radius=15, text_color="white", width=150, height=40,
                             fg_color="#E0DC00", font=("Impact", 16))
-        self.limpiar.grid(row=0, column=1, padx=20, pady=5)
+        self.limpiar.grid(row=0, column=2, padx=20, pady=5)
 
         self.remove_one_button = CTkButton(self.frame_botones_inferiores, text="Eliminar", command=remove_one,
                                     corner_radius=15, text_color="white", width=150, height=40,
                                     fg_color="#D32F2F", font=("Impact", 16))
-        self.remove_one_button.grid(row=0, column=2, padx=20, pady=5)
+        self.remove_one_button.grid(row=0, column=3, padx=20, pady=5)
 
-        self.ocultar_botones()
+        self.renovar = CTkButton(self.frame_botones_inferiores,
+                                 command=self.ocultar_renovar,text="Renovar",
+                                    corner_radius=15, text_color="white", width=150, height=40,
+                                    fg_color="#8200EC", font=("Impact", 16))
+        self.renovar.grid(row=0, column=1, padx=20, pady=5)
+
+        #self.ocultar_botones()
 
 
         my_tree.bind("<ButtonRelease-1>", select_record)
@@ -738,6 +749,17 @@ class Principal:
 
     def ocultar_botones(self):
         self.frame_botones_inferiores.pack_forget()
+
+    def ocultar_entry(self):
+        self.frame_contenedor_entry.pack_forget()
+
+    def ocultar_renovar(self):
+        self.data_frame.pack_forget()
+        self.frame_contenedor_entry.pack(expand=True, fill=BOTH)
+
+    def mostrar_renovar(self):
+        self.frame_contenedor_entry.pack_forget()
+        self.data_frame.Pack(expand=True, fill=BOTH)
         
 
     def mostrar_btn(self):

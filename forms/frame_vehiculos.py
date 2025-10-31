@@ -15,12 +15,13 @@ class FrameVehiculos(CTkFrame):
         mydb = mysql.connector.connect(
             host = "localhost",
             user = "root",
-            password = "123456",
+            password = "tu_nueva_contraseña",
             port = "3306",
             database = "control_alquiler_Reych"
         )
 
         my_cursor = mydb.cursor()
+        
 
         def clear_entries_2():
             f1_entry.delete(0,END)
@@ -36,85 +37,6 @@ class FrameVehiculos(CTkFrame):
             mar_entry.delete(0,END)
             modelo_entry.delete(0,END)
             mostrar_imagen("default")
-
-        def ADD():
-            try:
-                mydb = mysql.connector.connect(
-                    host = "localhost",
-                    user = "root",
-                    password = "123456",
-                    port = "3306",
-                    database = "control_alquiler_Reych"
-                )
-                my_cursor = mydb.cursor()
-
-                ci_val = ci_entry.get().strip()
-                nombre_val = r_name_entry.get().strip()
-                apellido_val = apell_entry.get().strip()
-                rif_val = J_entry.get().strip()
-                empresa_val = e_name_entry.get().strip()
-                direccion_val = dir_entry.get().strip()
-                telefono_val = cell_entry.get().strip()
-                placa_val = plac_entry.get().strip()
-                fecha_inicio = f1_entry.get().strip() 
-                fecha_fin = f2_entry.get().strip()
-
-                try:
-                    if fecha_inicio:
-                        d = datetime.strptime(fecha_inicio, "%d-%m-%Y")
-                        fecha_inicio_sql = d.strftime("%Y-%m-%d")
-                    else:
-                        fecha_inicio_sql = None
-
-                    if fecha_fin:
-                        d2 = datetime.strptime(fecha_fin, "%d-%m-%Y")
-                        fecha_fin_sql = d2.strftime("%Y-%m-%d")
-                    else:
-                        fecha_fin_sql = None
-                except Exception:
-                    fecha_inicio_sql = fecha_inicio
-                    fecha_fin_sql = fecha_fin
-
-                def existe_tabla(campo, valor, tabla, columna):
-                    sql_check = f"SELECT 1 FROM {tabla} WHERE {columna} = %s LIMIT 1"
-                    my_cursor.execute(sql_check, (valor,))
-                    return my_cursor.fetchone() is not None
-
-                if ci_val:
-                    if not existe_tabla("CI", ci_val, "representante", "CI"):
-                        sql = "INSERT INTO representante (CI, nombre_r, apellido) VALUES (%s, %s, %s)"
-                        my_cursor.execute(sql, (ci_val, nombre_val, apellido_val))
-                        mydb.commit()
-                else:
-                    raise ValueError("El campo C.I. está vacío.")
-
-                if rif_val:
-                    if not existe_tabla("RIF", rif_val, "contratista", "RIF"):
-                        sql2 = "INSERT INTO contratista (RIF, nombre, direccion, telefono, Representante_CI) VALUES (%s, %s, %s, %s, %s)"
-                        my_cursor.execute(sql2, (rif_val, empresa_val, direccion_val, telefono_val, ci_val))
-                        mydb.commit()
-                    else:
-                        pass
-                else:
-                    raise ValueError("El campo RIF está vacío.")
-
-                sql3 = "INSERT INTO alquiler (Fecha, RIF_Empresa, Placa_Vehiculo, Fecha_Expiracion) VALUES (%s, %s, %s, %s)"
-                my_cursor.execute(sql3, (fecha_inicio_sql, rif_val, placa_val, fecha_fin_sql))
-                mydb.commit()
-
-                messagebox.showinfo("Alquilado", "Vehiculo alquilado con éxito")
-            except Exception as e:
-                print("Error en ADD():", repr(e))
-                messagebox.showerror("Error al alquilar", f"Ocurrió un problema:\n{e}")
-            finally:
-                try:
-                    my_cursor.close()
-                except:
-                    pass
-                try:
-                    mydb.close()
-                except:
-                    pass
 
         def query_db():
                 conn = mydb
@@ -149,7 +71,7 @@ class FrameVehiculos(CTkFrame):
                 mydb = mysql.connector.connect(
                     host = "localhost",
                     user = "root",
-                    password = "123456",
+                    password = "tu_nueva_contraseña",
                     port = "3306",
                     database = "control_alquiler_Reych"
                 )
@@ -178,7 +100,7 @@ class FrameVehiculos(CTkFrame):
                 mydb = mysql.connector.connect(
                 host = "localhost",
                 user = "root",
-                password = "123456",
+                password = "tu_nueva_contraseña",
                 port = "3306",
                 database = "control_alquiler_Reych"
             )
@@ -254,7 +176,7 @@ class FrameVehiculos(CTkFrame):
         self.img_label.pack(pady=30, padx=10)
 
         alquilar = CTkButton(frame_barra_derecha, text="Alquilar", fg_color="#00A86B", text_color="white",
-                command=lambda:(ADD(), actualizar_tree_2()))
+                command=ADD)
         alquilar.pack(pady=5)
 
         limpiar = CTkButton(frame_barra_derecha, text="Limpiar", fg_color="#D32F2F",text_color="white",command=clear_entries_2)
@@ -402,6 +324,48 @@ class FrameVehiculos(CTkFrame):
         modelo_entry.grid(row=2,column=7,padx=10,pady=10)
 
         get_current_date()
+
+        def ADD():
+
+            mydb = mysql.connector.connect(
+                host = "localhost",
+                user = "root",
+                password = "123456",
+                port = "3306",
+                database = "control_alquiler_Reych"
+            )
+
+            my_cursor = mydb.cursor()
+
+            sql = "INSERT INTO representante (CI,nombre_r,apellido) VALUES (%s,%s,%s)"
+            values = (ci_entry.get(),r_name_entry.get(),apell_entry.get())
+            #my_cursor.execute(sql,values)
+            #mydb.commit()
+            sql2 = "INSERT INTO contratista (RIF, nombre, direccion, telefono, Representante_CI) VALUES (%s,%s,%s,%s,%s)"
+            values2 = (J_entry.get(),e_name_entry.get(),dir_entry.get(),cell_entry.get(),ci_entry.get())
+            #my_cursor.execute(sql2,values2)
+            #mydb.commit()
+            sql3 = "INSERT INTO alquiler (Fecha, RIF_Empresa, Placa_Vehiculo, Fecha_Expiracion) VALUES (%s,%s,%s,%s)"
+            values3 = (f1_entry.get(),J_entry.get(),plac_entry.get(),f2_entry.get())
+            #my_cursor.execute(sql3,values3)
+            #mydb.commit()
+            try:
+                my_cursor.execute(sql,values)
+                mydb.commit()
+                #conn.close()
+                my_cursor.execute(sql2,values2)
+                mydb.commit()
+                #conn.close()
+                my_cursor.execute(sql3,values3)
+                mydb.commit()
+                titulo = 'Alquilado'
+                mensaje = 'Vehiculo alquilado con exito'
+                messagebox.showinfo(titulo, mensaje)
+            except:
+                titulo = 'Alquilado'
+                mensaje = 'Ocurrio un problema'
+                messagebox.showinfo(titulo, mensaje)
+
 
         def select_record(e):#Esta funcion estaba comentanda
             f1_entry.delete(0,END)
