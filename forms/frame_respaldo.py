@@ -15,7 +15,7 @@ class FrameBackup(CTkFrame):
         HOST = "localhost"
         USUARIO = "root"
         port = "3306"
-        CONTRASENA = "tu_nueva_contraseña"
+        CONTRASENA = "123456"
         BASEDATOS = "control_alquiler_Reych"
         ARCHIVO_HISTORIAL = "historial_backup.txt"
 

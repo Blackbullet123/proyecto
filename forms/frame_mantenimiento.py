@@ -42,7 +42,7 @@ class FrameMantenimiento(CTkFrame):
             mydb = mysql.connector.connect(
                 host="localhost",
                 user="root",
-                password="tu_nueva_contraseña",
+                password="123456",
                 port="3306",
                 database="control_alquiler_Reych"
             )
@@ -113,7 +113,7 @@ class FrameMantenimiento(CTkFrame):
             mydb = mysql.connector.connect(
                 host="localhost",
                 user="root",
-                password="tu_nueva_contraseña",
+                password="123456",
                 port="3306",
                 database="control_alquiler_Reych"
             )
@@ -181,7 +181,7 @@ class FrameMantenimiento(CTkFrame):
                 mydb = mysql.connector.connect(
                     host="localhost",
                     user="root",
-                    password="tu_nueva_contraseña",
+                    password="123456",
                     port="3306",
                     database="control_alquiler_Reych"
                 )
