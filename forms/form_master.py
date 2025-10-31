@@ -647,13 +647,13 @@ class Principal:
         self.ver_menos = CTkButton(frame_ver_mas, text="Ver menos",text_color="#00501B", width=20,
                                   height=30,cursor="hand2",command=self.ocultar_datos_detallados,
                                     hover_color="#EEEEEE",fg_color="#EEEEEE", font=("Impact", 16))
-        self.ver_menos.place(x=10, y=2)
+        self.ver_menos.place(x=8, y=2)
         self.ocultar_ver_menos()
 
         self.ver_mas = CTkButton(frame_ver_mas, text="Ver mas",text_color="#00501B", width=20,
                                   height=30,cursor="hand2",command=self.mostrar_datos_detallados,
                                     hover_color="#EEEEEE",fg_color="#EEEEEE", font=("Impact", 16))
-        self.ver_mas.place(x=10, y=2)
+        self.ver_mas.place(x=8, y=2)
 
         self.update_button = CTkButton(self.frame_botones_inferiores, text="Actualizar", command=update,
                           corner_radius=15, text_color="white", width=150, height=40,
