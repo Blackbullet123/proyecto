@@ -13,6 +13,8 @@ from frame_mantenimiento import FrameMantenimiento
 from frame_respaldo import FrameBackup
 from datetime import datetime, timedelta
 import os
+from tkcalendar import Calendar
+from datetime import date
 from pathlib import Path
 import webbrowser
 
@@ -26,7 +28,7 @@ class Principal:
         self.root = CTk()
         self.root.title('ALQUITECH')
         self.root.geometry("1280x650+35+15")
-        # self.root.iconbitmap("imagenes/letra-r.ico")
+        self.root.iconbitmap("imagenes/letra-r.ico")
         self.root.config(background="#EEEEEE")
 
         self.barra_visible = True
@@ -81,59 +83,11 @@ class Principal:
 
         style.map('Treeview',
                 background=[('selected',"#00501B")])
-        
-        def update():
-                        
-            mydb = mysql.connector.connect(
-                host = "localhost",
-                user = "root",
-                password = "123456",
-                port = "3306",
-                database = "control_alquiler_Reych"
-            )
-            my_cursor = mydb.cursor()
-            conn = mydb
-            sql = "UPDATE alquiler SET COD_Alquiler='{0}',Fecha='{1}',Fecha_Expiracion='{2}' WHERE COD_Alquiler = '{0}'"
-            #my_cursor.execute(sql.format(COD_entry.get(),fi_entry.get(),ff_entry.get()))
-            #conn.commit()
-            #conn.close()
 
-            mydb = mysql.connector.connect(
-                host = "localhost",
-                user = "root",
-                password = "123456",
-                port = "3306",
-                database = "control_alquiler_Reych"
-            )
-            my_cursor = mydb.cursor()
-            conn = mydb
-            sql2 = "UPDATE contratista SET RIF='{0}', nombre='{1}', telefono='{2}' WHERE RIF='{0}'"
-            #my_cursor.execute(sql.format(rif_entry.get(),em_entry.get(),tlf_entry.get(),rif_entry.get()))
-            #conn.commit()
-            #conn.close()
-
-            try:
-                my_cursor.execute(sql.format(COD_entry.get(),))#fi_entry.get(),ff_entry.get()))
-                conn.commit()
-                #conn.close()
-                my_cursor.execute(sql2.format(rif_entry.get(),em_entry.get(),tlf_entry.get(),rif_entry.get()))
-                conn.commit()
-                #conn.close()
-                titulo = 'Alquilado'
-                mensaje = 'Actualizado con exito'
-                messagebox.showinfo(titulo, mensaje)
-            except:
-                titulo = 'Alquilado'
-                mensaje = 'Ocurrio un problema'
-                messagebox.showinfo(titulo, mensaje)
-            finally:
-                actualizar_tree()
-
-            
-
+        def clear_entries():
             COD_entry.delete(0,END)
-            #fi_entry.delete(0,END)
-            #ff_entry.delete(0,END)
+            fi_entry.delete(0,END)
+            ff_entry.delete(0,END)
             rif_entry.delete(0,END)
             em_entry.delete(0,END)
             tlf_entry.delete(0,END)
@@ -141,6 +95,40 @@ class Principal:
             placa_entry.delete(0,END)
             marca_entry.delete(0,END)
             model_entry.delete(0,END)
+            self.ocultar_botones()
+
+        def select_record(e):
+            selected = my_tree.focus()
+            if not selected:
+                return
+
+            values = my_tree.item(selected, 'values')
+            if not values:
+                return
+            self.mostrar_btn()
+
+            COD_entry.delete(0,END)
+            fi_entry.delete(0,END)
+            ff_entry.delete(0,END)
+            rif_entry.delete(0,END)
+            em_entry.delete(0,END)
+            tlf_entry.delete(0,END)
+            ci_entry.delete(0,END)
+            placa_entry.delete(0,END)
+            marca_entry.delete(0,END)
+            model_entry.delete(0,END)
+
+            COD_entry.insert(0,values[0])
+            fi_entry.insert(0, values[1])
+            ff_entry.insert(0, values[2])
+            rif_entry.insert(0, values[3])
+            em_entry.insert(0, values[4])
+            tlf_entry.insert(0, values[5])
+            ci_entry.insert(0, values[6])
+            placa_entry.insert(0, values[7])
+            marca_entry.insert(0, values[8])
+            model_entry.insert(0, values[9])
+        
 
         def remove_one():
             mydb = mysql.connector.connect(
@@ -153,7 +141,9 @@ class Principal:
             my_cursor = mydb.cursor()
             conn = mydb
             sql = "DELETE FROM alquiler WHERE COD_Alquiler = '{0}'"
-
+            #my_cursor.execute(sql.format(COD_entry.get()))
+            #conn.commit()
+            #conn.close()
 
             mydb = mysql.connector.connect(
                 host = "localhost",
@@ -199,47 +189,89 @@ class Principal:
                 messagebox.showinfo(titulo, mensaje)
             finally:
                 actualizar_tree()
+                clear_entries()
+        
+        def actualizar_tree():
+            for item in my_tree.get_children():
+                my_tree.delete(item)
 
-        def clear_entries():
-            COD_entry.delete(0,END)
-            #fi_entry.delete(0,END)
-            #ff_entry.delete(0,END)
-            rif_entry.delete(0,END)
-            em_entry.delete(0,END)
-            tlf_entry.delete(0,END)
-            ci_entry.delete(0,END)
-            placa_entry.delete(0,END)
-            marca_entry.delete(0,END)
-            model_entry.delete(0,END)
-            self.ocultar_botones()
+                mydb = mysql.connector.connect(
+                host = "localhost",
+                user = "root",
+                password = "123456",
+                port = "3306",
+                database = "control_alquiler_Reych"
+            )
 
-        def select_record(e):
-            COD_entry.delete(0,END)
-            #fi_entry.delete(0,END)
-            #ff_entry.delete(0,END)
-            rif_entry.delete(0,END)
-            em_entry.delete(0,END)
-            tlf_entry.delete(0,END)
-            ci_entry.delete(0,END)
-            placa_entry.delete(0,END)
-            marca_entry.delete(0,END)
-            model_entry.delete(0,END)
+            conn = mydb
 
-            selected = my_tree.focus()
-            values = my_tree.item(selected,'values')
+            my_cursor = mydb.cursor()
 
-            COD_entry.insert(0,values[0])
-            #fi_entry.insert(0, values[1])
-            #ff_entry.insert(0, values[2])
-            rif_entry.insert(0, values[3])
-            em_entry.insert(0, values[4])
-            tlf_entry.insert(0, values[5])
-            ci_entry.insert(0, values[6])
-            placa_entry.insert(0, values[7])
-            marca_entry.insert(0, values[8])
-            model_entry.insert(0, values[9])
-            self.mostrar_btn()
+            my_cursor.execute("SELECT a.COD_Alquiler, a.Fecha, a.Fecha_Expiracion, c.RIF, c.nombre, c.telefono, r.CI, v.Placa, m.Nombre, o.Nombre FROM representante r INNER JOIN contratista c ON r.CI = c.Representante_CI INNER JOIN alquiler a ON c.RIF = a.RIF_Empresa INNER JOIN vehiculo v ON a.Placa_Vehiculo = v.Placa INNER JOIN marca m ON v.ID_Marca = m.ID INNER JOIN modelo o ON o.ID_Marca = m.ID;")
+            items = my_cursor.fetchall()
 
+            count = 0
+
+            for item in items:
+                if count % 2 == 0:
+                    my_tree.insert(parent='',index='end',iid=count,text='',values=(item[0],item[1],item[2],item[3],item[4],item[5],item[6],item[7],item[8],item[9]),tags=('evenrow',))
+                else: 
+                    my_tree.insert(parent='',index='end',iid=count,text='',values=(item[0],item[1],item[2],item[3],item[4],item[5],item[6],item[7],item[8],item[9]),tags=('oddrow',))
+
+                count += 1
+
+            conn.commit()
+            conn.close()
+        
+        def update():
+                        
+            mydb = mysql.connector.connect(
+                host = "localhost",
+                user = "root",
+                password = "123456",
+                port = "3306",
+                database = "control_alquiler_Reych"
+            )
+            my_cursor = mydb.cursor()
+            conn = mydb
+            sql = "UPDATE alquiler SET COD_Alquiler='{0}',Fecha='{1}',Fecha_Expiracion='{2}' WHERE COD_Alquiler = '{0}'"
+            #my_cursor.execute(sql.format(COD_entry.get(),fi_entry.get(),ff_entry.get()))
+            #conn.commit()
+            #conn.close()
+
+            mydb = mysql.connector.connect(
+                host = "localhost",
+                user = "root",
+                password = "123456",
+                port = "3306",
+                database = "control_alquiler_Reych"
+            )
+            my_cursor = mydb.cursor()
+            conn = mydb
+            sql2 = "UPDATE contratista SET RIF='{0}', nombre='{1}', telefono='{2}' WHERE RIF='{0}'"
+            #my_cursor.execute(sql.format(rif_entry.get(),em_entry.get(),tlf_entry.get(),rif_entry.get()))
+            #conn.commit()
+            #conn.close()
+
+            try:
+                my_cursor.execute(sql.format(COD_entry.get(),fi_entry.get(),ff_entry.get()))
+                conn.commit()
+                #conn.close()
+                my_cursor.execute(sql2.format(rif_entry.get(),em_entry.get(),tlf_entry.get(),rif_entry.get()))
+                conn.commit()
+                #conn.close()
+                titulo = 'Alquilado'
+                mensaje = 'Actualizado con exito'
+                messagebox.showinfo(titulo, mensaje)
+            except:
+                titulo = 'Alquilado'
+                mensaje = 'Ocurrio un problema'
+                messagebox.showinfo(titulo, mensaje)
+            finally:
+                actualizar_tree()
+                clear_entries()
+
+            
         
         frame_form = Frame(self.root,bd=0,relief=SOLID,bg="#000000",height=50)
         frame_form.pack(side="top",expand=NO,fill=BOTH)
@@ -296,8 +328,8 @@ class Principal:
         inicio = CTkButton(frame_botones, text="Inicio",fg_color="transparent",text_color="white",
                                   width=150, height=30,hover_color="#00501B",
                                   font=("Ubuntu",17), anchor=W, image=inicio_icon, compound="left",
-                                  command=self.mostrar_contenido_principal)
-        inicio.pack(pady=5, padx=2, fill=X)
+                                  command=lambda:(self.mostrar_contenido_principal(), actualizar_tree()))
+        inicio.pack(pady=5, padx=2, fill=X)        
 
         img = Image.open("imagenes/alquiler.png")
         alquilar_icon = CTkImage(dark_image=img, light_image=img, size=(24,24))
@@ -352,7 +384,6 @@ class Principal:
         self.ocultar_btn.pack(anchor="nw", padx=10, pady=10, side=LEFT)
 
 
-
         def romper():
             self.root.destroy()
 
@@ -388,37 +419,6 @@ class Principal:
         frame_ver_mas = Frame(frame_contenedor_ver,bg="#EEEEEE",width=90, height=30)
         frame_ver_mas.pack(expand=NO, side=RIGHT)
 
-        def actualizar_tree():
-            for item in my_tree.get_children():
-                my_tree.delete(item)
-
-                mydb = mysql.connector.connect(
-                host = "localhost",
-                user = "root",
-                password = "123456",
-                port = "3306",
-                database = "control_alquiler_Reych"
-            )
-
-            conn = mydb
-
-            my_cursor = mydb.cursor()
-
-            my_cursor.execute("SELECT a.COD_Alquiler, a.Fecha, a.Fecha_Expiracion, c.RIF, c.nombre, c.telefono, r.CI, v.Placa, m.Nombre, o.Nombre FROM representante r INNER JOIN contratista c ON r.CI = c.Representante_CI INNER JOIN alquiler a ON c.RIF = a.RIF_Empresa INNER JOIN vehiculo v ON a.Placa_Vehiculo = v.Placa INNER JOIN marca m ON v.ID_Marca = m.ID INNER JOIN modelo o ON o.ID_Marca = m.ID;")
-            items = my_cursor.fetchall()
-
-            count = 0
-
-            for item in items:
-                if count % 2 == 0:
-                    my_tree.insert(parent='',index='end',iid=count,text='',values=(item[0],item[1],item[2],item[3],item[4],item[5],item[6],item[7],item[8],item[9]),tags=('evenrow',))
-                else: 
-                    my_tree.insert(parent='',index='end',iid=count,text='',values=(item[0],item[1],item[2],item[3],item[4],item[5],item[6],item[7],item[8],item[9]),tags=('oddrow',))
-
-                count += 1
-
-            conn.commit()
-            conn.close()
 
         def search_now():
                 
@@ -486,7 +486,7 @@ class Principal:
         tree_scroll.config(command=my_tree.yview)
 
         #CREACION DE COLUMNAS
-        my_tree['columns']=("COD","FechaI","FechaF","RIF","Empresa","TLF","CI","Placa","Modelo","Marca")#
+        my_tree['columns']=("COD","FechaI","FechaF","RIF","Empresa","TLF","CI","Placa","Modelo","Marca")
 
         my_tree.column("COD",anchor=CENTER,width=85)
         my_tree.column("FechaI",anchor=CENTER,width=85)
@@ -525,30 +525,42 @@ class Principal:
                 return False
             return text.isdecimal()
         
-        def validate_fecha(new_text):
-            if len(new_text) > 10:
-                return False
-            checks = []
-            for i, char in enumerate (new_text):
-                if i in (5 , 2):
-                    checks.append(char == "-")
-                else:
-                    checks.append(char.isdecimal())
-            return all(checks)
+        def abrir_calendario(event, entry):
+            top = tk.Toplevel(self.root)
+            top.title("Seleccionar fecha")
+            top.geometry("290x250+650+300")
+            top.grab_set()
+
+            cal = Calendar(top, date_pattern="yyyy-mm-dd", mindate=date.today())
+            cal.pack(padx=10, pady=10)
+
+            def seleccionar_fecha():
+                fecha = cal.get_date()
+                entry.configure(state="normal")
+                entry.delete(0, "end")
+                entry.insert(0, fecha)
+                entry.configure(state="readonly")
+                top.destroy()
+
+            btn = CTkButton(top, text="Seleccionar", command=seleccionar_fecha)
+            btn.pack(pady=5)
+
         
         #Frame de los inferior    
-
         frame_inferior = Frame(self.frame_principal,bg="#EEEEEE")
         frame_inferior.pack(fill="x", expand=True, padx=70, side="bottom")
-
-        self.frame_botones_inferiores = CTkFrame(frame_inferior, fg_color="#EEEEEE", width=100, height=40)
-        self.frame_botones_inferiores.pack( anchor="center", expand=True)
 
         self.data_frame = CTkFrame(frame_inferior, fg_color="transparent")
         self.data_frame.pack(anchor="center", expand=True)
 
-        self.frame_contenedor_entry = CTkFrame(frame_inferior, fg_color="transparent")
-        self.frame_contenedor_entry.pack(anchor="center", expand=True)
+        self.frame_contenedor_entry = CTkFrame(frame_inferior, fg_color="#EEEEEE")
+        self.frame_contenedor_entry.pack(anchor="center", side="right",expand=NO)
+
+        self.frame_botones_inferiores = CTkFrame(frame_inferior, fg_color="#EEEEEE", width=100, height=40)
+        self.frame_botones_inferiores.pack( anchor="center", expand=NO)
+
+        '''self.frame_botones_inferiores_2 = CTkFrame(frame_inferior, fg_color="#EEEEEE", width=100, height=40)
+        self.frame_botones_inferiores_2.pack( anchor="center", expand=NO)'''
 
         COD_frame = CTkFrame(self.data_frame, fg_color="transparent",corner_radius=6, width=100, height=20)
         COD_frame.grid(row=1, column=4, padx=25,pady=4, ipady=3)
@@ -556,7 +568,7 @@ class Principal:
         COD_label = CTkLabel(COD_frame, text="Cod.",fg_color="transparent",text_color="#00501B",
                                     font=("Ubuntu",16))
         COD_label.grid(row=0, column=0, padx=10, pady=1)
-        COD_entry = CTkEntry(COD_frame,justify=CENTER,width=130, state=DISABLED ,fg_color="transparent",text_color="black", border_color="#00501B",
+        COD_entry = CTkEntry(COD_frame,justify=CENTER,width=130 ,fg_color="transparent",text_color="black", border_color="#00501B",
                              validate="key", validatecommand=(self.data_frame.register(validate_entry2), "%S","%P"))
         COD_entry.grid(row=1,column=0, padx=10, pady=1)
 
@@ -567,7 +579,7 @@ class Principal:
                                     font=("Ubuntu",16))
         fi_label.grid(row=0,column=0, padx=10, pady=1)
         fi_entry = CTkEntry(fecha1_frame,justify=CENTER,fg_color="transparent",text_color="black", width=130, border_color="#00501B",
-                            validate="key", validatecommand=(self.data_frame.register(validate_fecha), "%P"))
+                            validate="key", validatecommand=(self.data_frame.register, "%P"))
         fi_entry.grid(row=1,column=0, padx=10, pady=1)
 
         fecha2_frame = CTkFrame(self.frame_contenedor_entry, fg_color="transparent",corner_radius=6, width=50, height=20,)
@@ -577,9 +589,8 @@ class Principal:
                                     font=("Ubuntu",16))
         ff_label.grid(row=0,column=0, padx=10, pady=1)
         ff_entry = CTkEntry(fecha2_frame, justify=CENTER,fg_color="transparent",text_color="black", width=130, border_color="#00501B",
-                            validate="key", validatecommand=(self.data_frame.register(validate_fecha), "%P"))
+                            validate="key", validatecommand=(self.data_frame.register, "%P"))
         ff_entry.grid(row=1,column=0, padx=10, pady=1)
-
         self.ocultar_entry()
 
         rif_frame = CTkFrame(self.data_frame, fg_color="transparent",corner_radius=6,  width=50, height=20,)
@@ -682,9 +693,12 @@ class Principal:
                                     fg_color="#8200EC", font=("Impact", 16))
         self.renovar.grid(row=0, column=1, padx=20, pady=5)
 
-        #self.ocultar_botones()
+
+        self.ocultar_botones()
 
 
+        fi_entry.bind("<Button-1>", lambda e: abrir_calendario(e, fi_entry))
+        ff_entry.bind("<Button-1>", lambda e: abrir_calendario(e, ff_entry))
         my_tree.bind("<ButtonRelease-1>", select_record)
 
         query_db()
@@ -746,6 +760,7 @@ class Principal:
         self.frame_nuevo_vehiculo.pack_forget()
         self.frame_mantenimeinto.pack_forget()
         self.frame_principal.pack(expand=True, fill=BOTH)
+        
 
     def ocultar_botones(self):
         self.frame_botones_inferiores.pack_forget()
@@ -755,12 +770,13 @@ class Principal:
 
     def ocultar_renovar(self):
         self.data_frame.pack_forget()
-        self.frame_contenedor_entry.pack(expand=True, fill=BOTH)
+        self.frame_botones_inferiores.pack_forget()
+        self.frame_contenedor_entry.pack(side=TOP)
 
     def mostrar_renovar(self):
         self.frame_contenedor_entry.pack_forget()
         self.data_frame.Pack(expand=True, fill=BOTH)
-        
+
 
     def mostrar_btn(self):
         self.frame_botones_inferiores.pack()

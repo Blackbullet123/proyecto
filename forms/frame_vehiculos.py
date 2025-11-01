@@ -130,6 +130,7 @@ class FrameVehiculos(CTkFrame):
                 print("Error en ADD():", repr(e))
                 messagebox.showerror("Error al alquilar", f"Ocurrió un problema:\n{e}")
             finally:
+                actualizar_tree_2()
                 try:
                     my_cursor.close()
                 except:
@@ -172,6 +173,7 @@ class FrameVehiculos(CTkFrame):
 
                 conn.commit()
                 conn.close()
+                
 
         def actualizar_tree_2():
             for item in my_tree.get_children():
