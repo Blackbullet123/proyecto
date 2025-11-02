@@ -490,7 +490,7 @@ class Principal:
         my_tree.column("COD",anchor=CENTER,width=85)
         my_tree.column("FechaI",anchor=CENTER,width=85)
         my_tree.column("FechaF",anchor=CENTER,width=85)
-        my_tree.column("RIF",anchor=CENTER,width=140)
+        my_tree.column("RIF",anchor=CENTER,width=120)
         my_tree.column("Empresa",anchor=CENTER,width=120)
         my_tree.column("TLF",anchor=CENTER,width=120)
         my_tree.column("CI",anchor=CENTER,width=120)
@@ -515,16 +515,16 @@ class Principal:
 
 
         def validate_entry2(text,new_text):
-            if len(new_text) > 3:#Hace que no supere los 10 digitos
+            if len(new_text) > 3:
                 return False
             return text.isdecimal()
 
         def validate_entry(text,new_text):
-            if len(new_text) > 15:#Hace que no supere los 10 digitos
+            if len(new_text) > 15:
                 return False
             return text.isdecimal()
         
-        def abrir_calendario(entry):
+        def abrir_calendario(event, entry):
             top = tk.Toplevel(self.root)
             top.title("Seleccionar fecha")
             top.geometry("290x250+650+300")

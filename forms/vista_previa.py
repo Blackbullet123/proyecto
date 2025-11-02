@@ -27,7 +27,7 @@ def vista_previa_1():
     root=tk.Toplevel()
     root.title("Imprimir")
     #root.configure(background='#2f7d55')
-    #root.geometry("600x300")
+    root.geometry("700x650+400+40")
     image = Image.open(io.BytesIO(imagen_bytes))
     photo = ImageTk.PhotoImage(image.resize((700, 500)))
 
@@ -37,7 +37,7 @@ def vista_previa_1():
     titulo.pack(padx=10, pady=5)
     
     def open_pfd_1(): 
-        os.startfile(f"PDF\datos de vehiculos detallado.pdf")
+        os.startfile(r"PDF\datos de vehiculos detallado.pdf")
     
     confirmar_boton = CTkButton(root,text="Confirmar",command=lambda: (root.destroy(), open_pfd_1()),corner_radius=15, 
                                            text_color="black",width=90,height=40,cursor='hand2',
@@ -69,7 +69,7 @@ def vista_previa_2():
     root=tk.Toplevel()
     root.title("Imprimir")
     #root.configure(background='#2f7d55')
-    #root.geometry("600x300")
+    root.geometry("700x650+400+40")
     image = Image.open(io.BytesIO(imagen_bytes))
     photo = ImageTk.PhotoImage(image.resize((700, 500)))
 
@@ -79,7 +79,7 @@ def vista_previa_2():
     titulo.pack(padx=10, pady=5)
     
     def open_pfd_2(): 
-        os.startfile(f"PDF\Vehiculos.pdf")
+        os.startfile(r"PDF\Vehiculos.pdf")
     
     confirmar_boton = CTkButton(root,text="Confirmar",command=lambda: (root.destroy(), open_pfd_2()),corner_radius=15, 
                                            text_color="black",width=90,height=40,cursor='hand2',
@@ -112,7 +112,7 @@ def vista_previa_3():
     root=tk.Toplevel()
     root.title("Imprimir")
     #root.configure(background='#2f7d55')
-    #root.geometry("600x300")
+    root.geometry("700x650+400+40")
     image = Image.open(io.BytesIO(imagen_bytes))
     photo = ImageTk.PhotoImage(image.resize((700, 500)))
 
@@ -122,7 +122,7 @@ def vista_previa_3():
     titulo.pack(padx=10, pady=5)
     
     def open_pfd_3(): 
-        os.startfile(f"PDF\Todos los alquilados.pdf")
+        os.startfile(r"PDF\Todos los alquilados.pdf")
     
     confirmar_boton = CTkButton(root,text="Confirmar",command=lambda: (root.destroy(), open_pfd_3()),corner_radius=15, 
                                            text_color="black",width=90,height=40,cursor='hand2',

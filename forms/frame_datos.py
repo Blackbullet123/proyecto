@@ -72,16 +72,16 @@ class FrameDatosDetallados(CTkFrame):
         self.my_tree.column("COD",anchor=CENTER,width=85)
         self.my_tree.column("RIF",anchor=CENTER,width=85)
         self.my_tree.column("Nombre",anchor=CENTER,width=85)
-        self.my_tree.column("TLF",anchor=CENTER,width=140)
-        self.my_tree.column("Direccion",anchor=CENTER,width=140)
-        self.my_tree.column("CI",anchor=CENTER,width=140)
-        self.my_tree.column("Nombre_r",anchor=CENTER,width=140)
-        self.my_tree.column("Apellido",anchor=CENTER,width=140)
-        self.my_tree.column("Placa",anchor=CENTER,width=140)
-        self.my_tree.column("Color",anchor=CENTER,width=140)
-        self.my_tree.column("Año",anchor=CENTER,width=140)
-        self.my_tree.column("Marca",anchor=CENTER,width=140)
-        self.my_tree.column("Modelo",anchor=CENTER,width=140)
+        self.my_tree.column("TLF",anchor=CENTER,width=120)
+        self.my_tree.column("Direccion",anchor=CENTER,width=120)
+        self.my_tree.column("CI",anchor=CENTER,width=120)
+        self.my_tree.column("Nombre_r",anchor=CENTER,width=120)
+        self.my_tree.column("Apellido",anchor=CENTER,width=120)
+        self.my_tree.column("Placa",anchor=CENTER,width=120)
+        self.my_tree.column("Color",anchor=CENTER,width=120)
+        self.my_tree.column("Año",anchor=CENTER,width=120)
+        self.my_tree.column("Marca",anchor=CENTER,width=120)
+        self.my_tree.column("Modelo",anchor=CENTER,width=120)
 
         self.my_tree.heading("COD", text="Cod.",anchor=CENTER)
         self.my_tree.heading("RIF", text="RIF.",anchor=CENTER)
@@ -154,7 +154,7 @@ class FrameDatosDetallados(CTkFrame):
         pdx = 20
         pdy = 715
         
-        imagen_2 = "imagenes/logo-reych.png"
+        imagen_2 = "imagenes/Reych.png"
         imagen_alq = Image(imagen_2, width=130, height=110)
         
         # Definir las coordenadas x y y para posicionar la imagen en el PDF

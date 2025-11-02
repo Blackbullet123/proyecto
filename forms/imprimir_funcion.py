@@ -5,13 +5,9 @@ from reportlab.platypus import SimpleDocTemplate, Paragraph, Table, TableStyle, 
 from reportlab.lib.styles import getSampleStyleSheet
 from reportlab.lib import colors
 import mysql.connector
-from tkinter import messagebox
 import pandas as pd
 from forms.vista_previa import vista_previa_3,vista_previa_2
-from pathlib import Path
-
-def get_project_root() -> Path:
-    return Path(__file__).parent if "__file__" in locals() else Path.cwd()        
+        
         
 def imprimir_todos():
         conn = mysql.connector.connect(
@@ -26,8 +22,7 @@ def imprimir_todos():
         df = pd.read_sql(query, conn)
         
         # Crear el PDF
-        doc_path = get_project_root() / "PDF" / "Todos los alquilados.pdf"
-        doc = SimpleDocTemplate(doc_path, pagesize=letter)
+        doc = SimpleDocTemplate("PDF/Todos los alquilados.pdf", pagesize=letter)
         data = [df.columns[:,].tolist()] + df.values.tolist()
         
         # Crear los textos que funcionarán como etiquetas
@@ -50,14 +45,14 @@ def imprimir_todos():
         p_title = Paragraph(title, styles['Title'])
         
         
-        imagen_path = get_project_root() / "imagenes" / "membrete.jpg"
+        imagen_path = "imagenes/membrete.jpg"
         imagen = Image(imagen_path, width=570, height=70)
         
         # Definir las coordenadas x y y para posicionar la imagen en el PDF
         pdx = 20
         pdy = 715
         
-        imagen_2 = get_project_root() / "imagenes" / "Reych.png"
+        imagen_2 = "imagenes/Reych.png"
         imagen_alq = Image(imagen_2, width=130, height=110)
         
         # Definir las coordenadas x y y para posicionar la imagen en el PDF
@@ -127,14 +122,14 @@ def imprimir_vehiculos():
         p_title = Paragraph(title, styles['Title'])
         
         
-        imagen_path = get_project_root() / "imagenes" / "membrete.jpg"
+        imagen_path = "imagenes/membrete.jpg"
         imagen = Image(imagen_path, width=570, height=70)
         
         # Definir las coordenadas x y y para posicionar la imagen en el PDF
         pdx = 20
         pdy = 715
         
-        imagen_2 = get_project_root() / "imagenes" / "Reych.png"
+        imagen_2 = "imagenes/Reych.png"
         imagen_alq = Image(imagen_2, width=130, height=110)
         
         # Definir las coordenadas x y y para posicionar la imagen en el PDF
