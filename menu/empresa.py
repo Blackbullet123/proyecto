@@ -8,7 +8,7 @@ from reportlab.platypus import SimpleDocTemplate, Paragraph, Table, TableStyle, 
 from reportlab.lib.styles import getSampleStyleSheet
 from reportlab.lib import colors
 import mysql.connector
-from forms.imprimir import imprimir_todos
+from forms.imprimir_funcion import imprimir_todos
 from forms.vista_previa import vista_previa_1
 from tkinter import messagebox
 import pandas as pd

@@ -1,249 +1,145 @@
 from tkinter import *
+from tkinter import ttk, messagebox
 import tkinter as tk
-from reportlab.lib.pagesizes import letter
-from reportlab.platypus import SimpleDocTemplate, Paragraph, Table, TableStyle, Image, Spacer
-from reportlab.lib.styles import getSampleStyleSheet
-from reportlab.lib import colors
 import mysql.connector
-from tkinter import messagebox
-import pandas as pd
-from forms.vista_previa import vista_previa_3,vista_previa_2
-from pathlib import Path
+from customtkinter import *
+from forms.frame_datos import FrameDatosDetallados
+from PIL import Image
 
-def get_project_root() -> Path:
-    return Path(__file__).parent if "__file__" in locals() else Path.cwd()        
-        
-def imprimir_todos():
-        conn = mysql.connector.connect(
-            host='localhost',
-            user='root',
-            password='123456',
-            database='control_alquiler_Reych'
-        )
+def ventana_imprimir():
 
-        # Consulta a la base de datos
-        query = ("SELECT a.COD_Alquiler, c.RIF, c.Nombre, c.telefono, c.direccion, r.CI, r.nombre, r.apellido, v.Placa, v.Color,v.Año, m.Nombre, o.Nombre FROM contratista c INNER JOIN alquiler a ON c.RIF = a.RIF_Empresa INNER JOIN representante r ON c.Representante_CI = r.CI INNER JOIN vehiculo v ON a.Placa_Vehiculo = v.Placa INNER JOIN marca m ON v.ID_Marca = m.ID INNER JOIN modelo o ON o.ID_Marca = m.ID;")
-        df = pd.read_sql(query, conn)
-        
-        # Crear el PDF
-        doc_path = get_project_root() / "PDF" / "Todos los alquilados.pdf"
-        doc = SimpleDocTemplate(doc_path, pagesize=letter)
-        data = [df.columns[:,].tolist()] + df.values.tolist()
-        
-        # Crear los textos que funcionarán como etiquetas
-        label0 = "<b>    <br/></b>"
-        label3 = "<b>RIF:</b> J-080204204"
-        label4 = "<b>Telefono:</b> 02832550911"
-        label9 = "<b>     <br/></b>"
-        label10 = "<b>    <br/></b>"
+    class imprimir:
+        def __init__(self):
+            self.root = tk.Toplevel()
+            self.root.title('ALQUITECH')
+            self.root.geometry("900x410+250+150")
+            self.root.config(background='#EEEEEE')
 
-        # Crear los párrafos con los textos
-        p_label0 = Paragraph(label0)
-        p_label3 = Paragraph(label3)
-        p_label4 = Paragraph(label4)
-        p_label9 = Paragraph(label9)
-        p_label10 = Paragraph(label10)
 
-        # Crear el membrete con un título de alquitech
-        styles = getSampleStyleSheet()
-        title = "<b>Todo los Vehiculos Alquilados</b>"
-        p_title = Paragraph(title, styles['Title'])
-        
-        
-        imagen_path = get_project_root() / "imagenes" / "membrete.jpg"
-        imagen = Image(imagen_path, width=570, height=70)
-        
-        # Definir las coordenadas x y y para posicionar la imagen en el PDF
-        pdx = 20
-        pdy = 715
-        
-        imagen_2 = get_project_root() / "imagenes" / "Reych.png"
-        imagen_alq = Image(imagen_2, width=130, height=110)
-        
-        # Definir las coordenadas x y y para posicionar la imagen en el PDF
-        x = 450
-        y = 610
+            self.barra_visible = True
+            self.barra_width = 200  
 
-        # Añadir la imagen al canvas en las coordenadas especificadas
-        def add_image(canvas, doc):
-            imagen_alq.drawOn(canvas, x, y)
-            imagen.drawOn(canvas, pdx, pdy)
-            
+            mydb = mysql.connector.connect(
+                host="localhost",
+                user="root",
+                password="123456",
+                port="3306",
+                database="control_alquiler_Reych"
+            )
+            self.my_cursor = mydb.cursor()
 
-        # Construir el documento PDF y añadir la función add_image al canvas
-        doc.build([imagen_alq, imagen], onFirstPage=add_image)
 
-        # Crear la tabla en el PDF
-        table = Table(data)
-        style = TableStyle([('BACKGROUND', (0, 0), (-1, 0), colors.seagreen),
-                            ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
-                            ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
-                            ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
-                            ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
-                            ('BACKGROUND', (0, 1), (-1, -1), colors.beige),
-                            ('FONTSIZE', (0, 0), (-1, -1), 6.5),
-                            ])
-        table.setStyle(style)
+            frame_form = Frame(self.root, bd=0, relief=SOLID, bg="#0E0F0F", height=50)
+            frame_form.pack(side="top", expand=NO, fill=BOTH)
 
-        # Añadir las etiquetas al PDF
-        elements = [p_label0, p_label3, p_label4, p_label9, p_label10, p_title, Spacer(1, 20), table]
-        
-        doc.build(elements)
-        vista_previa_3()
-    
-def imprimir_vehiculos():
-        conn = mysql.connector.connect(
-            host='localhost',
-            user='root',
-            password='123456',
-            database='control_alquiler_Reych'
-        )
+            frame_form_top = Frame(frame_form, bd=0, relief=SOLID, bg='black')
+            frame_form_top.pack(side="top", fill=X)
 
-        # Consulta a la base de datos
-        query = ("SELECT a.COD_Alquiler, v.Placa, m.Nombre, o.Nombre FROM vehiculo v LEFT JOIN alquiler a ON a.Placa_Vehiculo = v.Placa RIGHT JOIN marca m ON m.ID = v.ID_Marca INNER JOIN modelo o ON m.ID = o.ID_Marca ORDER BY a.COD_Alquiler ASC;")
-        df = pd.read_sql(query, conn)
-        
-        # Crear el PDF
-        doc = SimpleDocTemplate("PDF/Vehiculos.pdf", pagesize=letter)
-        data = [df.columns[:,].tolist()] + df.values.tolist()
-        
-        # Crear los textos que funcionarán como etiquetas
-        label0 = "<b>    <br/></b>"
-        label3 = "<b>RIF:</b> J-080204204"
-        label4 = "<b>Telefono:</b> 02832550911"
-        label9 = "<b>     <br/></b>"
-        label10 = "<b>    <br/></b>"
+            self.frame_main = CTkFrame(self.root, fg_color='white')
+            self.frame_main.pack(side="left", expand=True, fill=BOTH)
 
-        # Crear los párrafos con los textos
-        p_label0 = Paragraph(label0)
-        p_label3 = Paragraph(label3)
-        p_label4 = Paragraph(label4)
-        p_label9 = Paragraph(label9)
-        p_label10 = Paragraph(label10)
+            self.frame_form_l = CTkFrame(self.frame_main, fg_color="#0E0F0F", width=self.barra_width)
+            self.frame_form_l.pack(side="left", fill=Y)
+            self.frame_form_l.pack_propagate(False)
 
-        # Crear el membrete con un título de alquitech
-        styles = getSampleStyleSheet()
-        title = "<b>Vehiculos Disponibles</b>"
-        p_title = Paragraph(title, styles['Title'])
-        
-        
-        imagen_path = get_project_root() / "imagenes" / "membrete.jpg"
-        imagen = Image(imagen_path, width=570, height=70)
-        
-        # Definir las coordenadas x y y para posicionar la imagen en el PDF
-        pdx = 20
-        pdy = 715
-        
-        imagen_2 = get_project_root() / "imagenes" / "Reych.png"
-        imagen_alq = Image(imagen_2, width=130, height=110)
-        
-        # Definir las coordenadas x y y para posicionar la imagen en el PDF
-        x = 450
-        y = 610
+            frame_top = CTkFrame(self.frame_form_l, fg_color="transparent")
+            frame_top.pack(side="top", fill=X)
 
-        # Añadir la imagen al canvas en las coordenadas especificadas
-        def add_image(canvas, doc):
-            imagen_alq.drawOn(canvas, x, y)
-            imagen.drawOn(canvas, pdx, pdy)
-            
+            title = CTkLabel(master=frame_top, text="Alquitech",
+                            font=('YRSA SEMIBOLD', 40),
+                            text_color="white", pady=1)
+            title.pack(expand=YES, fill=BOTH, pady=5, padx=15)
 
-        # Construir el documento PDF y añadir la función add_image al canvas
-        doc.build([imagen_alq, imagen], onFirstPage=add_image)
+            imglogo = Image.open("imagenes/Reych.png")
+            bg = CTkLabel(master=frame_top, text=None,
+                            image=CTkImage(dark_image=imglogo, light_image=imglogo, size=(170, 170)))
+            bg.pack(anchor="center", padx=30, pady=1)
 
-        # Crear la tabla en el PDF
-        table = Table(data)
-        style = TableStyle([('BACKGROUND', (0, 0), (-1, 0), colors.seagreen),
-                            ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
-                            ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
-                            ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
-                            ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
-                            ('BACKGROUND', (0, 1), (-1, -1), colors.beige),
-                            ])
-        table.setStyle(style)
+            frame_botones = CTkFrame(self.frame_form_l, fg_color="transparent")
+            frame_botones.pack(side="top", fill=X, pady=20)
 
-        # Añadir las etiquetas al PDF
-        elements = [p_label0, p_label3, p_label4, p_label9, p_label10, p_title, Spacer(1, 20), table]
-        
-        doc.build(elements)
-        vista_previa_2()
+            img = Image.open("imagenes/imprimir_fila.png")
+            imprimir_seleccion = CTkImage(dark_image=img, light_image=img, size=(30,30))
+            imprimir_fila = CTkButton(frame_botones, text="Imprimir Seleccion",
+                                    fg_color="transparent",command=self.imprimir_datos,compound="left",image=imprimir_seleccion,hover_color="#00501B", text_color="white",
+                                    width=150, height=30,
+                                    font=("Ubuntu", 18))
+            imprimir_fila.pack(fill=X, pady=5, padx=2)
 
-def imprimir_fila_seleccionada():
-        selected_item = my_tree.selection()
-        if not selected_item:
-            messagebox.showerror("ERROR", "No se ha seleccionado una fila")
-            return
+            img = Image.open("imagenes/registro.png")
+            imprimir_icon_todo = CTkImage(dark_image=img, light_image=img, size=(30,30))
+            imprimir_todo = CTkButton(frame_botones, text="Imprimir todo",
+                                    fg_color="transparent", compound="left",image=imprimir_icon_todo,hover_color="#00501B",text_color="white",
+                                    width=150, height=30,
+                                    font=("Ubuntu", 18))
+            imprimir_todo.pack(fill=X,pady=5, padx=2)
 
-        for item in selected_item:
-            values = my_tree.item(item, "values")
-        
-        doc_path = get_project_root() / "PDF" / "datos de vehiculos detallado.pdf"
-        doc = SimpleDocTemplate(doc_path, pagesize=letter)
-        elements = []
-        
-        data = [
-            ['COD', 'RIF', 'Empresa', 'Teléfono', 'Direccion', 'C.I', 'Representante', 'Apellido', 'Placa', 'Color', 'Año', 'Marca', 'Modelo'],
-            values
-        ]
-        
-        # Crear los textos que funcionarán como etiquetas
-        label0 = "<b>    <br/></b>"
-        label3 = "<b>RIF:</b> J-080204204"
-        label4 = "<b>Telefono:</b> 02832550911"
-        label9 = "<b>     <br/></b>"
-        label10 = "<b>    <br/></b>"
+            frame_botones2 = CTkFrame(self.frame_form_l, fg_color="transparent")
+            frame_botones2.pack(side="bottom", fill=X, pady=20)
 
-        # Crear los párrafos con los textos
-        p_label0 = Paragraph(label0)
-        p_label3 = Paragraph(label3)
-        p_label4 = Paragraph(label4)
-        p_label9 = Paragraph(label9)
-        p_label10 = Paragraph(label10)
+            self.ocultar_btn = CTkButton(frame_form, text="☰ Ocultar",
+                                        text_color="white", hover_color="#00501B",fg_color="#0E0F0F",
+                                        command=self.toggle_barra)
+            self.ocultar_btn.pack(anchor="nw", padx=10, pady=10)
 
-        # Crear el membrete con un título de alquitech
-        styles = getSampleStyleSheet()
-        title = "<b>Datos Detallados</b>"
-        p_title = Paragraph(title, styles['Title'])
-        
-        imagen_path = get_project_root() / "imagenes" / "membrete.jpg"
-        if not imagen_path.exists():
-            messagebox.showerror("Error", "La imagen no se encuentra en la ruta especificada.")
-            return
-        imagen = Image(imagen_path, width=570, height=70)
-        
-        # Definir las coordenadas x y y para posicionar la imagen en el PDF
-        pdx = 20
-        pdy = 715
-        
-        imagen_2 = get_project_root() / "imagenes" / "logoapp.png"
-        imagen_alq = Image(imagen_2, width=130, height=110)
-        
-        # Definir las coordenadas x y y para posicionar la imagen en el PDF
-        x = 450
-        y = 610
+            self.frame_contenido_principal = CTkFrame(self.frame_main, fg_color='white')
+            self.frame_contenido_principal.pack(expand=True, fill=BOTH, padx=10, pady=10)
 
-        # Añadir la imagen al canvas en las coordenadas especificadas
-        def add_image(canvas, doc):
-            imagen_alq.drawOn(canvas, x, y)
-            imagen.drawOn(canvas, pdx, pdy)
-            
+            self.tree_frame = CTkFrame(self.frame_contenido_principal, corner_radius=20)
+            self.tree_frame.pack(pady=20, expand=True, fill=BOTH)
 
-        # Construir el documento PDF y añadir la función add_image al canvas
-        doc.build([imagen_alq, imagen], onFirstPage=add_image)
+            tree_scroll = Scrollbar(self.tree_frame)
+            tree_scroll.pack(side=RIGHT, fill=Y)
 
-        # Crear la tabla en el PDF
-        table = Table(data)
-        style = TableStyle([('BACKGROUND', (0, 0), (-1, 0), colors.seagreen),
-                            ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
-                            ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
-                            ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
-                            ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
-                            ('BACKGROUND', (0, 1), (-1, -1), colors.beige),
-                            ('FONTSIZE', (0, 0), (-1, -1), 7),
-                            ])
-        table.setStyle(style)
+            self.my_tree = ttk.Treeview(self.tree_frame, yscrollcommand=tree_scroll.set,
+                                        selectmode="extended", show="headings")
+            self.my_tree.pack(expand=True, fill=BOTH)
+            tree_scroll.config(command=self.my_tree.yview)
 
-        # Añadir las etiquetas al PDF
-        elements = [p_label0, p_label3, p_label4, p_label9, p_label10, p_title, Spacer(1, 20), table]
-        
-        doc.build(elements)
-        vista_previa_1()
+            self.my_tree['columns']=("COD","RIF","Empresa","TLF","Direccion","CI","Nombre","Apellido","Placa","Color","Año","Marca","Modelo")
+            for col in self.my_tree['columns']:
+                self.my_tree.column(col, anchor=CENTER, width=100)
+                self.my_tree.heading(col, text=col, anchor=CENTER)
+
+            self.my_tree.tag_configure('oddrow', background="white")
+            self.my_tree.tag_configure('evenrow', background="#00A86B")
+
+            self.query_db()
+
+            self.frame_datos_detallados = CTkFrame(self.frame_main, fg_color='white')
+            label_hola = CTkLabel(self.frame_datos_detallados, text="¡Esta es la pantalla de Datos Detallados.", text_color="black",
+                                font=("Ubuntu", 20))
+            label_hola.pack(pady=50)
+
+            self.frame_vehiculos_disponibles = CTkFrame(self.frame_main, fg_color='white')
+            label_hola = CTkLabel(self.frame_vehiculos_disponibles, text="¡Esta es la pantalla de vehiculos disponibles.", text_color="black",
+                                font=("Ubuntu", 20))
+            label_hola.pack(pady=50)
+
+
+            self.root.mainloop()
+
+        def imprimir_datos(self):
+            if hasattr(self, "frame_datos_detallados"):
+                FrameDatosDetallados.imprimir_fila_seleccionada(self)
+            else:
+                messagebox.showwarning("Atención", "No hay datos detallados cargados.")
+
+        def toggle_barra(self):
+            if self.barra_visible:
+                self.frame_form_l.configure(width=0)
+                self.ocultar_btn.configure(text="☰ Mostrar")
+            else:
+                self.frame_form_l.configure(width=self.barra_width)
+                self.ocultar_btn.configure(text="☰ Ocultar")
+            self.barra_visible = not self.barra_visible
+
+        def query_db(self):
+            self.my_cursor.execute("SELECT a.COD_Alquiler, c.RIF, c.nombre, c.telefono, c.direccion, r.CI, r.nombre, r.apellido, v.Placa, v.Color,v.Año, m.Nombre, o.Nombre FROM contratista c INNER JOIN alquiler a ON c.RIF = a.RIF_Empresa INNER JOIN representante r ON c.Representante_CI = r.CI INNER JOIN vehiculo v ON a.Placa_Vehiculo = v.Placa INNER JOIN marca m ON v.ID_Marca = m.ID INNER JOIN modelo o ON o.ID_Marca = m.ID;")
+            records = self.my_cursor.fetchall()
+            for i, record in enumerate(records):
+                tag = 'evenrow' if i % 2 == 0 else 'oddrow'
+                self.my_tree.insert('', 'end', iid=i, values=record, tags=(tag,))
+                
+    imprimir()
+

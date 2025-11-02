@@ -298,7 +298,7 @@ class FrameVehiculos(CTkFrame):
         )
 
         style.map('Treeview',
-                background=[('selected',"#2c5c45")])
+                background=[('selected',"#008fa8")])
         
         def validate_entry(text,new_text):
             if len(new_text) > 11:#Hace que no supere los 10 digitos

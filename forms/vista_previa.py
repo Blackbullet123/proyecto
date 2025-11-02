@@ -6,6 +6,7 @@ import os
 from customtkinter import *
 from pathlib import Path
 
+
 def get_project_root() -> Path:
     return Path(__file__).parent if "__file__" in locals() else Path.cwd()
     

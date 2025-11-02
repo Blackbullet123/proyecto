@@ -5,13 +5,12 @@ import tkinter as tk
 import mysql.connector
 from tkinter import messagebox
 from customtkinter import *
-from PIL import Image
-from frame_datos import FrameDatosDetallados
-from frame_vehiculos import FrameVehiculos
-from frame_nuevo_vehiculo import FrameNuevoVehiculo
-from frame_mantenimiento import FrameMantenimiento
-from frame_respaldo import FrameBackup
-from datetime import datetime, timedelta
+from forms.frame_datos import FrameDatosDetallados
+from forms.frame_vehiculos import FrameVehiculos
+from forms.frame_nuevo_vehiculo import FrameNuevoVehiculo
+from forms.frame_mantenimiento import FrameMantenimiento
+from forms.imprimir import ventana_imprimir
+from forms.frame_respaldo import FrameBackup
 import os
 from tkcalendar import Calendar
 from datetime import date
@@ -33,7 +32,6 @@ class Principal:
 
         self.barra_visible = True
         self.barra_width = 230
-        self.velocidad = 11 
 
 
         mydb = mysql.connector.connect(
@@ -82,7 +80,7 @@ class Principal:
         )
 
         style.map('Treeview',
-                background=[('selected',"#00501B")])
+                background=[('selected',"#008fa8")])
 
         def clear_entries():
             COD_entry.delete(0,END)
@@ -96,6 +94,7 @@ class Principal:
             marca_entry.delete(0,END)
             model_entry.delete(0,END)
             self.ocultar_botones()
+            actualizar_tree()
 
         def select_record(e):
             selected = my_tree.focus()
@@ -462,7 +461,7 @@ class Principal:
 
         img = Image.open("imagenes/imprimir.png")
         imprimir_icon = CTkImage(dark_image=img, light_image=img, size=(40,40))
-        imprimir = CTkButton(button_frame, hover_color="#EEEEEE" ,image=imprimir_icon , text="", fg_color="transparent",
+        imprimir = CTkButton(button_frame, hover_color="#EEEEEE",command=ventana_imprimir ,image=imprimir_icon , text="", fg_color="transparent",
                                width=30, height=30, )#command=imprimir_vehiculos)
         imprimir.pack(side="right", padx=3)
 
@@ -511,7 +510,7 @@ class Principal:
         my_tree.heading("Marca", text="Vehículo Marca",anchor=CENTER)
 
         my_tree.tag_configure('oddrow', background="white")
-        my_tree.tag_configure('evenrow', background="#00501B")
+        my_tree.tag_configure('evenrow', background="#00A86B")
 
 
 
@@ -525,7 +524,7 @@ class Principal:
                 return False
             return text.isdecimal()
         
-        def abrir_calendario(event, entry):
+        def abrir_calendario(entry):
             top = tk.Toplevel(self.root)
             top.title("Seleccionar fecha")
             top.geometry("290x250+650+300")
@@ -760,7 +759,7 @@ class Principal:
         self.frame_nuevo_vehiculo.pack_forget()
         self.frame_mantenimeinto.pack_forget()
         self.frame_principal.pack(expand=True, fill=BOTH)
-        
+
 
     def ocultar_botones(self):
         self.frame_botones_inferiores.pack_forget()
@@ -802,4 +801,3 @@ def abrir_pdf():
 pdf_path = get_project_root() / "PDF" / "manual.pdf"        
 ruta_pdf = pdf_path
 
-Principal()

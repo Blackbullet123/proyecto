@@ -2,7 +2,7 @@ from tkinter import *
 from tkinter import ttk
 import tkinter as tk
 import mysql.connector
-from forms.imprimir import imprimir_vehiculos
+from forms.imprimir_funcion import imprimir_vehiculos
 from menu.empresa import detallado
 from tkinter import messagebox
 from customtkinter import *
