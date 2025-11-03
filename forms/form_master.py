@@ -27,7 +27,7 @@ class Principal:
         self.root = CTk()
         self.root.title('ALQUITECH')
         self.root.geometry("1280x650+35+15")
-        self.root.iconbitmap("imagenes/letra-r.ico")
+        # self.root.iconbitmap("imagenes/letra-r.ico")
         self.root.config(background="#EEEEEE")
 
         self.barra_visible = True
@@ -796,7 +796,8 @@ def abrir_pdf():
     ruta_pdf = get_project_root() / "PDF" / "manual.pdf"
     
     if os.path.exists(ruta_pdf):
-        os.system(f'start {ruta_pdf}')
+        url_pdf = f"file://{ruta_pdf.absolute()}"
+        webbrowser.open_new(url_pdf)
 
 pdf_path = get_project_root() / "PDF" / "manual.pdf"        
 ruta_pdf = pdf_path
