@@ -122,9 +122,9 @@ def ventana_imprimir():
 
         def imprimir_datos(self):
             if hasattr(self, "frame_datos_detallados"):
-                FrameDatosDetallados.imprimir_fila_seleccionada(self)
+                FrameDatosDetallados.imprimir_fila_seleccionada(self, parent=self.root)
             else:
-                messagebox.showwarning("Atención", "No hay datos detallados cargados.")
+                messagebox.showwarning("Atención", "No hay datos detallados cargados.", parent=self.root)
 
 
         def toggle_barra(self):

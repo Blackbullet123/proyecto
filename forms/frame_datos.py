@@ -111,10 +111,10 @@ class FrameDatosDetallados(CTkFrame):
 
         self.my_tree.pack()
 
-    def imprimir_fila_seleccionada(self):
+    def imprimir_fila_seleccionada(self, parent=None):
         selected_item = self.my_tree.selection()
         if not selected_item:
-            messagebox.showerror("ERROR", "No se ha seleccionado una fila")
+            messagebox.showerror("ERROR", "No se ha seleccionado una fila", parent=parent)
             return
 
         for item in selected_item:
