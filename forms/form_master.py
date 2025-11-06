@@ -412,10 +412,13 @@ class Principal:
                         text_color="#00501B", font=("Impact", 45))
         titulo.pack(pady=0, padx=60 ,side=RIGHT)
 
-        frame_contenedor_ver = Frame(self.frame_principal,bg="#EEEEEE",width=30, height=30)
-        frame_contenedor_ver.pack(fill="x", expand=NO, padx=20)
+        frame_contenedor_renovar = Frame(self.frame_principal,bg="#EEEEEE",width=30, height=30)
+        frame_contenedor_renovar.pack(fill="x", expand=NO, padx=20)
 
-        frame_ver_mas = Frame(frame_contenedor_ver,bg="#EEEEEE",width=90, height=30)
+        frame_renovar = Frame(frame_contenedor_renovar,bg="#EEEEEE",width=150, height=30)
+        frame_renovar.pack(expand=NO, side=LEFT)
+
+        frame_ver_mas = Frame(frame_contenedor_renovar,bg="#EEEEEE",width=90, height=30)
         frame_ver_mas.pack(expand=NO, side=RIGHT)
 
 
@@ -553,41 +556,41 @@ class Principal:
         self.data_frame.pack(anchor="center", expand=True)
 
         self.frame_contenedor_entry = CTkFrame(frame_inferior, fg_color="#EEEEEE")
-        self.frame_contenedor_entry.pack(anchor="center", side="right",expand=NO)
+        self.frame_contenedor_entry.pack(anchor="center", side="left",expand=NO)
+
+        self.frame_contenedor_entry_fecha = CTkFrame(self.frame_contenedor_entry, fg_color="#EEEEEE")
+        self.frame_contenedor_entry_fecha.pack(anchor="center", side="top",expand=NO)
 
         self.frame_botones_inferiores = CTkFrame(frame_inferior, fg_color="#EEEEEE", width=100, height=40)
         self.frame_botones_inferiores.pack( anchor="center", expand=NO)
 
-        '''self.frame_botones_inferiores_2 = CTkFrame(frame_inferior, fg_color="#EEEEEE", width=100, height=40)
-        self.frame_botones_inferiores_2.pack( anchor="center", expand=NO)'''
-
         COD_frame = CTkFrame(self.data_frame, fg_color="transparent",corner_radius=6, width=100, height=20)
         COD_frame.grid(row=1, column=4, padx=25,pady=4, ipady=3)
 
-        COD_label = CTkLabel(COD_frame, text="Cod.",fg_color="transparent",text_color="#00501B",
+        COD_label = CTkLabel(COD_frame, text="Cod.",fg_color="transparent",text_color="black",
                                     font=("Ubuntu",16))
         COD_label.grid(row=0, column=0, padx=10, pady=1)
-        COD_entry = CTkEntry(COD_frame,justify=CENTER,width=130 ,fg_color="transparent",text_color="black", border_color="#00501B",
+        COD_entry = CTkEntry(COD_frame,justify=CENTER,width=130 ,fg_color="#c2f1c1",text_color="black", border_color="#00501B",
                              validate="key", validatecommand=(self.data_frame.register(validate_entry2), "%S","%P"))
         COD_entry.grid(row=1,column=0, padx=10, pady=1)
 
-        fecha1_frame = CTkFrame(self.frame_contenedor_entry, fg_color="transparent",corner_radius=6, width=100, height=20)
+        fecha1_frame = CTkFrame(self.frame_contenedor_entry_fecha, fg_color="transparent",corner_radius=6, width=100, height=20)
         fecha1_frame.grid(row=0, column=1,padx=25,pady=4, ipady=3)
 
-        fi_label = CTkLabel(fecha1_frame, text="Fecha Inicial",fg_color="transparent",text_color="#00501B",
+        fi_label = CTkLabel(fecha1_frame, text="Fecha Inicial",fg_color="transparent",text_color="black",
                                     font=("Ubuntu",16))
         fi_label.grid(row=0,column=0, padx=10, pady=1)
-        fi_entry = CTkEntry(fecha1_frame,justify=CENTER,fg_color="transparent",text_color="black", width=130, border_color="#00501B",
+        fi_entry = CTkEntry(fecha1_frame,justify=CENTER,fg_color="#c2f1c1",text_color="black", width=130, border_color="#00501B",
                             validate="key", validatecommand=(self.data_frame.register, "%P"))
         fi_entry.grid(row=1,column=0, padx=10, pady=1)
 
-        fecha2_frame = CTkFrame(self.frame_contenedor_entry, fg_color="transparent",corner_radius=6, width=50, height=20,)
+        fecha2_frame = CTkFrame(self.frame_contenedor_entry_fecha, fg_color="transparent",corner_radius=6, width=50, height=20,)
         fecha2_frame.grid(row=0, column=2,padx=25,pady=4, ipady=3)
 
-        ff_label = CTkLabel(fecha2_frame, text="Fecha Final",fg_color="transparent",text_color="#00501B",
+        ff_label = CTkLabel(fecha2_frame, text="Fecha Final",fg_color="transparent",text_color="black",
                                     font=("Ubuntu",16))
         ff_label.grid(row=0,column=0, padx=10, pady=1)
-        ff_entry = CTkEntry(fecha2_frame, justify=CENTER,fg_color="transparent",text_color="black", width=130, border_color="#00501B",
+        ff_entry = CTkEntry(fecha2_frame, justify=CENTER,fg_color="#c2f1c1",text_color="black", width=130, border_color="#00501B",
                             validate="key", validatecommand=(self.data_frame.register, "%P"))
         ff_entry.grid(row=1,column=0, padx=10, pady=1)
         self.ocultar_entry()
@@ -595,68 +598,68 @@ class Principal:
         rif_frame = CTkFrame(self.data_frame, fg_color="transparent",corner_radius=6,  width=50, height=20,)
         rif_frame.grid(row=0, column=1,padx=25,pady=4, ipady=3)
 
-        rif_label = CTkLabel(rif_frame, text="RIF",fg_color="transparent",text_color="#00501B",
+        rif_label = CTkLabel(rif_frame, text="RIF",fg_color="transparent",text_color="black",
                                     font=("Ubuntu",16))
         rif_label.grid(row=0,column=0, padx=10, pady=1)
-        rif_entry = CTkEntry(rif_frame, justify=CENTER,fg_color="transparent", text_color="black", width=130,  border_color="#00501B",
+        rif_entry = CTkEntry(rif_frame, justify=CENTER,fg_color="#c2f1c1", text_color="black", width=130,  border_color="#00501B",
                              validate="key", validatecommand=(self.data_frame.register(validate_entry), "%S","%P"))
         rif_entry.grid(row=1,column=0, padx=10, pady=1)
 
         empresa_frame = CTkFrame(self.data_frame, fg_color="transparent",corner_radius=6, width=35, height=20,)
         empresa_frame.grid(row=0, column=2,padx=25,pady=4, ipady=3)
 
-        em_label = CTkLabel(empresa_frame, text="Empresa",fg_color="transparent",text_color="#00501B",
+        em_label = CTkLabel(empresa_frame, text="Empresa",fg_color="transparent",text_color="black",
                                     font=("Ubuntu",16))
         em_label.grid(row=0,column=0, padx=10, pady=1)
-        em_entry = CTkEntry(empresa_frame, justify=CENTER,fg_color="transparent",text_color="black", border_color="#00501B",
+        em_entry = CTkEntry(empresa_frame, justify=CENTER,fg_color="#c2f1c1",text_color="black", border_color="#00501B",
                             width=130)
         em_entry.grid(row=1,column=0, padx=10, pady=1)
         
         ci_frame = CTkFrame(self.data_frame, fg_color="transparent",corner_radius=6, width=50, height=20)
         ci_frame.grid(row=0, column=4, padx=25,pady=4, ipady=3)
 
-        ci_label = CTkLabel(ci_frame, text="Cedula",fg_color="transparent",text_color="#00501B",
+        ci_label = CTkLabel(ci_frame, text="Cedula",fg_color="transparent",text_color="black",
                                     font=("Ubuntu",16))
         ci_label.grid(row=0, column=0, padx=10, pady=1)
-        ci_entry = CTkEntry(ci_frame,justify=CENTER,width=130,fg_color="transparent",text_color="black", border_color="#00501B",
+        ci_entry = CTkEntry(ci_frame,justify=CENTER,width=130,fg_color="#c2f1c1",text_color="black", border_color="#00501B",
                              validate="key", validatecommand=(self.data_frame.register(validate_entry), "%S","%P"))
         ci_entry.grid(row=1,column=0, padx=10, pady=1)
 
         tlf_frame = CTkFrame(self.data_frame, fg_color="transparent",corner_radius=6, width=50, height=20,)
         tlf_frame.grid(row=0, column=3,padx=25,pady=4, ipady=3)
 
-        tlf_label = CTkLabel(tlf_frame, text="Teléfono",fg_color="transparent",text_color="#00501B",
+        tlf_label = CTkLabel(tlf_frame, text="Teléfono",fg_color="transparent",text_color="black",
                                     font=("Ubuntu",16))
         tlf_label.grid(row=0,column=0, padx=10, pady=1)
-        tlf_entry = CTkEntry(tlf_frame,justify=CENTER, fg_color="transparent",text_color="black", width=130, border_color="#00501B",
+        tlf_entry = CTkEntry(tlf_frame,justify=CENTER, fg_color="#c2f1c1",text_color="black", width=130, border_color="#00501B",
                              validate="key", validatecommand=(self.data_frame.register(validate_entry), "%S","%P"))
         tlf_entry.grid(row=1,column=0, padx=10, pady=1)
 
         placa_frame = CTkFrame(self.data_frame, fg_color="transparent",corner_radius=6, width=50, height=20,)
         placa_frame.grid(row=1, column=1,padx=10,pady=4, ipady=3)
 
-        placa_label = CTkLabel(placa_frame, text="Placa",fg_color="transparent",text_color="#00501B",
+        placa_label = CTkLabel(placa_frame, text="Placa",fg_color="transparent",text_color="black",
                                     font=("Ubuntu",16))
         placa_label.grid(row=0,column=0, padx=10, pady=1)
-        placa_entry = CTkEntry(placa_frame, justify=CENTER,fg_color="transparent", text_color="black", width=130, border_color="#00501B",)
+        placa_entry = CTkEntry(placa_frame, justify=CENTER,fg_color="#c2f1c1", text_color="black", width=130, border_color="#00501B",)
         placa_entry.grid(row=1,column=0, padx=10, pady=1)
 
         marca_frame = CTkFrame(self.data_frame, fg_color="transparent",corner_radius=6, width=50, height=20,)
         marca_frame.grid(row=1, column=2,padx=10,pady=4, ipady=3)
 
-        marca_label = CTkLabel(marca_frame, text="Marca",fg_color="transparent",text_color="#00501B",
+        marca_label = CTkLabel(marca_frame, text="Marca",fg_color="transparent",text_color="black",
                                     font=("Ubuntu",16))
         marca_label.grid(row=0,column=0, padx=10, pady=1)
-        marca_entry = CTkEntry(marca_frame, justify=CENTER,fg_color="transparent", text_color="black",width=130, border_color="#00501B",)
+        marca_entry = CTkEntry(marca_frame, justify=CENTER,fg_color="#c2f1c1", text_color="black",width=130, border_color="#00501B",)
         marca_entry.grid(row=1,column=0, padx=10, pady=1)
 
         model_frame = CTkFrame(self.data_frame, fg_color="transparent",corner_radius=6, width=50, height=20,)
         model_frame.grid(row=1, column=3,padx=10,pady=4, ipady=3)
 
-        model_label = CTkLabel(model_frame, text="Modelo",fg_color="transparent",text_color="#00501B",
+        model_label = CTkLabel(model_frame, text="Modelo",fg_color="transparent",text_color="black",
                                     font=("Ubuntu",16))
         model_label.grid(row=0,column=0, padx=10, pady=1)
-        model_entry = CTkEntry(model_frame,justify=CENTER, fg_color="transparent", text_color="black",width=130, border_color="#00501B",)
+        model_entry = CTkEntry(model_frame,justify=CENTER, fg_color="#c2f1c1", text_color="black",width=130, border_color="#00501B",)
         model_entry.grid(row=1,column=0, padx=10, pady=1)
 
         self.ver_menos = CTkButton(frame_ver_mas, text="Ver menos",text_color="#00501B", width=20,
@@ -670,27 +673,33 @@ class Principal:
                                     hover_color="#EEEEEE",fg_color="#EEEEEE", font=("Impact", 16))
         self.ver_mas.place(x=8, y=2)
 
-        self.update_button = CTkButton(self.frame_botones_inferiores, text="Actualizar", command=update,
-                          corner_radius=15, text_color="white", width=150, height=40,
-                          fg_color="#00A86B", font=("Impact", 16))
+        self.renovar_menos = CTkButton(frame_renovar, text="Renovar Contrato -",text_color="#00501B", width=40,
+                                  height=30,cursor="hand2",command=self.ocultar_renovar,
+                                    hover_color="#EEEEEE",fg_color="#EEEEEE", font=("Impact", 16))
+        self.renovar_menos.place(x=2, y=2)
+        self.ocultar_ver_menos_renovar()
+
+        self.renovar_mas = CTkButton(frame_renovar, text="Renovar Contrato +",text_color="#00501B", width=40,
+                                  height=30,cursor="hand2",command=self.mostrar_renovar,
+                                    hover_color="#EEEEEE",fg_color="#EEEEEE", font=("Impact", 16))
+        self.renovar_mas.place(x=2, y=2)
+
+        self.update_button = CTkButton(self.frame_botones_inferiores, text="Actualizar", fg_color="#00C853",
+                                hover_color="#00E676", text_color="white",
+                                font=("Ubuntu",13,"bold"), width=120, command=update)
         self.update_button.grid(row=0, column=0, padx=20, pady=5)
 
 
-        self.limpiar = CTkButton(self.frame_botones_inferiores, text="Limpiar", command=clear_entries,
-                            corner_radius=15, text_color="white", width=150, height=40,
-                            fg_color="#E0DC00", font=("Impact", 16))
+        self.limpiar = CTkButton(self.frame_botones_inferiores, text="Limpiar", fg_color="#FFA000",
+                                hover_color="#FFB300", text_color="white",
+                                font=("Ubuntu",13,"bold"), width=120, command=clear_entries)
         self.limpiar.grid(row=0, column=2, padx=20, pady=5)
 
-        self.remove_one_button = CTkButton(self.frame_botones_inferiores, text="Eliminar", command=remove_one,
-                                    corner_radius=15, text_color="white", width=150, height=40,
-                                    fg_color="#D32F2F", font=("Impact", 16))
+        self.remove_one_button = CTkButton(self.frame_botones_inferiores,  text="Eliminar", fg_color="#D32F2F",
+                                hover_color="#E53935", text_color="white",
+                                font=("Ubuntu",13,"bold"), width=120, command=remove_one)
         self.remove_one_button.grid(row=0, column=3, padx=20, pady=5)
 
-        self.renovar = CTkButton(self.frame_botones_inferiores,
-                                 command=self.ocultar_renovar,text="Renovar",
-                                    corner_radius=15, text_color="white", width=150, height=40,
-                                    fg_color="#8200EC", font=("Impact", 16))
-        self.renovar.grid(row=0, column=1, padx=20, pady=5)
 
 
         self.ocultar_botones()
@@ -768,20 +777,33 @@ class Principal:
         self.frame_contenedor_entry.pack_forget()
 
     def ocultar_renovar(self):
-        self.data_frame.pack_forget()
+        self.frame_contenedor_entry.pack_forget()
         self.frame_botones_inferiores.pack_forget()
-        self.frame_contenedor_entry.pack(side=TOP)
+        self.data_frame.pack(side=TOP)
+        self.ver_renovar()
 
     def mostrar_renovar(self):
-        self.frame_contenedor_entry.pack_forget()
-        self.data_frame.Pack(expand=True, fill=BOTH)
+        self.data_frame.pack_forget()
+        self.frame_botones_inferiores.pack_forget()
+        self.frame_contenedor_entry.pack(expand=True, fill=BOTH)
+        self.no_ver_renovar()
 
+    def ver_renovar(self):
+        self.renovar_menos.place_forget()
+        self.renovar_mas.place(x=10, y=2)
+
+    def no_ver_renovar(self):
+        self.renovar_mas.place_forget()
+        self.renovar_menos.place(x=10, y=2)
 
     def mostrar_btn(self):
         self.frame_botones_inferiores.pack()
 
     def ocultar_ver_menos(self):
         self.ver_menos.place_forget()
+
+    def ocultar_ver_menos_renovar(self):
+        self.renovar_menos.place_forget()
 
     def ver(self):
         self.ver_menos.place_forget()
