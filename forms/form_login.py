@@ -723,12 +723,12 @@ class App:
         
         #BOTÓN
         self.inicio = CTkButton(self.lgn_frame, text='Iniciar', font=("yu gothic ui", 20, "bold"), width=150, height=40,
-                            hover_color='#a9dfbf', command=self.Login, cursor='hand2', fg_color='#145a32', corner_radius=20)
+                            hover_color='#00501B', command=self.Login, cursor='hand2', fg_color='#00501B', corner_radius=10)
         self.inicio.place(x=630, y=460)
         self.inicio.bind("<Return>")
 
         
-        def limitar_entry():
+        def limitar_entry(event=None):
             if len(self.password_login.get()) >= 8:
                 self.password_login.delete(8, 'end')
         self.password_login.bind('<KeyRelease>', limitar_entry)

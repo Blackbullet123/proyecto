@@ -2,6 +2,7 @@ from customtkinter import *
 from tkinter import *
 from tkinter import ttk, messagebox
 from datetime import datetime
+import tkinter as tk
 import mysql.connector
 from PIL import Image
 from forms.imprimir_funcion import imprimir_vehiculos
@@ -53,9 +54,9 @@ class FrameVehiculos(CTkFrame):
 
                 for record in records:
                     if count % 2 == 0:
-                        my_tree.insert(parent='',index='end',iid=count,text='',values=(record[0],record[1],record[2],record[3]),tags=('evenrow',))
+                        self.my_tree.insert(parent='',index='end',iid=count,text='',values=(record[0],record[1],record[2],record[3]),tags=('evenrow',))
                     else: 
-                        my_tree.insert(parent='',index='end',iid=count,text='',values=(record[0],record[1],record[2],record[3]),tags=('oddrow',))
+                        self.my_tree.insert(parent='',index='end',iid=count,text='',values=(record[0],record[1],record[2],record[3]),tags=('oddrow',))
 
                     count += 1
 
@@ -133,7 +134,7 @@ class FrameVehiculos(CTkFrame):
                 print("Error en ADD():", repr(e))
                 messagebox.showerror("Error al alquilar", f"Ocurrió un problema:\n{e}")
             finally:
-                actualizar_tree_2()
+                self.actualizar_tree_2()
                 try:
                     my_cursor.close()
                 except:
@@ -149,8 +150,8 @@ class FrameVehiculos(CTkFrame):
                 searched = self.buscar.get()
                 name = (searched, )
                 
-                for item in my_tree.get_children():
-                    my_tree.delete(item)
+                for item in self.my_tree.get_children():
+                    self.my_tree.delete(item)
 
                 mydb = mysql.connector.connect(
                     host = "localhost",
@@ -169,52 +170,20 @@ class FrameVehiculos(CTkFrame):
                 count = 0
                 for record in records:
                         if count % 2 == 0:
-                            my_tree.insert(parent='',index='end',text='',values=(record[0],record[1],record[2],record[3]),tags=('evenrow',))#,
+                            self.my_tree.insert(parent='',index='end',text='',values=(record[0],record[1],record[2],record[3]),tags=('evenrow',))#,
                         else:
-                            my_tree.insert(parent='',index='end',text='',values=(record[0],record[1],record[2],record[3]),tags=('oddrow',))#,
+                            self.my_tree.insert(parent='',index='end',text='',values=(record[0],record[1],record[2],record[3]),tags=('oddrow',))#,
                         count +=1
 
                 conn.commit()
                 conn.close()
                 
 
-        def actualizar_tree_2():
-            for item in my_tree.get_children():
-                my_tree.delete(item)
-
-                mydb = mysql.connector.connect(
-                host = "localhost",
-                user = "root",
-                password = "123456",
-                port = "3306",
-                database = "control_alquiler_Reych"
-            )
-
-            conn = mydb
-
-            my_cursor = mydb.cursor()
-
-            my_cursor.execute("SELECT a.COD_Alquiler, v.Placa, m.Nombre, o.Nombre FROM vehiculo v LEFT JOIN alquiler a ON a.Placa_Vehiculo = v.Placa RIGHT JOIN marca m ON m.ID = v.ID_Marca INNER JOIN modelo o ON m.ID = o.ID_Marca ORDER BY a.COD_Alquiler ASC;")
-            items = my_cursor.fetchall()
-
-            count = 0
-
-            for item in items:
-                if count % 2 == 0:
-                    my_tree.insert(parent='',index='end',iid=count,text='',values=(item[0],item[1],item[2],item[3]),tags=('evenrow',))
-                else: 
-                    my_tree.insert(parent='',index='end',iid=count,text='',values=(item[0],item[1],item[2],item[3]),tags=('oddrow',))
-
-                count += 1
-
-            conn.commit()
-            conn.close()
-
 
         frame_superior = CTkFrame(self, fg_color="#EEEEEE")
         frame_superior.pack(pady=10, fill=X, expand=True)
 
-        titulo = CTkLabel(frame_superior, text="VEHICULOS",
+        titulo = CTkLabel(frame_superior, text="VEHÍCULOS",
                         text_color="#00501B", font=("Impact", 45))
         titulo.pack(pady=0, padx=60 ,side=RIGHT)
 
@@ -247,10 +216,10 @@ class FrameVehiculos(CTkFrame):
         tree_scroll = ttk.Scrollbar(tree_frame)
         tree_scroll.pack(side=RIGHT, fill=Y)
 
-        my_tree = ttk.Treeview(tree_frame, yscrollcommand=tree_scroll.set,
+        self.my_tree = ttk.Treeview(tree_frame, yscrollcommand=tree_scroll.set,
                                     selectmode="extended", show="headings")
-        my_tree.pack(fill=BOTH, expand=True)
-        tree_scroll.config(command=my_tree.yview)
+        self.my_tree.pack(fill=BOTH, expand=True)
+        tree_scroll.config(command=self.my_tree.yview)
 
 
          #botones con las funciones
@@ -268,25 +237,25 @@ class FrameVehiculos(CTkFrame):
         limpiar.pack(pady=5)
 
 
-        tree_scroll.config(command=my_tree.yview)
+        tree_scroll.config(command=self.my_tree.yview)
 
 
-        my_tree['columns']=("COD","Placa","Marca","Modelo")
+        self.my_tree['columns']=("COD","Placa","Marca","Modelo")
 
-        my_tree.column("COD",anchor=CENTER,width=140)
-        my_tree.column("Placa",anchor=CENTER,width=140)
-        my_tree.column("Marca",anchor=CENTER,width=140)
-        my_tree.column("Modelo",anchor=CENTER,width=140)
+        self.my_tree.column("COD",anchor=CENTER,width=140)
+        self.my_tree.column("Placa",anchor=CENTER,width=140)
+        self.my_tree.column("Marca",anchor=CENTER,width=140)
+        self.my_tree.column("Modelo",anchor=CENTER,width=140)
 
 
-        my_tree.heading("COD", text="COD Alquiler",anchor=CENTER)
-        my_tree.heading("Placa", text="Placa",anchor=CENTER)
-        my_tree.heading("Marca", text="Vehículo Marca",anchor=CENTER)
-        my_tree.heading("Modelo", text="Vehículo Modelo",anchor=CENTER)
+        self.my_tree.heading("COD", text="COD Alquiler",anchor=CENTER)
+        self.my_tree.heading("Placa", text="Placa",anchor=CENTER)
+        self.my_tree.heading("Marca", text="Vehículo Marca",anchor=CENTER)
+        self.my_tree.heading("Modelo", text="Vehículo Modelo",anchor=CENTER)
         
 
-        my_tree.tag_configure('oddrow', background="white")
-        my_tree.tag_configure('evenrow', background="#00A86B")
+        self.my_tree.tag_configure('oddrow', background="white")
+        self.my_tree.tag_configure('evenrow', background="#00A86B")
 
         style = ttk.Style()
 
@@ -347,6 +316,12 @@ class FrameVehiculos(CTkFrame):
 
             btn = CTkButton(top, text="Seleccionar", command=seleccionar_fecha)
             btn.pack(pady=5)
+
+        def mayusculas(event, entry):
+            text = entry.get()
+            if text:
+                entry.delete(0, tk.END)
+                entry.insert(0, text[0].upper() + text[1:])
 
 
         #=================== Frame de datos ===================
@@ -432,6 +407,10 @@ class FrameVehiculos(CTkFrame):
         modelo_entry = CTkEntry(data_frame,fg_color="#c2f1c1",text_color="black", border_color="#00501B")
         modelo_entry.grid(row=2,column=7,padx=10,pady=10)
 
+        r_name_entry.bind("<KeyRelease>", lambda e: mayusculas(e, r_name_entry))
+        apell_entry.bind("<KeyRelease>", lambda e: mayusculas(e, apell_entry))
+        e_name_entry.bind("<KeyRelease>", lambda e: mayusculas(e, e_name_entry))
+        dir_entry.bind("<KeyRelease>", lambda e: mayusculas(e, dir_entry))
         f2_entry.bind("<Button-1>", lambda e: abrir_calendario(e, f2_entry))
 
         get_current_date()
@@ -451,8 +430,8 @@ class FrameVehiculos(CTkFrame):
             mar_entry.delete(0,END)
             modelo_entry.delete(0,END)
 
-            selected = my_tree.focus()
-            values = my_tree.item(selected,'values')
+            selected = self.my_tree.focus()
+            values = self.my_tree.item(selected,'values')
 
             plac_entry.insert(0,values[1])
             mar_entry.insert(0,values[2])
@@ -483,7 +462,38 @@ class FrameVehiculos(CTkFrame):
 
         mostrar_imagen("default")
 
-        my_tree.bind("<ButtonRelease-1>", select_record)
+        self.my_tree.bind("<ButtonRelease-1>", select_record)
 
 
         query_db()
+
+
+    def actualizar_tree_2(self):
+        for item in self.my_tree.get_children():
+            self.my_tree.delete(item)
+
+        mydb = mysql.connector.connect(
+            host="localhost",
+            user="root",
+            password="123456",
+            port="3306",
+            database="control_alquiler_Reych"
+        )
+
+        my_cursor = mydb.cursor()
+
+        my_cursor.execute("""
+            SELECT a.COD_Alquiler, v.Placa, m.Nombre, o.Nombre
+            FROM vehiculo v
+            LEFT JOIN alquiler a ON a.Placa_Vehiculo = v.Placa
+            RIGHT JOIN marca m ON m.ID = v.ID_Marca
+            INNER JOIN modelo o ON m.ID = o.ID_Marca
+            ORDER BY a.COD_Alquiler ASC;
+        """)
+
+        items = my_cursor.fetchall()
+        for count, item in enumerate(items):
+            tag = 'evenrow' if count % 2 == 0 else 'oddrow'
+            self.my_tree.insert('', 'end', iid=count, values=item, tags=(tag,))
+
+        mydb.close()

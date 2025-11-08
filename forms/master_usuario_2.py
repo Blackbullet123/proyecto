@@ -3,7 +3,6 @@ from tkinter import ttk
 import tkinter as tk
 import mysql.connector
 from forms.imprimir_funcion import imprimir_vehiculos
-from menu.empresa import detallado
 from tkinter import messagebox
 from customtkinter import *
 from PIL import Image
@@ -116,7 +115,7 @@ class usuario:
 
         date_detalles = CTkButton(frame_botones, text="Datos detallados",fg_color="transparent",text_color="white",
                                   width=150, height=40,
-                                  font=("Ubuntu",18), command=detallado)
+                                  font=("Ubuntu",18))
         date_detalles.pack(pady=5, padx=2)
 
         #imprimir = CTkButton(frame_botones, text="Exportar datos",fg_color="transparent", command=select_imprimir,text_color="white",

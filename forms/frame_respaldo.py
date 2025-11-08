@@ -85,11 +85,9 @@ class FrameBackup(CTkFrame):
             ruta_completa = os.path.join(ruta_backup, nombre_archivo)
 
             try:
-                        # Detectar sistema operativo y definir la ruta de mysqldump
                 sistema_operativo = platform.system()
                 
                 if sistema_operativo == "Windows":
-                    # Rutas comunes de MySQL en Windows
                     rutas_posibles = [
                         r"C:\Program Files\MySQL\MySQL Server 8.0\bin\mysqldump.exe",
                         r"C:\Program Files\MySQL\MySQL Server 5.7\bin\mysqldump.exe",
@@ -104,10 +102,9 @@ class FrameBackup(CTkFrame):
                             break
                     
                     if not mysqldump_path:
-                        # Si no encuentra en rutas comunes, buscar en PATH
                         mysqldump_path = "mysqldump.exe"
                         
-                else:  # Linux, macOS, etc.
+                else:
                     mysqldump_path = "mysqldump"
 
                 comando = [
@@ -148,11 +145,9 @@ class FrameBackup(CTkFrame):
                 return
 
             try:
-                # Detectar sistema operativo y definir la ruta de mysql
                 sistema_operativo = platform.system()
                 
                 if sistema_operativo == "Windows":
-                    # Rutas comunes de MySQL en Windows
                     rutas_posibles = [
                         r"C:\Program Files\MySQL\MySQL Server 8.0\bin\mysql.exe",
                         r"C:\Program Files\MySQL\MySQL Server 5.7\bin\mysql.exe",
@@ -167,13 +162,11 @@ class FrameBackup(CTkFrame):
                             break
                     
                     if not mysql_path:
-                        # Si no encuentra en rutas comunes, buscar en PATH
                         mysql_path = "mysql.exe"
                         
-                else:  # Linux, macOS, etc.
+                else:
                     mysql_path = "mysql"
 
-                # Comando para crear la base de datos si no existe
                 comando_crear = [
                     mysql_path,
                     f"-h{HOST}",
@@ -185,7 +178,6 @@ class FrameBackup(CTkFrame):
                 ]
                 subprocess.run(comando_crear, stderr=subprocess.PIPE)
 
-                # Comando para restaurar el backup
                 comando_restore = [
                     mysql_path,
                     f"-h{HOST}",
@@ -242,7 +234,6 @@ class FrameBackup(CTkFrame):
         btn_backup = CTkButton(frame_backup, text="Realizar Backup", text_color="white",font=("Arial", 12, "bold"), fg_color="#00501B", command=realizar_backup)
         btn_backup.pack(pady=10)
 
-        # --- Sección Restore ---
         frame_restore_contenedor = CTkFrame(frame_principal, fg_color="#EEEEEE")
         frame_restore_contenedor.pack(expand=True, fill="x", pady=10, padx=20)
 
@@ -263,7 +254,6 @@ class FrameBackup(CTkFrame):
         btn_restore = CTkButton(frame_restore, text="Restaurar Backup", text_color="white",font=("Arial", 12,"bold"), fg_color="#00501B", command=restaurar_backup)
         btn_restore.pack(pady=10)
 
-        # --- Sección Historial ---
         frame_inferior_cont = CTkFrame(frame_inferior, corner_radius=15, fg_color="#EEEEEE")
         frame_inferior_cont.pack(expand=True, fill="x", pady=10, padx=20)
 

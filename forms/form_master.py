@@ -13,7 +13,7 @@ from forms.imprimir import ventana_imprimir
 from forms.frame_respaldo import FrameBackup
 import os
 from tkcalendar import Calendar
-from datetime import date
+from datetime import date, datetime
 from pathlib import Path
 import webbrowser
 
@@ -50,16 +50,16 @@ class Principal:
 
             my_cursor = mydb.cursor()
 
-            my_cursor.execute("SELECT a.COD_Alquiler, a.Fecha, a.Fecha_Expiracion, c.RIF, c.nombre, c.telefono, r.CI, v.Placa, m.Nombre, o.Nombre FROM representante r INNER JOIN contratista c ON r.CI = c.Representante_CI INNER JOIN alquiler a ON c.RIF = a.RIF_Empresa INNER JOIN vehiculo v ON a.Placa_Vehiculo = v.Placa INNER JOIN marca m ON v.ID_Marca = m.ID INNER JOIN modelo o ON o.ID_Marca = m.ID;")
+            my_cursor.execute("SELECT a.COD_Alquiler, a.Fecha, a.Fecha_Expiracion, c.RIF, c.nombre, c.telefono, r.CI, v.Placa, m.Nombre, o.Nombre FROM representante r INNER JOIN contratista c ON r.CI = c.Representante_CI INNER JOIN alquiler a ON c.RIF = a.RIF_Empresa INNER JOIN vehiculo v ON a.Placa_Vehiculo = v.Placa INNER JOIN marca m ON v.ID_Marca = m.ID INNER JOIN modelo o ON o.ID_Marca = m.ID ORDER BY a.COD_Alquiler ASC;")
             records = my_cursor.fetchall()
 
             count = 0
 
             for record in records:
                 if count % 2 == 0:
-                    my_tree.insert(parent='',index='end',iid=count,text='',values=(record[0],record[1],record[2],record[3],record[4],record[5],record[6],record[7],record[8],record[9]),tags=('evenrow',))
+                    self.my_tree.insert(parent='',index='end',iid=count,text='',values=(record[0],record[1],record[2],record[3],record[4],record[5],record[6],record[7],record[8],record[9]),tags=('evenrow',))
                 else: 
-                    my_tree.insert(parent='',index='end',iid=count,text='',values=(record[0],record[1],record[2],record[3],record[4],record[5],record[6],record[7],record[8],record[9]),tags=('oddrow',))
+                    self.my_tree.insert(parent='',index='end',iid=count,text='',values=(record[0],record[1],record[2],record[3],record[4],record[5],record[6],record[7],record[8],record[9]),tags=('oddrow',))
 
                 count += 1
 
@@ -94,14 +94,14 @@ class Principal:
             marca_entry.delete(0,END)
             model_entry.delete(0,END)
             self.ocultar_botones()
-            actualizar_tree()
+            self.actualizar_tree()
 
         def select_record(e):
-            selected = my_tree.focus()
+            selected = self.my_tree.focus()
             if not selected:
                 return
 
-            values = my_tree.item(selected, 'values')
+            values = self.my_tree.item(selected, 'values')
             if not values:
                 return
             self.mostrar_btn()
@@ -187,40 +187,9 @@ class Principal:
                 mensaje = 'Ocurrio un problema'
                 messagebox.showinfo(titulo, mensaje)
             finally:
-                actualizar_tree()
+                self.actualizar_tree()
                 clear_entries()
         
-        def actualizar_tree():
-            for item in my_tree.get_children():
-                my_tree.delete(item)
-
-                mydb = mysql.connector.connect(
-                host = "localhost",
-                user = "root",
-                password = "123456",
-                port = "3306",
-                database = "control_alquiler_Reych"
-            )
-
-            conn = mydb
-
-            my_cursor = mydb.cursor()
-
-            my_cursor.execute("SELECT a.COD_Alquiler, a.Fecha, a.Fecha_Expiracion, c.RIF, c.nombre, c.telefono, r.CI, v.Placa, m.Nombre, o.Nombre FROM representante r INNER JOIN contratista c ON r.CI = c.Representante_CI INNER JOIN alquiler a ON c.RIF = a.RIF_Empresa INNER JOIN vehiculo v ON a.Placa_Vehiculo = v.Placa INNER JOIN marca m ON v.ID_Marca = m.ID INNER JOIN modelo o ON o.ID_Marca = m.ID;")
-            items = my_cursor.fetchall()
-
-            count = 0
-
-            for item in items:
-                if count % 2 == 0:
-                    my_tree.insert(parent='',index='end',iid=count,text='',values=(item[0],item[1],item[2],item[3],item[4],item[5],item[6],item[7],item[8],item[9]),tags=('evenrow',))
-                else: 
-                    my_tree.insert(parent='',index='end',iid=count,text='',values=(item[0],item[1],item[2],item[3],item[4],item[5],item[6],item[7],item[8],item[9]),tags=('oddrow',))
-
-                count += 1
-
-            conn.commit()
-            conn.close()
         
         def update():
                         
@@ -267,7 +236,7 @@ class Principal:
                 mensaje = 'Ocurrio un problema'
                 messagebox.showinfo(titulo, mensaje)
             finally:
-                actualizar_tree()
+                self.actualizar_tree()
                 clear_entries()
 
             
@@ -296,7 +265,7 @@ class Principal:
 
         self.frame_nuevo_vehiculo = FrameNuevoVehiculo(self.frame_main, self)
         self.frame_datos_detallados = FrameDatosDetallados(self.frame_principal, self)
-        self.frame_vehiculos_disponibles = FrameVehiculos(self.frame_main, self)
+        self.frame_vehiculos_disponibles = FrameVehiculos(self.frame_main,self)
         self.frame_mantenimeinto = FrameMantenimiento(self.frame_main, self)
         self.frame_backup = FrameBackup(self.frame_main, self)
 
@@ -327,7 +296,7 @@ class Principal:
         inicio = CTkButton(frame_botones, text="Inicio",fg_color="transparent",text_color="white",
                                   width=150, height=30,hover_color="#00501B",
                                   font=("Ubuntu",17), anchor=W, image=inicio_icon, compound="left",
-                                  command=lambda:(self.mostrar_contenido_principal(), actualizar_tree()))
+                                  command=self.mostrar_contenido_principal)
         inicio.pack(pady=5, padx=2, fill=X)        
 
         img = Image.open("imagenes/alquiler.png")
@@ -424,30 +393,30 @@ class Principal:
 
         def search_now():
                 
-                for item in my_tree.get_children():
-                    my_tree.delete(item)
+            for item in self.my_tree.get_children():
+                self.my_tree.delete(item)
 
-                mydb = mysql.connector.connect(
-                    host = "localhost",
-                    user = "root",
-                    password = "123456",
-                    port = "3306",
-                    database = "control_alquiler_Reych"
-                )
-                my_cursor = mydb.cursor()
-                conn = mydb
-                sql = "SELECT a.COD_Alquiler, a.Fecha, a.Fecha_Expiracion, c.RIF, c.nombre, c.telefono, r.CI, v.Placa, m.Nombre, o.Nombre FROM representante r INNER JOIN contratista c ON r.CI = c.Representante_CI INNER JOIN alquiler a ON c.RIF = a.RIF_Empresa INNER JOIN vehiculo v ON a.Placa_Vehiculo = v.Placa INNER JOIN marca m ON v.ID_Marca = m.ID INNER JOIN modelo o ON o.ID_Marca = m.ID WHERE COD_Alquiler = {0}"
+            mydb = mysql.connector.connect(
+                host = "localhost",
+                user = "root",
+                password = "123456",
+                port = "3306",
+                database = "control_alquiler_Reych"
+            )
+            my_cursor = mydb.cursor()
+            conn = mydb
+            sql = "SELECT a.COD_Alquiler, a.Fecha, a.Fecha_Expiracion, c.RIF, c.nombre, c.telefono, r.CI, v.Placa, m.Nombre, o.Nombre FROM representante r INNER JOIN contratista c ON r.CI = c.Representante_CI INNER JOIN alquiler a ON c.RIF = a.RIF_Empresa INNER JOIN vehiculo v ON a.Placa_Vehiculo = v.Placa INNER JOIN marca m ON v.ID_Marca = m.ID INNER JOIN modelo o ON o.ID_Marca = m.ID WHERE COD_Alquiler = {0}"
 
-                my_cursor.execute(sql.format(buscar.get()))
-                records = my_cursor.fetchall()
-                
-                
-                for record in records:
-                                my_tree.insert(parent='',index='end',text='',values=(record[0],record[1],record[2],record[3],record[4],record[5],record[6],record[7],record[8],record[9]))#,
+            my_cursor.execute(sql.format(buscar.get()))
+            records = my_cursor.fetchall()
+            
+            
+            for record in records:
+                            self.my_tree.insert(parent='',index='end',text='',values=(record[0],record[1],record[2],record[3],record[4],record[5],record[6],record[7],record[8],record[9]))
 
 
-                conn.commit()
-                conn.close()
+            conn.commit()
+            conn.close()
 
 
         buscar_label = CTkLabel(button_frame, text="Buscar Vehículo:",
@@ -475,45 +444,45 @@ class Principal:
         tree_scroll = Scrollbar(self.tree_frame)
         tree_scroll.pack(side=RIGHT, fill=Y)
 
-        my_tree = ttk.Treeview(
+        self.my_tree = ttk.Treeview(
             self.tree_frame,
             yscrollcommand=tree_scroll.set,
             selectmode="extended",
             show="headings"
         )
-        my_tree.pack(fill=BOTH, expand=True)
+        self.my_tree.pack(fill=BOTH, expand=True)
 
-        tree_scroll.config(command=my_tree.yview)
+        tree_scroll.config(command=self.my_tree.yview)
 
-        tree_scroll.config(command=my_tree.yview)
+        tree_scroll.config(command=self.my_tree.yview)
 
         #CREACION DE COLUMNAS
-        my_tree['columns']=("COD","FechaI","FechaF","RIF","Empresa","TLF","CI","Placa","Modelo","Marca")
+        self.my_tree['columns']=("COD","FechaI","FechaF","RIF","Empresa","TLF","CI","Placa","Modelo","Marca")
 
-        my_tree.column("COD",anchor=CENTER,width=85)
-        my_tree.column("FechaI",anchor=CENTER,width=85)
-        my_tree.column("FechaF",anchor=CENTER,width=85)
-        my_tree.column("RIF",anchor=CENTER,width=120)
-        my_tree.column("Empresa",anchor=CENTER,width=120)
-        my_tree.column("TLF",anchor=CENTER,width=120)
-        my_tree.column("CI",anchor=CENTER,width=120)
-        my_tree.column("Placa",anchor=CENTER,width=120)
-        my_tree.column("Modelo",anchor=CENTER,width=120)
-        my_tree.column("Marca",anchor=CENTER,width=120)
+        self.my_tree.column("COD",anchor=CENTER,width=85)
+        self.my_tree.column("FechaI",anchor=CENTER,width=85)
+        self.my_tree.column("FechaF",anchor=CENTER,width=85)
+        self.my_tree.column("RIF",anchor=CENTER,width=120)
+        self.my_tree.column("Empresa",anchor=CENTER,width=120)
+        self.my_tree.column("TLF",anchor=CENTER,width=120)
+        self.my_tree.column("CI",anchor=CENTER,width=120)
+        self.my_tree.column("Placa",anchor=CENTER,width=120)
+        self.my_tree.column("Modelo",anchor=CENTER,width=120)
+        self.my_tree.column("Marca",anchor=CENTER,width=120)
 
-        my_tree.heading("COD", text="Cod.",anchor=CENTER)
-        my_tree.heading("FechaI", text="Fecha Inicial",anchor=CENTER)
-        my_tree.heading("FechaF", text="Fecha Final",anchor=CENTER)
-        my_tree.heading("RIF", text="RIF",anchor=CENTER)
-        my_tree.heading("Empresa", text="Empresa",anchor=CENTER)
-        my_tree.heading("TLF", text="Teléfono",anchor=CENTER)
-        my_tree.heading("CI", text="Cedula",anchor=CENTER)
-        my_tree.heading("Placa", text="Placa",anchor=CENTER)
-        my_tree.heading("Modelo", text="Vehículo Modelo",anchor=CENTER)
-        my_tree.heading("Marca", text="Vehículo Marca",anchor=CENTER)
+        self.my_tree.heading("COD", text="Cod.",anchor=CENTER)
+        self.my_tree.heading("FechaI", text="Fecha Inicial",anchor=CENTER)
+        self.my_tree.heading("FechaF", text="Fecha Final",anchor=CENTER)
+        self.my_tree.heading("RIF", text="RIF",anchor=CENTER)
+        self.my_tree.heading("Empresa", text="Empresa",anchor=CENTER)
+        self.my_tree.heading("TLF", text="Teléfono",anchor=CENTER)
+        self.my_tree.heading("CI", text="Cedula",anchor=CENTER)
+        self.my_tree.heading("Placa", text="Placa",anchor=CENTER)
+        self.my_tree.heading("Modelo", text="Vehículo Modelo",anchor=CENTER)
+        self.my_tree.heading("Marca", text="Vehículo Marca",anchor=CENTER)
 
-        my_tree.tag_configure('oddrow', background="white")
-        my_tree.tag_configure('evenrow', background="#00A86B")
+        self.my_tree.tag_configure('oddrow', background="white")
+        self.my_tree.tag_configure('evenrow', background="#00A86B")
 
 
 
@@ -546,6 +515,20 @@ class Principal:
 
             btn = CTkButton(top, text="Seleccionar", command=seleccionar_fecha)
             btn.pack(pady=5)
+
+
+        def get_current_date():
+            fecha_actual = datetime.now().strftime("%Y-%m-%d")
+            fi_entry.delete(0, "end")            
+            fi_entry.insert(0, fecha_actual)
+            self.root.after(1000, get_current_date)
+
+        #Esto es para las mayusculas ;)
+        def mayusculas(event, entry):
+            text = entry.get()
+            if text:
+                entry.delete(0, tk.END)
+                entry.insert(0, text[0].upper() + text[1:])
 
         
         #Frame de los inferior    
@@ -580,8 +563,7 @@ class Principal:
         fi_label = CTkLabel(fecha1_frame, text="Fecha Inicial",fg_color="transparent",text_color="black",
                                     font=("Ubuntu",16))
         fi_label.grid(row=0,column=0, padx=10, pady=1)
-        fi_entry = CTkEntry(fecha1_frame,justify=CENTER,fg_color="#c2f1c1",text_color="black", width=130, border_color="#00501B",
-                            validate="key", validatecommand=(self.data_frame.register, "%P"))
+        fi_entry = CTkEntry(fecha1_frame,justify=CENTER,fg_color="#c2f1c1",text_color="black", width=130, border_color="#00501B")
         fi_entry.grid(row=1,column=0, padx=10, pady=1)
 
         fecha2_frame = CTkFrame(self.frame_contenedor_entry_fecha, fg_color="transparent",corner_radius=6, width=50, height=20,)
@@ -705,14 +687,49 @@ class Principal:
         self.ocultar_botones()
 
 
-        fi_entry.bind("<Button-1>", lambda e: abrir_calendario(e, fi_entry))
+        em_entry.bind("<KeyRelease>", lambda e: mayusculas(e, em_entry))
         ff_entry.bind("<Button-1>", lambda e: abrir_calendario(e, ff_entry))
-        my_tree.bind("<ButtonRelease-1>", select_record)
-
+        self.my_tree.bind("<ButtonRelease-1>", select_record)
+        
+        get_current_date()
         query_db()
 
 
         self.root.mainloop()
+    
+
+    def actualizar_tree(self):
+            for item in self.my_tree.get_children():
+                self.my_tree.delete(item)
+
+                mydb = mysql.connector.connect(
+                host = "localhost",
+                user = "root",
+                password = "123456",
+                port = "3306",
+                database = "control_alquiler_Reych"
+            )
+
+            conn = mydb
+
+            my_cursor = mydb.cursor()
+
+            my_cursor.execute("SELECT a.COD_Alquiler, a.Fecha, a.Fecha_Expiracion, c.RIF, c.nombre, c.telefono, r.CI, v.Placa, m.Nombre, o.Nombre FROM representante r INNER JOIN contratista c ON r.CI = c.Representante_CI INNER JOIN alquiler a ON c.RIF = a.RIF_Empresa INNER JOIN vehiculo v ON a.Placa_Vehiculo = v.Placa INNER JOIN marca m ON v.ID_Marca = m.ID INNER JOIN modelo o ON o.ID_Marca = m.ID ORDER BY a.COD_Alquiler ASC;")
+            items = my_cursor.fetchall()
+
+            count = 0
+
+            for item in items:
+                if count % 2 == 0:
+                    self.my_tree.insert(parent='',index='end',iid=count,text='',values=(item[0],item[1],item[2],item[3],item[4],item[5],item[6],item[7],item[8],item[9]),tags=('evenrow',))
+                else: 
+                    self.my_tree.insert(parent='',index='end',iid=count,text='',values=(item[0],item[1],item[2],item[3],item[4],item[5],item[6],item[7],item[8],item[9]),tags=('oddrow',))
+
+                count += 1
+
+            conn.commit()
+            conn.close()
+
 
 
     def toggle_barra(self):
@@ -728,6 +745,7 @@ class Principal:
         self.tree_frame.pack_forget()
         self.frame_datos_detallados.pack(expand=True, fill=BOTH)
         self.no_ver()
+        self.frame_datos_detallados.actualizar_tree_datos()
 
     def ocultar_datos_detallados(self):
         self.frame_datos_detallados.pack_forget()
@@ -740,6 +758,7 @@ class Principal:
         self.frame_mantenimeinto.pack_forget()
         self.frame_nuevo_vehiculo.pack_forget()
         self.frame_vehiculos_disponibles.pack(expand=True, fill=BOTH)
+        self.frame_vehiculos_disponibles.actualizar_tree_2()
 
     def mostrar_nuevo_vehiculo(self):
         self.frame_principal.pack_forget()
@@ -747,6 +766,7 @@ class Principal:
         self.frame_mantenimeinto.pack_forget()
         self.frame_vehiculos_disponibles.pack_forget()
         self.frame_nuevo_vehiculo.pack(expand=True, fill=BOTH)
+        self.frame_nuevo_vehiculo.cargar_marcas()
 
     def mostrar_mantenimiento(self):
         self.frame_principal.pack_forget()
@@ -768,7 +788,8 @@ class Principal:
         self.frame_nuevo_vehiculo.pack_forget()
         self.frame_mantenimeinto.pack_forget()
         self.frame_principal.pack(expand=True, fill=BOTH)
-
+        self.actualizar_tree()
+        
 
     def ocultar_botones(self):
         self.frame_botones_inferiores.pack_forget()
@@ -812,7 +833,6 @@ class Principal:
     def no_ver(self):
         self.ver_mas.place_forget()
         self.ver_menos.place(x=10, y=2)
-
 
 def abrir_pdf():
     ruta_pdf = get_project_root() / "PDF" / "manual.pdf"

@@ -187,3 +187,35 @@ class FrameDatosDetallados(CTkFrame):
         
         doc.build(elements)
         vista_previa_1()
+    
+    def actualizar_tree_datos(self):
+        for item in self.my_tree.get_children():
+            self.my_tree.delete(item)
+
+            mydb = mysql.connector.connect(
+            host = "localhost",
+            user = "root",
+            password = "123456",
+            port = "3306",
+            database = "control_alquiler_Reych"
+        )
+
+        conn = mydb
+
+        my_cursor = mydb.cursor()
+
+        my_cursor.execute("SELECT a.COD_Alquiler, c.RIF, c.Nombre, c.telefono, c.direccion, r.CI, r.nombre, r.apellido, v.Placa, v.Color,v.Año, m.Nombre, o.Nombre FROM contratista c INNER JOIN alquiler a ON c.RIF = a.RIF_Empresa INNER JOIN representante r ON c.Representante_CI = r.CI INNER JOIN vehiculo v ON a.Placa_Vehiculo = v.Placa INNER JOIN marca m ON v.ID_Marca = m.ID INNER JOIN modelo o ON o.ID_Marca = m.ID ORDER BY a.COD_Alquiler ASC;")
+        items = my_cursor.fetchall()
+
+        count = 0
+
+        for item in items:
+            if count % 2 == 0:
+                self.my_tree.insert(parent='',index='end',text='',values=(item[0],item[1],item[2],item[3],item[4],item[5],item[6],item[7],item[8],item[9],item[10],item[11],item[12]),tags=('evenrow',))
+            else: 
+                self.my_tree.insert(parent='',index='end',text='',values=(item[0],item[1],item[2],item[3],item[4],item[5],item[6],item[7],item[8],item[9],item[10],item[11],item[12]),tags=('oddrow',))
+
+            count += 1
+
+        conn.commit()
+        conn.close()
