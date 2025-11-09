@@ -106,7 +106,7 @@ class FrameNuevoVehiculo(CTkFrame):
 
         frame_imagen = CTkFrame(barra_inferior, fg_color="#00695C", corner_radius=8)
         frame_imagen.pack(side="left", padx=15, pady=5)
-        self.img_label = CTkLabel(frame_imagen, text="Sin imagen", width=130, height=80,
+        self.img_label = CTkLabel(frame_imagen, text="", width=130, height=80,
                                   fg_color="#B0BEC5", corner_radius=8)
         self.img_label.pack(padx=5, pady=3)
         CTkButton(frame_imagen, text="Seleccionar", width=120, height=30,
@@ -277,7 +277,7 @@ class FrameNuevoVehiculo(CTkFrame):
             entry.delete(0, tk.END)
         self.marca_combobox.set("")
         self.modelo_combobox.set("")
-        self.img_label.configure(image="", text="Sin imagen")
+        self.img_label.configure(image="", text="")
         self.ruta_imagen_seleccionada = None
         self.cargar_treeview()
 

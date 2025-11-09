@@ -97,7 +97,7 @@ def ventana_imprimir():
             self.my_tree.pack(expand=True, fill=BOTH)
             tree_scroll.config(command=self.my_tree.yview)
 
-            self.my_tree['columns']=("COD","RIF","Empresa","TLF","Direccion","CI","Nombre","Apellido","Placa","Color","Año","Marca","Modelo")
+            self.my_tree['columns']=("COD","RIF","Empresa","TLF","Direccion","Cedula","Nombre","Apellido","Placa","Color","Año","Marca","Modelo")
             for col in self.my_tree['columns']:
                 self.my_tree.column(col, anchor=CENTER, width=100)
                 self.my_tree.heading(col, text=col, anchor=CENTER)

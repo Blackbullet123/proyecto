@@ -183,9 +183,9 @@ class Principal:
                 mensaje = 'Vehiculo eliminado con exito'
                 messagebox.showinfo(titulo, mensaje)
             except:
-                titulo = 'Alquilado'
+                titulo = 'error'
                 mensaje = 'Ocurrio un problema'
-                messagebox.showinfo(titulo, mensaje)
+                messagebox.showerror(titulo, mensaje)
             finally:
                 self.actualizar_tree()
                 clear_entries()
@@ -232,9 +232,9 @@ class Principal:
                 mensaje = 'Actualizado con exito'
                 messagebox.showinfo(titulo, mensaje)
             except:
-                titulo = 'Alquilado'
+                titulo = 'error'
                 mensaje = 'Ocurrio un problema'
-                messagebox.showinfo(titulo, mensaje)
+                messagebox.showerror(titulo, mensaje)
             finally:
                 self.actualizar_tree()
                 clear_entries()
@@ -419,7 +419,7 @@ class Principal:
             conn.close()
 
 
-        buscar_label = CTkLabel(button_frame, text="Buscar Vehículo:",
+        buscar_label = CTkLabel(button_frame, text="Buscar:",
                                 text_color="black", font=("Ubuntu", 15))
         buscar_label.pack(side="left", padx=5, pady=10)
 
@@ -434,7 +434,7 @@ class Principal:
         img = Image.open("imagenes/imprimir.png")
         imprimir_icon = CTkImage(dark_image=img, light_image=img, size=(40,40))
         imprimir = CTkButton(button_frame, hover_color="#EEEEEE",command=ventana_imprimir ,image=imprimir_icon , text="", fg_color="transparent",
-                               width=30, height=30, )#command=imprimir_vehiculos)
+                               width=30, height=30, )
         imprimir.pack(side="right", padx=3)
 
         #treeview
@@ -603,8 +603,7 @@ class Principal:
         ci_label = CTkLabel(ci_frame, text="Cedula",fg_color="transparent",text_color="black",
                                     font=("Ubuntu",16))
         ci_label.grid(row=0, column=0, padx=10, pady=1)
-        ci_entry = CTkEntry(ci_frame,justify=CENTER,width=130,fg_color="#c2f1c1",text_color="black", border_color="#00501B",
-                             validate="key", validatecommand=(self.data_frame.register(validate_entry), "%S","%P"))
+        ci_entry = CTkEntry(ci_frame,justify=CENTER,width=130,fg_color="#c2f1c1",text_color="black", border_color="#00501B")
         ci_entry.grid(row=1,column=0, padx=10, pady=1)
 
         tlf_frame = CTkFrame(self.data_frame, fg_color="transparent",corner_radius=6, width=50, height=20,)
@@ -699,36 +698,28 @@ class Principal:
     
 
     def actualizar_tree(self):
-            for item in self.my_tree.get_children():
-                self.my_tree.delete(item)
+        for item in self.my_tree.get_children():
+            self.my_tree.delete(item)
 
-                mydb = mysql.connector.connect(
-                host = "localhost",
-                user = "root",
-                password = "123456",
-                port = "3306",
-                database = "control_alquiler_Reych"
-            )
+        mydb = mysql.connector.connect(
+            host="localhost",
+            user="root",
+            password="123456",
+            port="3306",
+            database="control_alquiler_Reych"
+        )
 
-            conn = mydb
+        my_cursor = mydb.cursor()
 
-            my_cursor = mydb.cursor()
+        my_cursor.execute("""
+            SELECT a.COD_Alquiler, a.Fecha, a.Fecha_Expiracion, c.RIF, c.nombre, c.telefono, r.CI, v.Placa, m.Nombre, o.Nombre FROM representante r INNER JOIN contratista c ON r.CI = c.Representante_CI INNER JOIN alquiler a ON c.RIF = a.RIF_Empresa INNER JOIN vehiculo v ON a.Placa_Vehiculo = v.Placa INNER JOIN marca m ON v.ID_Marca = m.ID INNER JOIN modelo o ON o.ID_Marca = m.ID ORDER BY a.COD_Alquiler ASC; """)
+        items = my_cursor.fetchall()
 
-            my_cursor.execute("SELECT a.COD_Alquiler, a.Fecha, a.Fecha_Expiracion, c.RIF, c.nombre, c.telefono, r.CI, v.Placa, m.Nombre, o.Nombre FROM representante r INNER JOIN contratista c ON r.CI = c.Representante_CI INNER JOIN alquiler a ON c.RIF = a.RIF_Empresa INNER JOIN vehiculo v ON a.Placa_Vehiculo = v.Placa INNER JOIN marca m ON v.ID_Marca = m.ID INNER JOIN modelo o ON o.ID_Marca = m.ID ORDER BY a.COD_Alquiler ASC;")
-            items = my_cursor.fetchall()
+        for count, item in enumerate(items):
+            tag = 'evenrow' if count % 2 == 0 else 'oddrow'
+            self.my_tree.insert(parent='', index='end', iid=count, text='', values=item, tags=(tag,))
 
-            count = 0
-
-            for item in items:
-                if count % 2 == 0:
-                    self.my_tree.insert(parent='',index='end',iid=count,text='',values=(item[0],item[1],item[2],item[3],item[4],item[5],item[6],item[7],item[8],item[9]),tags=('evenrow',))
-                else: 
-                    self.my_tree.insert(parent='',index='end',iid=count,text='',values=(item[0],item[1],item[2],item[3],item[4],item[5],item[6],item[7],item[8],item[9]),tags=('oddrow',))
-
-                count += 1
-
-            conn.commit()
-            conn.close()
+        mydb.close()
 
 
 

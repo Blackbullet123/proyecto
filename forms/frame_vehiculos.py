@@ -41,6 +41,8 @@ class FrameVehiculos(CTkFrame):
             mar_entry.delete(0,END)
             modelo_entry.delete(0,END)
             mostrar_imagen("default")
+            self.update_ci_prefix()
+
 
         def query_db():
                 conn = mydb
@@ -324,19 +326,26 @@ class FrameVehiculos(CTkFrame):
                 entry.insert(0, text[0].upper() + text[1:])
 
 
-        #=================== Frame de datos ===================
         frame_inferior = CTkFrame(self, fg_color="#EEEEEE", corner_radius=10)
         frame_inferior.pack(padx=20, pady=10, fill="x")
 
         data_frame = CTkFrame(frame_inferior, fg_color="transparent")
         data_frame.pack(anchor="center")
 
-        ci_label = CTkLabel(data_frame, text="C.I",fg_color='transparent',text_color="black",
+        self.tipo_ci_var = StringVar(value="V")
+        self.numero_ci_var = StringVar()
+
+        ci_label = CTkLabel(data_frame, text="Cedula",fg_color='transparent',text_color="black",
                         font=("Ubuntu",16))
         ci_label.grid(row=0,column=0, padx=10,pady=10, sticky="ew")
-        ci_entry = CTkEntry(data_frame,fg_color="#c2f1c1",text_color="black", border_color="#00501B",
-                            validate="key",validatecommand=(data_frame.register(validate_entry), "%S","%P"))
-        ci_entry.grid(row=0,column=1,padx=10,pady=10) 
+        ci_entry = CTkEntry(data_frame, width=140, textvariable=self.numero_ci_var,
+                    fg_color="#c2f1c1", text_color="black", border_color="#00501B")
+        ci_entry.grid(row=0,column=1,padx=10,pady=10)
+
+        menu_tipo = Menu(ci_entry,bg="#333333",fg="white", activebackground="#0761AA", tearoff=0)
+        for tipo in ["V", "E", "J"]:
+            menu_tipo.add_command(label=tipo, command=lambda t=tipo: self.select_tipo(t, ci_entry))
+ 
 
         r_name_label = CTkLabel(data_frame, text="Nombre",fg_color='transparent',text_color="black",
                         font=("Ubuntu",16))
@@ -375,14 +384,14 @@ class FrameVehiculos(CTkFrame):
         validatecommand=(data_frame.register(validate_entry), "%S","%P"))
         cell_entry.grid(row=1,column=5,padx=10,pady=10)
 
-        f1_label = CTkLabel(data_frame, text="Fecha I.",fg_color='transparent',text_color="black",
+        f1_label = CTkLabel(data_frame, text="Fecha Inicial",fg_color='transparent',text_color="black",
                         font=("Ubuntu",16))
         f1_label.grid(row=1,column=6, padx=10,pady=10)
         f1_entry = CTkEntry(data_frame, fg_color="#c2f1c1", text_color="black", border_color="#00501B")
         f1_entry.grid(row=1, column=7, padx=10, pady=10)
 
 
-        f2_label = CTkLabel(data_frame, text="Fecha F.",fg_color='transparent',text_color="black",
+        f2_label = CTkLabel(data_frame, text="Fecha Final",fg_color='transparent',text_color="black",
                         font=("Ubuntu",16))
         f2_label.grid(row=2,column=0, padx=10,pady=10)
         f2_entry = CTkEntry(data_frame,fg_color="#c2f1c1",text_color="black", border_color="#00501B",validate="key",
@@ -407,16 +416,21 @@ class FrameVehiculos(CTkFrame):
         modelo_entry = CTkEntry(data_frame,fg_color="#c2f1c1",text_color="black", border_color="#00501B")
         modelo_entry.grid(row=2,column=7,padx=10,pady=10)
 
+        ci_entry.bind("<Button-1>", lambda e: self.open_tipo_menu(e, menu_tipo))
+        ci_entry.bind("<KeyRelease>", self.on_ci_key_release)
+        ci_entry.bind("<KeyPress>", self.proteger_prefijo)
         r_name_entry.bind("<KeyRelease>", lambda e: mayusculas(e, r_name_entry))
         apell_entry.bind("<KeyRelease>", lambda e: mayusculas(e, apell_entry))
         e_name_entry.bind("<KeyRelease>", lambda e: mayusculas(e, e_name_entry))
         dir_entry.bind("<KeyRelease>", lambda e: mayusculas(e, dir_entry))
         f2_entry.bind("<Button-1>", lambda e: abrir_calendario(e, f2_entry))
 
+        self.update_ci_prefix()
+
         get_current_date()
 
 
-        def select_record(e):#Esta funcion estaba comentanda
+        def select_record(e):
             f1_entry.delete(0,END)
             f2_entry.delete(0,END)
             ci_entry.delete(0,END)
@@ -436,7 +450,7 @@ class FrameVehiculos(CTkFrame):
             plac_entry.insert(0,values[1])
             mar_entry.insert(0,values[2])
             modelo_entry.insert(0,values[3])
-
+            self.update_ci_prefix()
             mostrar_imagen(values[1])
 
         def mostrar_imagen(placa):
@@ -497,3 +511,53 @@ class FrameVehiculos(CTkFrame):
             self.my_tree.insert('', 'end', iid=count, values=item, tags=(tag,))
 
         mydb.close()
+    
+
+    def open_tipo_menu(self, event, menu):
+        x = event.widget.winfo_rootx()
+        y = event.widget.winfo_rooty() + event.widget.winfo_height()
+        menu.tk_popup(x, y)
+
+
+    def select_tipo(self, tipo, entry):
+        self.tipo_ci_var.set(tipo)
+        self.update_ci_prefix()
+        entry.focus_set()
+        
+        try:
+            entry.unpost() 
+        except Exception:
+            pass
+
+    def update_ci_prefix(self):
+        current = self.numero_ci_var.get()
+        numeros = current.split("-", 1)[-1] if "-" in current else current
+        self.numero_ci_var.set(f"{self.tipo_ci_var.get()}-{numeros}")
+
+        ci_entry_widget = self.numero_ci_var._tk.globalgetvar(str(self.numero_ci_var))
+        try:
+            pass
+        except Exception:
+            pass
+
+
+    def on_ci_key_release(self, event):
+        current = self.numero_ci_var.get()
+        if "-" in current:
+            tipo, numeros = current.split("-", 1)
+        else:
+            tipo, numeros = self.tipo_ci_var.get(), current
+
+        numeros = ''.join(filter(str.isdigit, numeros))[:10]
+        self.numero_ci_var.set(f"{tipo}-{numeros}")
+        entry_widget = event.widget
+        entry_widget.icursor(len(f"{tipo}-") + len(numeros))
+
+    def proteger_prefijo(self, event):
+        entry = event.widget
+        cursor_pos = entry.index(tk.INSERT)
+        text = entry.get()
+        if cursor_pos <= 2:
+            if event.keysym in ("BackSpace", "Delete", "Left"):
+                return "break"
+

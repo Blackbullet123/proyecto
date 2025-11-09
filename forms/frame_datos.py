@@ -88,7 +88,7 @@ class FrameDatosDetallados(CTkFrame):
         self.my_tree.heading("Nombre", text="Empresa",anchor=CENTER)
         self.my_tree.heading("TLF", text="Teléfono",anchor=CENTER)
         self.my_tree.heading("Direccion", text="Direccion",anchor=CENTER)
-        self.my_tree.heading("CI", text="C.I",anchor=CENTER)
+        self.my_tree.heading("CI", text="Cedula",anchor=CENTER)
         self.my_tree.heading("Nombre_r", text="Representante ",anchor=CENTER)
         self.my_tree.heading("Apellido", text="Apellido",anchor=CENTER)
         self.my_tree.heading("Placa", text=" Placa",anchor=CENTER)
