@@ -51,7 +51,7 @@ class FrameMantenimiento(CTkFrame):
                 SELECT v.Placa, m.Nombre AS Marca, o.Nombre AS Modelo
                 FROM vehiculo v
                 INNER JOIN marca m ON v.ID_Marca = m.ID
-                INNER JOIN modelo o ON o.ID_Marca = m.ID
+                INNER JOIN modelo o ON v.ID_Modelo = o.ID
             """)
             vehiculos = cursor.fetchall()
             mydb.close()

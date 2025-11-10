@@ -49,7 +49,7 @@ class FrameVehiculos(CTkFrame):
 
                 my_cursor = mydb.cursor()
 
-                my_cursor.execute("SELECT a.COD_Alquiler, v.Placa, m.Nombre, o.Nombre FROM vehiculo v LEFT JOIN alquiler a ON a.Placa_Vehiculo = v.Placa RIGHT JOIN marca m ON m.ID = v.ID_Marca INNER JOIN modelo o ON m.ID = o.ID_Marca ORDER BY a.COD_Alquiler ASC;")
+                my_cursor.execute("SELECT a.COD_Alquiler, v.Placa, m.Nombre, o.Nombre FROM vehiculo v LEFT JOIN alquiler a ON a.Placa_Vehiculo = v.Placa RIGHT JOIN marca m ON m.ID = v.ID_Marca INNER JOIN modelo o ON v.ID_Modelo = o.ID ORDER BY a.COD_Alquiler ASC;")
                 records = my_cursor.fetchall()
 
                 count = 0
@@ -164,7 +164,7 @@ class FrameVehiculos(CTkFrame):
                 )
                 my_cursor = mydb.cursor()
                 conn = mydb
-                sql = "SELECT a.COD_Alquiler, v.Placa, m.Nombre, o.Nombre FROM vehiculo v LEFT JOIN alquiler a ON a.Placa_Vehiculo = v.Placa RIGHT JOIN marca m ON m.ID = v.ID_Marca INNER JOIN modelo o ON m.ID = o.ID_Marca WHERE m.Nombre = %s ORDER BY a.COD_Alquiler ASC;"
+                sql = "SELECT a.COD_Alquiler, v.Placa, m.Nombre, o.Nombre FROM vehiculo v LEFT JOIN alquiler a ON a.Placa_Vehiculo = v.Placa RIGHT JOIN marca m ON m.ID = v.ID_Marca INNER JOIN modelo o ON v.ID_Modelo = o.ID WHERE m.Nombre = %s ORDER BY a.COD_Alquiler ASC;"
 
                 my_cursor.execute(sql,name)
                 records = my_cursor.fetchall()
@@ -252,8 +252,8 @@ class FrameVehiculos(CTkFrame):
 
         self.my_tree.heading("COD", text="COD Alquiler",anchor=CENTER)
         self.my_tree.heading("Placa", text="Placa",anchor=CENTER)
-        self.my_tree.heading("Marca", text="Vehículo Marca",anchor=CENTER)
         self.my_tree.heading("Modelo", text="Vehículo Modelo",anchor=CENTER)
+        self.my_tree.heading("Marca", text="Vehículo Marca",anchor=CENTER)
         
 
         self.my_tree.tag_configure('oddrow', background="white")
@@ -303,7 +303,7 @@ class FrameVehiculos(CTkFrame):
             top.geometry("290x250+650+300")
             top.transient(self) 
             top.focus_force()  
-            top.grab_set()
+            #top.grab_set()
 
             cal = Calendar(top, date_pattern="dd-mm-yyyy", mindate=date.today())
             cal.pack(padx=10, pady=10)
@@ -501,7 +501,7 @@ class FrameVehiculos(CTkFrame):
             FROM vehiculo v
             LEFT JOIN alquiler a ON a.Placa_Vehiculo = v.Placa
             RIGHT JOIN marca m ON m.ID = v.ID_Marca
-            INNER JOIN modelo o ON m.ID = o.ID_Marca
+            INNER JOIN modelo o ON v.ID_Modelo = o.ID
             ORDER BY a.COD_Alquiler ASC;
         """)
 
