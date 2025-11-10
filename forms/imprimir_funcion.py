@@ -4,6 +4,7 @@ from reportlab.lib.pagesizes import letter
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Table, TableStyle, Image, Spacer
 from reportlab.lib.styles import getSampleStyleSheet
 from reportlab.lib import colors
+from datetime import datetime
 import mysql.connector
 import pandas as pd
 from forms.vista_previa import vista_previa_3,vista_previa_2
@@ -25,11 +26,15 @@ def imprimir_todos():
         doc = SimpleDocTemplate("PDF/Todos los alquilados.pdf", pagesize=letter)
         data = [df.columns[:,].tolist()] + df.values.tolist()
         
+        def fecha_pdf():
+            ahora = datetime.now()
+            return ahora.strftime("%d/%m/%Y %I:%M %p")
+
         # Crear los textos que funcionarán como etiquetas
         label0 = "<b>    <br/></b>"
         label3 = "<b>RIF:</b> J-080204204"
         label4 = "<b>Telefono:</b> 02832550911"
-        label9 = "<b>     <br/></b>"
+        label9 = f"<b>Fecha:</b> {fecha_pdf()}"
         label10 = "<b>    <br/></b>"
 
         # Crear los párrafos con los textos
@@ -39,7 +44,6 @@ def imprimir_todos():
         p_label9 = Paragraph(label9)
         p_label10 = Paragraph(label10)
 
-        # Crear el membrete con un título de alquitech
         styles = getSampleStyleSheet()
         title = "<b>Todo los Vehiculos Alquilados</b>"
         p_title = Paragraph(title, styles['Title'])
@@ -48,16 +52,15 @@ def imprimir_todos():
         imagen_path = "imagenes/membrete.jpg"
         imagen = Image(imagen_path, width=570, height=70)
         
-        # Definir las coordenadas x y y para posicionar la imagen en el PDF
         pdx = 20
         pdy = 715
         
-        imagen_2 = "imagenes/Reych.png"
+        imagen_2 = "imagenes/Reych_imp.png"
         imagen_alq = Image(imagen_2, width=130, height=110)
         
-        # Definir las coordenadas x y y para posicionar la imagen en el PDF
         x = 450
         y = 610
+
 
         # Añadir la imagen al canvas en las coordenadas especificadas
         def add_image(canvas, doc):
@@ -102,11 +105,15 @@ def imprimir_vehiculos():
         doc = SimpleDocTemplate("PDF/Vehiculos.pdf", pagesize=letter)
         data = [df.columns[:,].tolist()] + df.values.tolist()
         
+        def fecha_pdf_2():
+            ahora = datetime.now()
+            return ahora.strftime("%d/%m/%Y %I:%M %p")
+
         # Crear los textos que funcionarán como etiquetas
         label0 = "<b>    <br/></b>"
         label3 = "<b>RIF:</b> J-080204204"
         label4 = "<b>Telefono:</b> 02832550911"
-        label9 = "<b>     <br/></b>"
+        label9 = f"<b>Fecha:</b> {fecha_pdf_2()}"
         label10 = "<b>    <br/></b>"
 
         # Crear los párrafos con los textos
@@ -129,7 +136,7 @@ def imprimir_vehiculos():
         pdx = 20
         pdy = 715
         
-        imagen_2 = "imagenes/Reych.png"
+        imagen_2 = "imagenes/Reych_imp.png"
         imagen_alq = Image(imagen_2, width=130, height=110)
         
         # Definir las coordenadas x y y para posicionar la imagen en el PDF

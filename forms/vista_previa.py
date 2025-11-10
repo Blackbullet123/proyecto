@@ -39,16 +39,14 @@ def vista_previa_1():
     def open_pfd_1(): 
         os.startfile(r"PDF\datos de vehiculos detallado.pdf")
     
-    confirmar_boton = CTkButton(root,text="Confirmar",command=lambda: (root.destroy(), open_pfd_1()),corner_radius=15, 
-                                           text_color="black",width=90,height=40,cursor='hand2',
-                                           border_color="lightgreen",border_width=2,
-                                        fg_color="seagreen",hover_color="#57bd9e", font=("Helvetica", 18))
+    confirmar_boton = CTkButton(root,text="Confirmar",command=lambda: (root.destroy(), open_pfd_1()),
+                                           text_color="white",cursor='hand2',
+                                        fg_color="#00501B",hover_color="#57bd9e", font=("Arial", 14,"bold"))
     confirmar_boton.pack(padx=10,pady=3)
     
-    cancelar_boton = CTkButton(root,text="Cancelar",command=root.destroy,corner_radius=15, 
-                                           text_color="black",width=90,height=40,cursor='hand2',
-                                           border_color="lightgreen",border_width=2,
-                                        fg_color="seagreen",hover_color="#57bd9e", font=("Helvetica", 18))
+    cancelar_boton = CTkButton(root,text="Cancelar",command=root.destroy,
+                                           text_color="white",cursor='hand2',
+                                        fg_color="#00501B",hover_color="#57bd9e", font=("Arial", 14, "bold"))
     cancelar_boton.pack(padx=10,pady=3)
     root.mainloop()
     
@@ -81,16 +79,14 @@ def vista_previa_2():
     def open_pfd_2(): 
         os.startfile(r"PDF\Vehiculos.pdf")
     
-    confirmar_boton = CTkButton(root,text="Confirmar",command=lambda: (root.destroy(), open_pfd_2()),corner_radius=15, 
-                                           text_color="black",width=90,height=40,cursor='hand2',
-                                           border_color="lightgreen",border_width=2,
-                                        fg_color="seagreen",hover_color="#57bd9e", font=("Helvetica", 18))
+    confirmar_boton = CTkButton(root,text="Confirmar",command=lambda: (root.destroy(), open_pfd_2()),
+                                           text_color="white",cursor='hand2',
+                                        fg_color="#00501B",hover_color="#57bd9e", font=("Arial", 14,"bold"))
     confirmar_boton.pack(padx=10,pady=3)
     
-    cancelar_boton = CTkButton(root,text="Cancelar",command=root.destroy,corner_radius=15, 
-                                           text_color="black",width=90,height=40,cursor='hand2',
-                                           border_color="lightgreen",border_width=2,
-                                        fg_color="seagreen",hover_color="#57bd9e", font=("Helvetica", 18))
+    cancelar_boton = CTkButton(root,text="Cancelar",command=root.destroy,
+                                           text_color="white",cursor='hand2',
+                                        fg_color="#00501B",hover_color="#57bd9e", font=("Arial", 14, "bold"))
     cancelar_boton.pack(padx=10,pady=3)
     root.mainloop()
 
@@ -124,16 +120,14 @@ def vista_previa_3():
     def open_pfd_3(): 
         os.startfile(r"PDF\Todos los alquilados.pdf")
     
-    confirmar_boton = CTkButton(root,text="Confirmar",command=lambda: (root.destroy(), open_pfd_3()),corner_radius=15, 
-                                           text_color="black",width=90,height=40,cursor='hand2',
-                                           border_color="lightgreen",border_width=2,
-                                        fg_color="seagreen",hover_color="#57bd9e", font=("Helvetica", 18))
+    confirmar_boton = CTkButton(root,text="Confirmar",command=lambda: (root.destroy(), open_pfd_3()),
+                                           text_color="white",cursor='hand2',
+                                        fg_color="#00501B",hover_color="#57bd9e", font=("Arial", 14,"bold"))
     confirmar_boton.pack(padx=10,pady=3)
     
-    cancelar_boton = CTkButton(root,text="Cancelar",command=root.destroy,corner_radius=15, 
-                                           text_color="black",width=90,height=40,cursor='hand2',
-                                           border_color="lightgreen",border_width=2,
-                                        fg_color="seagreen",hover_color="#57bd9e", font=("Helvetica", 18))
+    cancelar_boton = CTkButton(root,text="Cancelar",command=root.destroy,
+                                           text_color="white",cursor='hand2',
+                                        fg_color="#00501B",hover_color="#57bd9e", font=("Arial", 14, "bold"))
     cancelar_boton.pack(padx=10,pady=3)
     root.mainloop()
     
