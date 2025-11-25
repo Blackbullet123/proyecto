@@ -69,7 +69,6 @@ class FrameNuevoVehiculo(CTkFrame):
 
         self.my_tree['columns'] = ("Placa","Marca","Modelo","Color","Año")
         for col, width in zip(self.my_tree['columns'], [140]*5):
-
             self.my_tree.column(col, anchor=CENTER, width=width)
             self.my_tree.heading(col, text=col, anchor=CENTER)
         self.my_tree.tag_configure('oddrow', background="white")
@@ -84,21 +83,30 @@ class FrameNuevoVehiculo(CTkFrame):
 
         labels = ["Placa","Color","Año"]
         self.entries = {}
+
         for i, label in enumerate(labels):
-            CTkLabel(frame_campos, text=f"{label}:", text_color="white", font=("Ubuntu",13,"bold")).grid(row=0, column=i*2, padx=(5,2), sticky="e")
-            self.entries[label.lower()] = CTkEntry(frame_campos, fg_color="#c2f1c1", text_color="black",
-                                                  border_color="#00501B", width=120, height=28)
-            self.entries[label.lower()].grid(row=0, column=i*2+1, padx=(0,8))
+            CTkLabel(frame_campos, text=f"{label}:", text_color="white",
+                    font=("Ubuntu",13,"bold")).grid(row=0, column=i*2, padx=(5,2), sticky="e")
+
+            if label == "Color":  
+                colores_comunes = ["BLANCO", "NEGRO", "GRIS", "ROJO", "AZUL", "VERDE","VINOTINTO" ,"AMARILLO", "PLATA"]
+                self.entries["color"] = CTkComboBox(frame_campos, state="readonly", values=colores_comunes, width=120)
+                self.entries["color"].grid(row=0, column=i*2+1, padx=(0,8))
+                self.entries["color"].set("")
+            else:
+                self.entries[label.lower()] = CTkEntry(frame_campos, fg_color="#c2f1c1",text_color="black", border_color="#00501B",width=120, height=28)
+                self.entries[label.lower()].grid(row=0, column=i*2+1, padx=(0,8))
+
 
         CTkLabel(frame_campos, text="Marca:", text_color="white", font=("Ubuntu",13,"bold")).grid(row=0, column=6, padx=(5,2), sticky="e")
-        self.marca_combobox = CTkComboBox(frame_campos,values=self.cargar_marcas(), width=120, command=self.actualizar_modelos)
+        self.marca_combobox = CTkComboBox(frame_campos, state="readonly",values=self.cargar_marcas(), width=120, command=self.actualizar_modelos)
         self.marca_combobox.grid(row=0, column=7, padx=(0,5))
         self.marca_combobox.set("")
         CTkButton(frame_campos, text="+", width=25, height=28, fg_color="#00BFA5",
                   hover_color="#009688", command=self.agregar_nueva_marca).grid(row=0, column=8, padx=(0,8))
 
         CTkLabel(frame_campos, text="Modelo:", text_color="white", font=("Ubuntu",13,"bold")).grid(row=0, column=9, padx=(5,2), sticky="e")
-        self.modelo_combobox = CTkComboBox(frame_campos, values=[], width=120)
+        self.modelo_combobox = CTkComboBox(frame_campos,state="readonly", values=[], width=120)
         self.modelo_combobox.grid(row=0, column=10, padx=(0,5))
         self.modelo_combobox.set("")
         CTkButton(frame_campos, text="+", width=25, height=28, fg_color="#00BFA5",
@@ -122,9 +130,7 @@ class FrameNuevoVehiculo(CTkFrame):
         CTkButton(frame_botones, text="Eliminar", fg_color="#D32F2F", hover_color="#E53935",
                   text_color="white", font=("Ubuntu",13,"bold"), width=120, command=self.eliminar_vehiculo).grid(row=0,column=2,padx=15,pady=5)
 
-
         self.entries['placa'].bind("<KeyRelease>", lambda e: self.entry_mayusculas(self.entries['placa']))
-        self.entries['color'].bind("<KeyRelease>", lambda e: self.entry_mayusculas(self.entries['color']))
 
     def cargar_marcas(self):
         self.mycursor.execute("SELECT Nombre FROM marca ORDER BY Nombre")
@@ -273,8 +279,12 @@ class FrameNuevoVehiculo(CTkFrame):
             self.my_tree.insert('', 'end', values=r, tags=(tag,))
 
     def limpiar_campos(self):
-        for entry in self.entries.values():
-            entry.delete(0, tk.END)
+        for key, widget in self.entries.items():
+            if isinstance(widget, CTkComboBox):
+                widget.set("")
+            else:
+                widget.delete(0, tk.END)
+
         self.marca_combobox.set("")
         self.modelo_combobox.set("")
         self.img_label.configure(image="", text="")
@@ -291,8 +301,7 @@ class FrameNuevoVehiculo(CTkFrame):
                 self.marca_combobox.set(datos[1])
                 self.actualizar_modelos(datos[1])
                 self.modelo_combobox.set(datos[2])
-                self.entries['color'].delete(0, tk.END)
-                self.entries['color'].insert(0, datos[3])
+                self.entries['color'].set(datos[3])
                 self.entries['año'].delete(0, tk.END)
                 self.entries['año'].insert(0, datos[4])
 
@@ -334,4 +343,3 @@ class FrameNuevoVehiculo(CTkFrame):
         for i, r in enumerate(rows):
             tag = 'evenrow' if i % 2 == 0 else 'oddrow'
             self.my_tree.insert('', 'end', values=r, tags=(tag,))
-    

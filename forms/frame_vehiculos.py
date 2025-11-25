@@ -42,6 +42,7 @@ class FrameVehiculos(CTkFrame):
             modelo_entry.delete(0,END)
             mostrar_imagen("default")
             self.update_ci_prefix()
+            self.update_tlf_prefix()
 
 
         def query_db():
@@ -377,12 +378,18 @@ class FrameVehiculos(CTkFrame):
         dir_entry = CTkEntry(data_frame,fg_color="#c2f1c1",text_color="black", border_color="#00501B")
         dir_entry.grid(row=1,column=3,padx=10,pady=10)
 
+        self.tipo_tlf_var = StringVar(value="0414")
+        self.numero_tlf_var = StringVar()
+
         cell_label = CTkLabel(data_frame, text="Teléfono",fg_color='transparent',text_color="black",
                         font=("Ubuntu",16))
         cell_label.grid(row=1,column=4, padx=10,pady=10)
-        cell_entry = CTkEntry(data_frame,fg_color="#c2f1c1",text_color="black", border_color="#00501B", validate="key",
-        validatecommand=(data_frame.register(validate_entry), "%S","%P"))
+        cell_entry = CTkEntry(data_frame,fg_color="#c2f1c1",textvariable=self.numero_tlf_var ,text_color="black", border_color="#00501B")
         cell_entry.grid(row=1,column=5,padx=10,pady=10)
+
+        menu_tlf = Menu(cell_entry,bg="#333333",fg="white", activebackground="#0761AA", tearoff=0)
+        for tipo in ["0414", "0424", "0416", "0426", "0412", "0422"]:
+            menu_tlf.add_command(label=tipo, command=lambda t=tipo: self.select_tipo_tlf(t, cell_entry))
 
         f1_label = CTkLabel(data_frame, text="Fecha Inicial",fg_color='transparent',text_color="black",
                         font=("Ubuntu",16))
@@ -419,6 +426,9 @@ class FrameVehiculos(CTkFrame):
         ci_entry.bind("<Button-1>", lambda e: self.open_tipo_menu(e, menu_tipo))
         ci_entry.bind("<KeyRelease>", self.on_ci_key_release)
         ci_entry.bind("<KeyPress>", self.proteger_prefijo)
+        cell_entry.bind("<Button-1>", lambda e: self.open_tipo_menu_tlf(e, menu_tlf))
+        cell_entry.bind("<KeyRelease>", self.on_tlf_key_release)
+        cell_entry.bind("<KeyPress>", self.guardar_prefijo)
         r_name_entry.bind("<KeyRelease>", lambda e: mayusculas(e, r_name_entry))
         apell_entry.bind("<KeyRelease>", lambda e: mayusculas(e, apell_entry))
         e_name_entry.bind("<KeyRelease>", lambda e: mayusculas(e, e_name_entry))
@@ -426,6 +436,7 @@ class FrameVehiculos(CTkFrame):
         f2_entry.bind("<Button-1>", lambda e: abrir_calendario(e, f2_entry))
 
         self.update_ci_prefix()
+        self.update_tlf_prefix()
 
         get_current_date()
 
@@ -451,6 +462,7 @@ class FrameVehiculos(CTkFrame):
             mar_entry.insert(0,values[2])
             modelo_entry.insert(0,values[3])
             self.update_ci_prefix()
+            self.update_tlf_prefix()
             mostrar_imagen(values[1])
 
         def mostrar_imagen(placa):
@@ -560,4 +572,58 @@ class FrameVehiculos(CTkFrame):
         if cursor_pos <= 2:
             if event.keysym in ("BackSpace", "Delete", "Left"):
                 return "break"
+
+    
+    def open_tipo_menu_tlf(self, event, menu):
+        x = event.widget.winfo_rootx()
+        y = event.widget.winfo_rooty() + event.widget.winfo_height()
+        menu.tk_popup(x, y)
+
+
+    def select_tipo_tlf(self, tipo, entry):
+        self.tipo_tlf_var.set(tipo)
+        self.update_tlf_prefix()
+        entry.focus_set()
+        
+        try:
+            entry.unpost() 
+        except Exception:
+            pass
+
+    def update_tlf_prefix(self):
+        current = self.numero_tlf_var.get()
+        numeros = current.split("-", 1)[-1] if "-" in current else current
+        self.numero_tlf_var.set(f"{self.tipo_tlf_var.get()}-{numeros}")
+
+        ci_entry_widget = self.numero_tlf_var._tk.globalgetvar(str(self.numero_tlf_var))
+        try:
+            pass
+        except Exception:
+            pass
+
+
+    def on_tlf_key_release(self, event):
+        current = self.numero_tlf_var.get()
+        if "-" in current:
+            tipo, numeros = current.split("-", 1)
+        else:
+            tipo, numeros = self.tipo_tlf_var.get(), current
+
+        numeros = ''.join(filter(str.isdigit, numeros))[:7]
+        self.numero_tlf_var.set(f"{tipo}-{numeros}")
+        entry_widget = event.widget
+        entry_widget.icursor(len(f"{tipo}-") + len(numeros))
+
+    def guardar_prefijo(self, event):
+        entry = event.widget
+        cursor_pos = entry.index(tk.INSERT)
+
+        prefijo = f"{self.tipo_tlf_var.get()}-"
+        len_pref = len(prefijo)
+        if cursor_pos < len_pref:
+            entry.icursor(len_pref)
+            return "break"
+        if event.keysym == "BackSpace" and cursor_pos == len_pref:
+            return "break"
+
 

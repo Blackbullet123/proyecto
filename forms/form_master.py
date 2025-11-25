@@ -10,7 +10,7 @@ from forms.frame_vehiculos import FrameVehiculos
 from forms.frame_nuevo_vehiculo import FrameNuevoVehiculo
 from forms.frame_mantenimiento import FrameMantenimiento
 from forms.imprimir import ventana_imprimir
-from forms.frame_respaldo import FrameBackup
+from forms.frame_configuracion import FrameConfiguracion
 import os
 from tkcalendar import Calendar
 from datetime import date, datetime
@@ -27,7 +27,7 @@ class Principal:
         self.root = CTk()
         self.root.title('ALQUITECH')
         self.root.geometry("1280x650+35+15")
-        # self.root.iconbitmap("imagenes/letra-r.ico")
+        self.root.iconbitmap("imagenes/letra-r.ico")
         self.root.config(background="#EEEEEE")
 
         self.barra_visible = True
@@ -267,7 +267,7 @@ class Principal:
         self.frame_datos_detallados = FrameDatosDetallados(self.frame_principal, self)
         self.frame_vehiculos_disponibles = FrameVehiculos(self.frame_main,self)
         self.frame_mantenimeinto = FrameMantenimiento(self.frame_main, self)
-        self.frame_backup = FrameBackup(self.frame_main, self)
+        self.frame_configuracion = FrameConfiguracion(self.frame_main, self)
 
 
         frame_top = CTkFrame(self.frame_form_l, fg_color="#000000")
@@ -322,14 +322,6 @@ class Principal:
                                   font=("Ubuntu",17), anchor=W, image=nuevo_vehiculo_icon, compound="left")
         nuevo_vehiculo.pack(pady=5, padx=2, fill=X)
 
-        img = Image.open("imagenes/backup.png")
-        backup_restore_icon = CTkImage(dark_image=img, light_image=img, size=(24,24))
-        backup_restore = CTkButton(frame_botones, text="Backup y Restore",fg_color="transparent",text_color="white",
-                                  width=150, height=40,hover_color="#00501B",
-                                  font=("Ubuntu",17), anchor=W, image=backup_restore_icon, compound="left",
-                                  command=self.mostrar_respaldo)
-        backup_restore.pack(pady=5, padx=2, fill=X)
-
         img = Image.open("imagenes/mantenimiento.png")
         mantenimiento_icon = CTkImage(dark_image=img, light_image=img, size=(24,24))
         mantenimiento = CTkButton(frame_botones, text="Mantenimiento",fg_color="transparent",text_color="white",
@@ -337,6 +329,14 @@ class Principal:
                                   font=("Ubuntu",17), anchor=W, image=mantenimiento_icon, compound="left",
                                   command=self.mostrar_mantenimiento)
         mantenimiento.pack(pady=5, padx=2, fill=X)
+
+        img = Image.open("imagenes/configuraciones.png")
+        configuracion_icon = CTkImage(dark_image=img, light_image=img, size=(24,24))
+        configuracion = CTkButton(frame_botones, text="Configuración",fg_color="transparent",text_color="white",
+                                  width=150, height=40,hover_color="#00501B",
+                                  font=("Ubuntu",17), anchor=W, image=configuracion_icon, compound="left",
+                                  command=self.mostrar_configuracion)
+        configuracion.pack(pady=5, padx=2, fill=X)
 
         img = Image.open("imagenes/ayuda.png")
         ayuda_icon = CTkImage(dark_image=img, light_image=img, size=(24,24))
@@ -745,7 +745,7 @@ class Principal:
 
     def mostrar_vehiculos_disponibles(self):
         self.frame_principal.pack_forget()
-        self.frame_backup.pack_forget()
+        self.frame_configuracion.pack_forget()
         self.frame_mantenimeinto.pack_forget()
         self.frame_nuevo_vehiculo.pack_forget()
         self.frame_vehiculos_disponibles.pack(expand=True, fill=BOTH)
@@ -753,7 +753,7 @@ class Principal:
 
     def mostrar_nuevo_vehiculo(self):
         self.frame_principal.pack_forget()
-        self.frame_backup.pack_forget()
+        self.frame_configuracion.pack_forget()
         self.frame_mantenimeinto.pack_forget()
         self.frame_vehiculos_disponibles.pack_forget()
         self.frame_nuevo_vehiculo.pack(expand=True, fill=BOTH)
@@ -762,20 +762,20 @@ class Principal:
     def mostrar_mantenimiento(self):
         self.frame_principal.pack_forget()
         self.frame_nuevo_vehiculo.pack_forget()
-        self.frame_backup.pack_forget()
+        self.frame_configuracion.pack_forget()
         self.frame_vehiculos_disponibles.pack_forget()
         self.frame_mantenimeinto.pack(expand=True, fill=BOTH)
 
-    def mostrar_respaldo(self):
+    def mostrar_configuracion(self):
         self.frame_mantenimeinto.pack_forget()
         self.frame_principal.pack_forget()
         self.frame_nuevo_vehiculo.pack_forget()
         self.frame_vehiculos_disponibles.pack_forget()
-        self.frame_backup.pack(expand=True, fill=BOTH)
+        self.frame_configuracion.pack(expand=True, fill=BOTH)
 
     def mostrar_contenido_principal(self):
         self.frame_vehiculos_disponibles.pack_forget()
-        self.frame_backup.pack_forget()
+        self.frame_configuracion.pack_forget()
         self.frame_nuevo_vehiculo.pack_forget()
         self.frame_mantenimeinto.pack_forget()
         self.frame_principal.pack(expand=True, fill=BOTH)

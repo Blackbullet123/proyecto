@@ -199,19 +199,26 @@ class FrameBackup(CTkFrame):
             except Exception as e:
                 messagebox.showerror("Error", f"Excepción inesperada:\n{str(e)}")
 
-                
 
-        frame_superior = CTkFrame(self, fg_color="#EEEEEE")
+
+        self.frame_main = CTkFrame(self, fg_color="#EEEEEE")
+        self.frame_main.pack(fill=BOTH, expand=True)              
+
+        frame_superior = CTkFrame(self.frame_main, fg_color="#EEEEEE")
         frame_superior.pack(pady=10, fill=X, expand=True, side="top")
+
+        volver = CTkButton(frame_superior, text="← Volver", fg_color="#0E0F0F", cursor="hand2", text_color="white",
+                           width=100, height=40)
+        volver.pack(pady=10, padx=20, side=LEFT)
 
         titulo = CTkLabel(frame_superior, text="Backup & Restore",
                         text_color="#00501B", font=("Impact", 45))
         titulo.pack(pady=0, padx=60 ,side=RIGHT)
 
-        frame_principal = Frame(self, bg="#EEEEEE")
+        frame_principal = Frame(self.frame_main, bg="#EEEEEE")
         frame_principal.pack(fill=BOTH, expand=True, anchor="center")
 
-        frame_inferior = Frame(self, bg="#EEEEEE")
+        frame_inferior = Frame(self.frame_main, bg="#EEEEEE")
         frame_inferior.pack(fill="x", expand=True)
 
         frame_backup_contenedor = CTkFrame(frame_principal,fg_color="#EEEEEE")
@@ -267,3 +274,5 @@ class FrameBackup(CTkFrame):
         lbl_ultimo_restore.pack(anchor="w", pady=2)
 
         actualizar_labels()
+
+
