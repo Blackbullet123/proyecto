@@ -496,7 +496,7 @@ class Principal:
                 return False
             return text.isdecimal()
         
-        def abrir_calendario(event, entry):
+        def abrir_calendario(entry):
             top = tk.Toplevel(self.root)
             top.title("Seleccionar fecha")
             top.geometry("290x250+650+300")
