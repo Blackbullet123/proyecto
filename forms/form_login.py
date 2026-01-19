@@ -19,18 +19,12 @@ class App:
     
     def Validar_login_2(self, rif, password):
         with sqlite3.connect(self.db_name) as conexion:
-            cursor = conexion.cursor()
-            cursor.execute("SELECT Contraseña FROM Usuarios_2 WHERE Usuario = ?", (rif,))
-            resultado = cursor.fetchone()
+            cursor=conexion.cursor()
+            sql= f"SELECT * FROM Usuarios_2 WHERE Usuario = '{rif}' AND Contraseña = '{password}'"
+            cursor.execute(sql)
+            validacion= cursor.fetchall()
             cursor.close()
-            if resultado is None:
-                return False
-            contraseña_almacenada = resultado[0]
-            if bcrypt.checkpw(self.password_login.get().encode('utf-8'), contraseña_almacenada.encode('utf-8')):
-                return True
-            else:
-                return False
-    
+            return validacion
     
     
     def Validar_login(self, rif, password):
