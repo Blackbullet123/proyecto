@@ -1,3 +1,3 @@
-from forms.form_master import Principal
+from forms.form_login import App
 
-Principal() 
+App()
