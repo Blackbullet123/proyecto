@@ -9,6 +9,47 @@ from pathlib import Path
 
 def get_project_root() -> Path:
     return Path(__file__).parent if "__file__" in locals() else Path.cwd()
+
+def vista_previa_grafica():
+    def previsualizar_pdf(pdf_path):
+        pdf = fitz.open(pdf_path)
+        primera_pagina = pdf[0]
+        imagen_bytes = primera_pagina.get_pixmap().tobytes()
+        pdf.close()
+        return imagen_bytes
+
+    pdf_path = "PDF\\Grafica.pdf"
+    if not os.path.exists(pdf_path):
+        raise FileNotFoundError(f"El archivo {pdf_path} no existe.")
+    imagen_bytes = previsualizar_pdf(pdf_path)
+
+    root = tk.Toplevel()
+    root.title("Imprimir")
+    root.geometry("700x650+400+40")
+    image = Image.open(io.BytesIO(imagen_bytes))
+    photo = ImageTk.PhotoImage(image.resize((700, 500)))
+
+    label = tk.Label(root, image=photo)
+    label.image = photo
+    label.pack(padx=10, pady=5)
+    titulo = tk.Label(root, text="¿Estás seguro que deseas exportar en PDF?", font=('Helvetica', 16), fg="black")
+    titulo.pack(padx=10, pady=5)
+
+    def open_pdf():
+        os.startfile(pdf_path)
+
+    confirmar_boton = CTkButton(root, text="Confirmar", command=lambda: (root.destroy(), open_pdf()),
+                                text_color="white", cursor='hand2',
+                                fg_color="#00501B", hover_color="#57bd9e", font=("Arial", 14, "bold"))
+    confirmar_boton.pack(padx=10, pady=3)
+
+    cancelar_boton = CTkButton(root, text="Cancelar", command=root.destroy,
+                               text_color="white", cursor='hand2',
+                               fg_color="#00501B", hover_color="#57bd9e", font=("Arial", 14, "bold"))
+    cancelar_boton.pack(padx=10, pady=3)
+    root.mainloop()
+
+
     
 def vista_previa_1():
     

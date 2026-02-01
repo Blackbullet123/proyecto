@@ -9,6 +9,7 @@ from forms.frame_datos import FrameDatosDetallados
 from forms.frame_vehiculos import FrameVehiculos
 from forms.frame_nuevo_vehiculo import FrameNuevoVehiculo
 from forms.frame_mantenimiento import FrameMantenimiento
+from forms.frame_estadisticas import FrameEstadisticas
 from forms.imprimir import ventana_imprimir
 from forms.frame_configuracion import FrameConfiguracion
 import os
@@ -237,6 +238,7 @@ class Principal:
                 messagebox.showerror(titulo, mensaje)
             finally:
                 self.actualizar_tree()
+                self.frame_estadisticas.actualizar_grafico()
                 clear_entries()
 
             
@@ -268,6 +270,7 @@ class Principal:
         self.frame_vehiculos_disponibles = FrameVehiculos(self.frame_main,self)
         self.frame_mantenimeinto = FrameMantenimiento(self.frame_main, self)
         self.frame_configuracion = FrameConfiguracion(self.frame_main, self)
+        self.frame_estadisticas = FrameEstadisticas(self.frame_main, self)
 
 
         frame_top = CTkFrame(self.frame_form_l, fg_color="#000000")
@@ -307,13 +310,6 @@ class Principal:
                                     command=self.mostrar_vehiculos_disponibles)
         alquilar.pack(pady=5, padx=2, fill=X)
 
-        '''img = Image.open("imagenes/registro.png")
-        datos_icon = CTkImage(dark_image=img, light_image=img, size=(24,24))
-        date_detalles = CTkButton(frame_botones, text="Datos detallados",fg_color="transparent",text_color="white",
-                                  width=150, height=40,hover_color="#00501B",
-                                  font=("Ubuntu",17), anchor=W, image=datos_icon, compound="left",
-                                  command=self.mostrar_datos_detallados)
-        date_detalles.pack(pady=5, padx=2, fill=X)'''
 
         img = Image.open("imagenes/nuevo.png")
         nuevo_vehiculo_icon = CTkImage(dark_image=img, light_image=img, size=(24,24))
@@ -330,6 +326,14 @@ class Principal:
                                   command=self.mostrar_mantenimiento)
         mantenimiento.pack(pady=5, padx=2, fill=X)
 
+        img = Image.open("imagenes/estadisticas.png")
+        datos_icon = CTkImage(dark_image=img, light_image=img, size=(24,24))
+        date_detalles = CTkButton(frame_botones, text="Estadisticas",fg_color="transparent",text_color="white",
+                                  width=150, height=40,hover_color="#00501B",
+                                  font=("Ubuntu",17), anchor=W, image=datos_icon, compound="left",
+                                  command=self.mostrar_estadisticas)
+        date_detalles.pack(pady=5, padx=2, fill=X)
+
         img = Image.open("imagenes/configuraciones.png")
         configuracion_icon = CTkImage(dark_image=img, light_image=img, size=(24,24))
         configuracion = CTkButton(frame_botones, text="Configuración",fg_color="transparent",text_color="white",
@@ -338,13 +342,13 @@ class Principal:
                                   command=self.mostrar_configuracion)
         configuracion.pack(pady=5, padx=2, fill=X)
 
-        img = Image.open("imagenes/ayuda.png")
+        '''img = Image.open("imagenes/ayuda.png")
         ayuda_icon = CTkImage(dark_image=img, light_image=img, size=(24,24))
         ayuda = CTkButton(frame_botones, text="Ayuda",fg_color="transparent",text_color="white",
                                   width=150, height=40,hover_color="#00501B",
                                   font=("Ubuntu",17), anchor=W, image=ayuda_icon, compound="left"
                                   , command=abrir_pdf)
-        ayuda.pack(pady=5,padx=2, fill=X)
+        ayuda.pack(pady=5,padx=2, fill=X)'''
 
         self.ocultar_btn = CTkButton(frame_ocultar, text="☰ Ocultar",
                                      text_color="white", fg_color="#0E0F0F",hover_color="#00501B",
@@ -747,6 +751,7 @@ class Principal:
         self.frame_principal.pack_forget()
         self.frame_configuracion.pack_forget()
         self.frame_mantenimeinto.pack_forget()
+        self.frame_estadisticas.pack_forget()
         self.frame_nuevo_vehiculo.pack_forget()
         self.frame_vehiculos_disponibles.pack(expand=True, fill=BOTH)
         self.frame_vehiculos_disponibles.actualizar_tree_2()
@@ -755,6 +760,7 @@ class Principal:
         self.frame_principal.pack_forget()
         self.frame_configuracion.pack_forget()
         self.frame_mantenimeinto.pack_forget()
+        self.frame_estadisticas.pack_forget()
         self.frame_vehiculos_disponibles.pack_forget()
         self.frame_nuevo_vehiculo.pack(expand=True, fill=BOTH)
         self.frame_nuevo_vehiculo.cargar_marcas()
@@ -763,6 +769,7 @@ class Principal:
         self.frame_principal.pack_forget()
         self.frame_nuevo_vehiculo.pack_forget()
         self.frame_configuracion.pack_forget()
+        self.frame_estadisticas.pack_forget()
         self.frame_vehiculos_disponibles.pack_forget()
         self.frame_mantenimeinto.pack(expand=True, fill=BOTH)
 
@@ -770,13 +777,23 @@ class Principal:
         self.frame_mantenimeinto.pack_forget()
         self.frame_principal.pack_forget()
         self.frame_nuevo_vehiculo.pack_forget()
+        self.frame_estadisticas.pack_forget()
         self.frame_vehiculos_disponibles.pack_forget()
         self.frame_configuracion.pack(expand=True, fill=BOTH)
+
+    def mostrar_estadisticas(self):
+        self.frame_mantenimeinto.pack_forget()
+        self.frame_principal.pack_forget()
+        self.frame_nuevo_vehiculo.pack_forget()
+        self.frame_vehiculos_disponibles.pack_forget()
+        self.frame_configuracion.pack_forget()
+        self.frame_estadisticas.pack(expand=True, fill=BOTH)
 
     def mostrar_contenido_principal(self):
         self.frame_vehiculos_disponibles.pack_forget()
         self.frame_configuracion.pack_forget()
         self.frame_nuevo_vehiculo.pack_forget()
+        self.frame_estadisticas.pack_forget()
         self.frame_mantenimeinto.pack_forget()
         self.frame_principal.pack(expand=True, fill=BOTH)
         self.actualizar_tree()
