@@ -841,14 +841,3 @@ class Principal:
     def no_ver(self):
         self.ver_mas.place_forget()
         self.ver_menos.place(x=10, y=2)
-
-def abrir_pdf():
-    ruta_pdf = get_project_root() / "PDF" / "manual.pdf"
-    
-    if os.path.exists(ruta_pdf):
-        url_pdf = f"file://{ruta_pdf.absolute()}"
-        webbrowser.open_new(url_pdf)
-
-pdf_path = get_project_root() / "PDF" / "manual.pdf"        
-ruta_pdf = pdf_path
-

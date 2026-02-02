@@ -10,7 +10,7 @@ class VentanaCambiarUsuario(CTkToplevel):
         self.controlador = controlador
 
         self.title("Cambiar usuario")
-        self.geometry("350x300+350+150")
+        self.geometry("350x300+550+250")
         self.resizable(False, False)
         self.grab_set()
         self.focus_force()
