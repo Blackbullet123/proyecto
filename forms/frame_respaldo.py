@@ -2,15 +2,25 @@ from customtkinter import *
 from tkinter import *
 import tkinter as tk
 from tkinter import messagebox, filedialog
+import mysql.connector
 import subprocess
 import datetime
 import os
 import platform
 
-class FrameBackup(CTkFrame):
-    def __init__(self, parent, controlador):
-        super().__init__(parent, fg_color='#EEEEEE')
+class FrameBackup(CTkToplevel):
+    def __init__(self, controlador):
+        super().__init__()
+        
         self.controlador = controlador
+
+        self.title("Respaldo")
+        self.geometry("800x650+205+15")
+        self.resizable(False, False)
+        self.grab_set()
+        self.focus_force()
+
+
 
         HOST = "localhost"
         USUARIO = "root"
@@ -199,6 +209,9 @@ class FrameBackup(CTkFrame):
             except Exception as e:
                 messagebox.showerror("Error", f"Excepción inesperada:\n{str(e)}")
 
+        def volver():
+            self.destroy()
+
 
 
         self.frame_main = CTkFrame(self, fg_color="#EEEEEE")
@@ -208,7 +221,7 @@ class FrameBackup(CTkFrame):
         frame_superior.pack(pady=10, fill=X, expand=True, side="top")
 
         volver = CTkButton(frame_superior, text="← Volver", fg_color="#0E0F0F", cursor="hand2", text_color="white",
-                           width=100, height=40)
+                           width=100, command=volver,height=40)
         volver.pack(pady=10, padx=20, side=LEFT)
 
         titulo = CTkLabel(frame_superior, text="Backup & Restore",

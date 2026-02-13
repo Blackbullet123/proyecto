@@ -36,6 +36,12 @@ PRIMARY KEY(Placa),
 FOREIGN KEY(ID_Marca) REFERENCES marca(ID)
 );
 
+ALTER TABLE vehiculo ADD COLUMN ID_Modelo INT;
+ALTER TABLE vehiculo ADD FOREIGN KEY (ID_Modelo) REFERENCES modelo(ID);
+
+ALTER TABLE vehiculo ADD COLUMN dias_mantenimiento INT DEFAULT 30;
+
+
 INSERT INTO `control_alquiler_Reych`.`vehiculo` (`Placa`,`Color`,`Año`,`ID_Marca`,`ID_Modelo`) VALUES ('AB928BQ','BLANCO',2012,1,1);
 INSERT INTO `control_alquiler_Reych`.`vehiculo` (`Placa`,`Color`,`Año`,`ID_Marca`,`ID_Modelo`) VALUES ('AG851MM','VINOTINTO',2012,1,1);
 INSERT INTO `control_alquiler_Reych`.`vehiculo` (`Placa`,`Color`,`Año`,`ID_Marca`,`ID_Modelo`) VALUES ('AH928FK','VINOTINTO',2012,1,1);
@@ -57,9 +63,6 @@ INSERT INTO `control_alquiler_Reych`.`vehiculo` (`Placa`,`Color`,`Año`,`ID_Marc
 INSERT INTO `control_alquiler_Reych`.`vehiculo` (`Placa`,`Color`,`Año`,`ID_Marca`,`ID_Modelo`) VALUES ('GT665GK','BLANCO',2009,3,3);
 INSERT INTO `control_alquiler_Reych`.`vehiculo` (`Placa`,`Color`,`Año`,`ID_Marca`,`ID_Modelo`) VALUES ('GW772WW','GRIS',2014,4,4);
 
-ALTER TABLE vehiculo ADD COLUMN ID_Modelo INT;
-ALTER TABLE vehiculo ADD FOREIGN KEY (ID_Modelo) REFERENCES modelo(ID);
-
 
 CREATE TABLE representante(
 CI VARCHAR(20) NOT NULL,
@@ -73,7 +76,7 @@ CREATE TABLE contratista(
 RIF VARCHAR(20) NOT NULL,
 nombre VARCHAR(255) NOT NULL,
 direccion VARCHAR(450) NOT NULL,
-telefono VARCHAR(255) NOT NULL,
+telefono VARCHAR(20) NOT NULL,
 Representante_CI VARCHAR(20) NOT NULL,
 PRIMARY KEY(RIF),
 FOREIGN KEY(Representante_CI) REFERENCES representante(CI)
@@ -101,5 +104,3 @@ CREATE TABLE mantenimiento (
     Costo DECIMAL(10,2),
     FOREIGN KEY (Placa) REFERENCES vehiculo(Placa)
 );
-
-

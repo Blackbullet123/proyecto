@@ -2,6 +2,7 @@ from customtkinter import *
 from tkinter import *
 from PIL import Image, ImageTk
 from forms.cambiar_cuenta import VentanaCambiarUsuario
+from forms.frame_respaldo import FrameBackup
 import webbrowser
 import os   
 from pathlib import Path
@@ -14,6 +15,16 @@ class FrameConfiguracion(CTkFrame):
     def __init__(self, parent, controlador):
         super().__init__(parent, fg_color='#EEEEEE')
         self.controlador = controlador
+
+        self.datos_conexion = {
+            "host": "localhost",
+            "user": "root",
+            "password": "123456",
+            "database": "control_alquiler_Reych",
+            "port": "3306",
+            "mysql_path": r"C:\Program Files\MySQL\MySQL Server 8.0\bin\mysql.exe"
+        }
+
 
         frame_superior = CTkFrame(self, fg_color="#EEEEEE")
         frame_superior.pack(fill=X, pady=10)
@@ -45,7 +56,7 @@ class FrameConfiguracion(CTkFrame):
         backup_icon = CTkImage(dark_image=img, light_image=img, size=(65,65))
         self.btn_backup = CTkButton(self.grid_botones,text="Backup & Restore",font=("Ubuntu",20,"bold"),fg_color="#E9EEF3",
                                     hover_color="#D5DBE0",text_color="#1F2937",corner_radius=16,border_width=1,
-                            border_color="#E0E3E7",height=140,image=backup_icon, compound="top")
+                            border_color="#E0E3E7",height=140, command=self.abrir_backup,image=backup_icon,compound="top")
         self.btn_backup.grid(row=0, column=1, padx=15, pady=15, sticky="nsew")
 
 
@@ -66,6 +77,10 @@ class FrameConfiguracion(CTkFrame):
 
     def cambiar_cuenta(self):
         ventana_cambiar_usuario = VentanaCambiarUsuario(self.controlador)
+
+    def abrir_backup(self):
+        ventana_backup = FrameBackup(self.controlador)
+
 
 
 def abrir_pdf():

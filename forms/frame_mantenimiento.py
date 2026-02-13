@@ -11,12 +11,16 @@ class FrameMantenimiento(CTkFrame):
         super().__init__(parent, fg_color='#EEEEEE')
         self.controlador = controlador
 
+        self.COLOR_MANTENIMIENTO_ATRASADO = "#FF3B30" 
+        self.COLOR_SIN_REGISTRO = "#007AFF"         
+        self.COLOR_OPTIMO = "#34C759" 
+
         frame_superior = CTkFrame(self, fg_color="#EEEEEE")
         frame_superior.pack(pady=10, fill=X)
 
         titulo = CTkLabel(frame_superior, text="MANTENIMIENTO",
                           text_color="#00501B", font=("Impact", 45))
-        titulo.pack(pady=0, padx=20, side=LEFT)
+        titulo.pack(pady=0, padx=20, side=RIGHT)
 
         frame_centro_container = CTkFrame(self, fg_color="#EEEEEE")
         frame_centro_container.pack(expand=True, fill=BOTH, pady=10)
@@ -30,6 +34,29 @@ class FrameMantenimiento(CTkFrame):
 
         self.frame_centro = CTkFrame(self.canvas, fg_color="#EEEEEE")
         self.canvas.create_window((0, 0), window=self.frame_centro, anchor="nw")
+
+        frame_leyenda = CTkFrame(frame_superior, fg_color="transparent")
+        frame_leyenda.pack(side=LEFT, padx=20)
+
+        def crear_item_leyenda(parent, color, texto):
+            item = CTkFrame(parent, fg_color="transparent")
+            item.pack(side=LEFT, padx=10)
+
+            canvas = CTkCanvas(item, width=14, height=14, bg="#EEEEEE", highlightthickness=0)
+            canvas.pack(side=LEFT)
+            canvas.create_oval(2, 2, 12, 12, fill=color, outline=color)
+
+            CTkLabel(
+                item,
+                text=texto,
+                font=("Ubuntu", 13, "bold"),
+                text_color="black"
+            ).pack(side=LEFT, padx=6)
+
+        crear_item_leyenda(frame_leyenda, self.COLOR_MANTENIMIENTO_ATRASADO, "Mantenimiento necesario")
+        crear_item_leyenda(frame_leyenda, self.COLOR_SIN_REGISTRO, "Sin registro")
+        crear_item_leyenda(frame_leyenda, self.COLOR_OPTIMO, "Óptimas condiciones")
+
 
         def on_configure(event):
             self.canvas.configure(scrollregion=self.canvas.bbox("all"))
@@ -145,16 +172,16 @@ class FrameMantenimiento(CTkFrame):
             mydb.close()
 
             if not resultado:
-                return "blue"
+                return self.COLOR_SIN_REGISTRO
 
             fecha_ultimo = resultado[0]
             dias_pasados = (datetime.now().date() - fecha_ultimo).days
             dias_restantes = dias_mantenimiento - dias_pasados
 
             if dias_restantes <= 1:
-                return "red"
+                return self.COLOR_MANTENIMIENTO_ATRASADO
             else:
-                return "green"
+                return self.COLOR_OPTIMO
 
         except mysql.connector.Error as err:
             print(f"Error al obtener marcador de mantenimiento: {err}")
@@ -304,7 +331,7 @@ class FrameMantenimiento(CTkFrame):
                 mydb.commit()
                 mydb.close()
                 messagebox.showinfo("Éxito", f"Mantenimiento registrado para {placa}.")
-                self.cargar_vehiculos()  # refresca tarjetas
+                self.cargar_vehiculos() 
                 ventana.destroy()
             except mysql.connector.Error as err:
                 messagebox.showerror("Error al guardar", f"No se pudo registrar:\n{err}")
