@@ -8,31 +8,38 @@ import os
 
 class FrameMantenimiento(CTkFrame):
     def __init__(self, parent, controlador):
-        super().__init__(parent, fg_color='#EEEEEE')
+        super().__init__(parent, fg_color=('#EEEEEE', '#1A1A1A'))
+
         self.controlador = controlador
 
         self.COLOR_MANTENIMIENTO_ATRASADO = "#FF3B30" 
         self.COLOR_SIN_REGISTRO = "#007AFF"         
         self.COLOR_OPTIMO = "#34C759" 
 
-        frame_superior = CTkFrame(self, fg_color="#EEEEEE")
+        frame_superior = CTkFrame(self, fg_color=("#EEEEEE", "#1A1A1A"))
         frame_superior.pack(pady=10, fill=X)
 
+
         titulo = CTkLabel(frame_superior, text="MANTENIMIENTO",
-                          text_color="#00501B", font=("Impact", 45))
+                          text_color=("#00501B", "#00FF7F"), font=("Impact", 45))
         titulo.pack(pady=0, padx=20, side=RIGHT)
 
-        frame_centro_container = CTkFrame(self, fg_color="#EEEEEE")
+
+        frame_centro_container = CTkFrame(self, fg_color=("#EEEEEE", "#1A1A1A"))
         frame_centro_container.pack(expand=True, fill=BOTH, pady=10)
 
-        self.canvas = CTkCanvas(frame_centro_container, bg="#EEEEEE", highlightthickness=0)
+
+        bg_color = "#EEEEEE" if get_appearance_mode() == "Light" else "#1A1A1A"
+        self.canvas = CTkCanvas(frame_centro_container, bg=bg_color, highlightthickness=0)
         self.canvas.pack(side=LEFT, fill=BOTH, expand=True)
+
 
         scroll = ttk.Scrollbar(frame_centro_container, orient="vertical", command=self.canvas.yview)
         scroll.pack(side=RIGHT, fill=Y)
         self.canvas.configure(yscrollcommand=scroll.set)
 
-        self.frame_centro = CTkFrame(self.canvas, fg_color="#EEEEEE")
+        self.frame_centro = CTkFrame(self.canvas, fg_color=("#EEEEEE", "#1A1A1A"))
+
         self.canvas.create_window((0, 0), window=self.frame_centro, anchor="nw")
 
         frame_leyenda = CTkFrame(frame_superior, fg_color="transparent")
@@ -42,16 +49,19 @@ class FrameMantenimiento(CTkFrame):
             item = CTkFrame(parent, fg_color="transparent")
             item.pack(side=LEFT, padx=10)
 
-            canvas = CTkCanvas(item, width=14, height=14, bg="#EEEEEE", highlightthickness=0)
+            bg_item = "#EEEEEE" if get_appearance_mode() == "Light" else "#1A1A1A"
+            canvas = CTkCanvas(item, width=14, height=14, bg=bg_item, highlightthickness=0)
             canvas.pack(side=LEFT)
+
             canvas.create_oval(2, 2, 12, 12, fill=color, outline=color)
 
             CTkLabel(
                 item,
                 text=texto,
                 font=("Ubuntu", 13, "bold"),
-                text_color="black"
+                text_color=("black", "white")
             ).pack(side=LEFT, padx=6)
+
 
         crear_item_leyenda(frame_leyenda, self.COLOR_MANTENIMIENTO_ATRASADO, "Mantenimiento necesario")
         crear_item_leyenda(frame_leyenda, self.COLOR_SIN_REGISTRO, "Sin registro")
@@ -103,11 +113,12 @@ class FrameMantenimiento(CTkFrame):
 
         for i, (placa, marca, modelo, dias_mantenimiento) in enumerate(vehiculos):
             if i % columnas == 0:
-                fila_frame = CTkFrame(self.frame_centro, fg_color="#EEEEEE")
+                fila_frame = CTkFrame(self.frame_centro, fg_color=("#EEEEEE", "#1A1A1A"))
                 fila_frame.pack(fill=X, pady=10)
 
-            card = CTkFrame(fila_frame, corner_radius=10, fg_color="white",
-                            border_width=1, border_color="#00501B")
+            card = CTkFrame(fila_frame, corner_radius=10, fg_color=("#FFFFFF", "#2B2B2B"),
+                            border_width=1, border_color=("#00501B", "#00FF7F"))
+
             card.pack(side=LEFT, padx=20, pady=10, expand=True, fill=BOTH)
 
             ruta_imagen = f"imagenes_vehiculos/{placa}.jpg"
@@ -120,17 +131,20 @@ class FrameMantenimiento(CTkFrame):
             except Exception:
                 CTkLabel(card, text="Sin imagen", text_color="gray").pack(pady=5)
 
-            CTkLabel(card, text=f"Marca: {marca}", font=("Ubuntu", 15), text_color="#00501B").pack(pady=1)
-            CTkLabel(card, text=f"Modelo: {modelo}", font=("Ubuntu", 14), text_color="black").pack(pady=1)
-            CTkLabel(card, text=f"Placa: {placa}", font=("Ubuntu", 14, "bold"), text_color="#00A86B").pack(pady=1)
+            CTkLabel(card, text=f"Marca: {marca}", font=("Ubuntu", 15), text_color=("#00501B", "#00FF7F")).pack(pady=1)
+            CTkLabel(card, text=f"Modelo: {modelo}", font=("Ubuntu", 14), text_color=("black", "white")).pack(pady=1)
+            CTkLabel(card, text=f"Placa: {placa}", font=("Ubuntu", 14, "bold"), text_color=("#00A86B", "#00FF7F")).pack(pady=1)
+
 
             color_marcador = self.obtener_color_marcador(placa, dias_mantenimiento)
             if color_marcador:
-                alert_canvas = CTkCanvas(card, width=20, height=20, bg="white",highlightthickness=0)
+                bg_alert = "white" if get_appearance_mode() == "Light" else "#2B2B2B"
+                alert_canvas = CTkCanvas(card, width=20, height=20, bg=bg_alert, highlightthickness=0)
                 alert_canvas.place(relx=1.0, y=5, anchor="ne")
                 alert_canvas.create_oval(2, 2, 18, 18, fill=color_marcador, outline=color_marcador)
 
-            botones_superior = CTkFrame(card, fg_color="white")
+            botones_superior = CTkFrame(card, fg_color="transparent")
+
             botones_superior.pack(pady=5)
             CTkButton(botones_superior, text="Verificar",
                       fg_color="#00501B", text_color="white",
@@ -143,7 +157,8 @@ class FrameMantenimiento(CTkFrame):
                       command=lambda p=placa: self.registrar_mantenimiento(p)
                       ).pack(side=LEFT, padx=5)
 
-            botones_inferior = CTkFrame(card, fg_color="white")
+            botones_inferior = CTkFrame(card, fg_color="transparent")
+
             botones_inferior.pack(pady=5)
             CTkButton(botones_inferior, text="Configurar",
                       fg_color="#FFA500", text_color="white",
@@ -214,7 +229,8 @@ class FrameMantenimiento(CTkFrame):
             dias_actual = 30
 
         dias_var = StringVar(value=str(dias_actual))
-        CTkEntry(ventana, textvariable=dias_var, width=100).pack(pady=10)
+        CTkEntry(ventana, textvariable=dias_var, width=100, fg_color=("#c2f1c1", "#2D2D2D"), text_color=("black", "white"), border_color="#00501B").pack(pady=10)
+
 
         def guardar_config():
             try:
@@ -303,15 +319,18 @@ class FrameMantenimiento(CTkFrame):
         costo_var = StringVar()
 
         CTkLabel(ventana, text_color="#00501B",text="Kilometraje actual:").pack(pady=(10, 0))
-        km_entry = CTkEntry(ventana, textvariable=km_var, width=250)
+        km_entry = CTkEntry(ventana, textvariable=km_var, width=250, fg_color=("#c2f1c1", "#2D2D2D"), text_color=("black", "white"), border_color="#00501B")
+
         km_entry.pack()
 
         CTkLabel(ventana, text_color="#00501B",text="Descripción:").pack(pady=(10, 0))
-        desc_entry = CTkEntry(ventana, textvariable=desc_var, width=250)
+        desc_entry = CTkEntry(ventana, textvariable=desc_var, width=250, fg_color=("#c2f1c1", "#2D2D2D"), text_color=("black", "white"), border_color="#00501B")
+
         desc_entry.pack()
 
         CTkLabel(ventana, text_color="#00501B",text="Costo (opcional):").pack(pady=(10, 0))
-        costo_entry = CTkEntry(ventana, textvariable=costo_var, width=250)
+        costo_entry = CTkEntry(ventana, textvariable=costo_var, width=250, fg_color=("#c2f1c1", "#2D2D2D"), text_color=("black", "white"), border_color="#00501B")
+
         costo_entry.pack()
 
         def guardar():

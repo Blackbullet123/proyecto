@@ -48,7 +48,8 @@ def ventana_imprimir():
 
             title = CTkLabel(master=frame_top, text="Alquitech",
                             font=('YRSA SEMIBOLD', 40),
-                            text_color="white", pady=1)
+                            text_color=("#00501B", "#00FF7F"), pady=1)
+
             title.pack(expand=YES, fill=BOTH, pady=5, padx=15)
 
             imglogo = Image.open("imagenes/Reych.png")

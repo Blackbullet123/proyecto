@@ -17,7 +17,8 @@ def get_project_root() -> Path:
 
 class FrameDatosDetallados(CTkFrame):
     def __init__(self, parent, controlador):
-        super().__init__(parent, fg_color='white')
+        super().__init__(parent, fg_color=("#FFFFFF", "#1A1A1A"))
+
         self.controlador = controlador
 
         conn = mysql.connector.connect(
@@ -51,8 +52,9 @@ class FrameDatosDetallados(CTkFrame):
         style.map('Treeview',
                 background=[('selected',"#005954")])
 
-        self.tree_frame_detallado = Frame(self)
+        self.tree_frame_detallado = CTkFrame(self, fg_color=("#FFFFFF", "#1A1A1A"))
         self.tree_frame_detallado.pack(pady=0, expand=True, fill=BOTH)
+
 
         tree_scroll = Scrollbar(self.tree_frame_detallado)
         tree_scroll.pack(side=RIGHT,fill=Y)

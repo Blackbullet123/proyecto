@@ -13,7 +13,7 @@ import os
 
 class FrameVehiculos(CTkFrame):
     def __init__(self, parent, controlador):
-        super().__init__(parent, fg_color="#EEEEEE")
+        super().__init__(parent, fg_color=("#EEEEEE", "#1A1A1A"))
         self.controlador = controlador
 
         mydb = mysql.connector.connect(
@@ -183,15 +183,16 @@ class FrameVehiculos(CTkFrame):
                 
 
 
-        frame_superior = CTkFrame(self, fg_color="#EEEEEE")
+        frame_superior = CTkFrame(self, fg_color=("#EEEEEE", "#1A1A1A"))
         frame_superior.pack(pady=10, fill=X, expand=True)
 
         titulo = CTkLabel(frame_superior, text="VEHÍCULOS",
-                        text_color="#00501B", font=("Impact", 45))
+                        text_color=("#00501B", "#00FF7F"), font=("Impact", 45))
+
         titulo.pack(pady=0, padx=60 ,side=RIGHT)
 
         buscar_label_2 = CTkLabel(frame_superior, text="Buscar Vehículo:",
-                                text_color="black", font=("Ubuntu", 15))
+                                text_color=("black", "white"), font=("Ubuntu", 15))
         buscar_label_2.pack(side="left", padx=15, pady=10)
 
         self.buscar = CTkEntry(frame_superior, width=250)
@@ -204,8 +205,11 @@ class FrameVehiculos(CTkFrame):
 
 
         img = Image.open("imagenes/imprimir.png")
-        imprimir_icon = CTkImage(dark_image=img, light_image=img, size=(40,40))
-        imprimir = CTkButton(frame_superior, hover_color="#EEEEEE" ,image=imprimir_icon , text="", fg_color="transparent",
+        img_white = Image.open("imagenes/imprimir_white.png")
+        imprimir_icon = CTkImage(light_image=img, dark_image=img_white, size=(40,40))
+
+        imprimir = CTkButton(frame_superior, hover_color=("#EEEEEE", "#2D2D2D") ,image=imprimir_icon , text="", fg_color="transparent",
+
                                width=30, height=30, command=imprimir_vehiculos)
         imprimir.pack(side="right", padx=3)
 
@@ -327,7 +331,7 @@ class FrameVehiculos(CTkFrame):
                 entry.insert(0, text[0].upper() + text[1:])
 
 
-        frame_inferior = CTkFrame(self, fg_color="#EEEEEE", corner_radius=10)
+        frame_inferior = CTkFrame(self, fg_color=("#EEEEEE", "#1A1A1A"), corner_radius=10)
         frame_inferior.pack(padx=20, pady=10, fill="x")
 
         data_frame = CTkFrame(frame_inferior, fg_color="transparent")
@@ -336,11 +340,11 @@ class FrameVehiculos(CTkFrame):
         self.tipo_ci_var = StringVar(value="V")
         self.numero_ci_var = StringVar()
 
-        ci_label = CTkLabel(data_frame, text="Cedula",fg_color='transparent',text_color="black",
+        ci_label = CTkLabel(data_frame, text="Cedula",fg_color='transparent',text_color=("black", "white"),
                         font=("Ubuntu",16))
         ci_label.grid(row=0,column=0, padx=10,pady=10, sticky="ew")
         ci_entry = CTkEntry(data_frame, width=140, textvariable=self.numero_ci_var,
-                    fg_color="#c2f1c1", text_color="black", border_color="#00501B")
+                    fg_color=("#c2f1c1", "#2D2D2D"), text_color=("black", "white"), border_color="#00501B")
         ci_entry.grid(row=0,column=1,padx=10,pady=10)
 
         menu_tipo = Menu(ci_entry,bg="#333333",fg="white", activebackground="#0761AA", tearoff=0)
@@ -348,79 +352,79 @@ class FrameVehiculos(CTkFrame):
             menu_tipo.add_command(label=tipo, command=lambda t=tipo: self.select_tipo(t, ci_entry))
  
 
-        r_name_label = CTkLabel(data_frame, text="Nombre",fg_color='transparent',text_color="black",
+        r_name_label = CTkLabel(data_frame, text="Nombre",fg_color='transparent',text_color=("black", "white"),
                         font=("Ubuntu",16))
         r_name_label.grid(row=0,column=2, padx=10,pady=10)
-        r_name_entry = CTkEntry(data_frame,fg_color="#c2f1c1",text_color="black", border_color="#00501B")
+        r_name_entry = CTkEntry(data_frame,fg_color=("#c2f1c1", "#2D2D2D"),text_color=("black", "white"), border_color="#00501B")
         r_name_entry.grid(row=0,column=3,padx=10,pady=10)
 
-        apell_label = CTkLabel(data_frame, text="Apellido",fg_color='transparent',text_color="black",
+        apell_label = CTkLabel(data_frame, text="Apellido",fg_color='transparent',text_color=("black", "white"),
                         font=("Ubuntu",16))
         apell_label.grid(row=0,column=4, padx=10,pady=10)
-        apell_entry = CTkEntry(data_frame,fg_color="#c2f1c1",text_color="black", border_color="#00501B")
+        apell_entry = CTkEntry(data_frame,fg_color=("#c2f1c1", "#2D2D2D"),text_color=("black", "white"), border_color="#00501B")
         apell_entry.grid(row=0,column=5,padx=10,pady=10)
 
-        J_label = CTkLabel(data_frame, text="RIF",fg_color='transparent',text_color="black",
+        J_label = CTkLabel(data_frame, text="RIF",fg_color='transparent',text_color=("black", "white"),
                         font=("Ubuntu",16))
         J_label.grid(row=0,column=6, padx=10,pady=10)
-        J_entry = CTkEntry(data_frame,fg_color="#c2f1c1",text_color="black", border_color="#00501B", validate="key",validatecommand=(data_frame.register(validate_entry), "%S","%P"))
+        J_entry = CTkEntry(data_frame,fg_color=("#c2f1c1", "#2D2D2D"),text_color=("black", "white"), border_color="#00501B", validate="key",validatecommand=(data_frame.register(validate_entry), "%S","%P"))
         J_entry.grid(row=0,column=7,padx=10,pady=10)
 
-        e_name_label = CTkLabel(data_frame, text="Empresa",fg_color='transparent',text_color="black",
+        e_name_label = CTkLabel(data_frame, text="Empresa",fg_color='transparent',text_color=("black", "white"),
                         font=("Ubuntu",16))
         e_name_label.grid(row=1,column=0, padx=10,pady=10)
-        e_name_entry = CTkEntry(data_frame,fg_color="#c2f1c1",text_color="black", border_color="#00501B")
+        e_name_entry = CTkEntry(data_frame,fg_color=("#c2f1c1", "#2D2D2D"),text_color=("black", "white"), border_color="#00501B")
         e_name_entry.grid(row=1,column=1,padx=10,pady=10)
 
-        dir_label = CTkLabel(data_frame, text="Direccion",fg_color='transparent',text_color="black",
+        dir_label = CTkLabel(data_frame, text="Direccion",fg_color='transparent',text_color=("black", "white"),
                         font=("Ubuntu",16))
         dir_label.grid(row=1,column=2, padx=10,pady=10)
-        dir_entry = CTkEntry(data_frame,fg_color="#c2f1c1",text_color="black", border_color="#00501B")
+        dir_entry = CTkEntry(data_frame,fg_color=("#c2f1c1", "#2D2D2D"),text_color=("black", "white"), border_color="#00501B")
         dir_entry.grid(row=1,column=3,padx=10,pady=10)
 
         self.tipo_tlf_var = StringVar(value="0414")
         self.numero_tlf_var = StringVar()
 
-        cell_label = CTkLabel(data_frame, text="Teléfono",fg_color='transparent',text_color="black",
+        cell_label = CTkLabel(data_frame, text="Teléfono",fg_color='transparent',text_color=("black", "white"),
                         font=("Ubuntu",16))
         cell_label.grid(row=1,column=4, padx=10,pady=10)
-        cell_entry = CTkEntry(data_frame,fg_color="#c2f1c1",textvariable=self.numero_tlf_var ,text_color="black", border_color="#00501B")
+        cell_entry = CTkEntry(data_frame,fg_color=("#c2f1c1", "#2D2D2D"),textvariable=self.numero_tlf_var ,text_color=("black", "white"), border_color="#00501B")
         cell_entry.grid(row=1,column=5,padx=10,pady=10)
 
         menu_tlf = Menu(cell_entry,bg="#333333",fg="white", activebackground="#0761AA", tearoff=0)
         for tipo in ["0414", "0424", "0416", "0426", "0412", "0422"]:
             menu_tlf.add_command(label=tipo, command=lambda t=tipo: self.select_tipo_tlf(t, cell_entry))
 
-        f1_label = CTkLabel(data_frame, text="Fecha Inicial",fg_color='transparent',text_color="black",
+        f1_label = CTkLabel(data_frame, text="Fecha Inicial",fg_color='transparent',text_color=("black", "white"),
                         font=("Ubuntu",16))
         f1_label.grid(row=1,column=6, padx=10,pady=10)
-        f1_entry = CTkEntry(data_frame, fg_color="#c2f1c1", text_color="black", border_color="#00501B")
+        f1_entry = CTkEntry(data_frame, fg_color=("#c2f1c1", "#2D2D2D"), text_color=("black", "white"), border_color="#00501B")
         f1_entry.grid(row=1, column=7, padx=10, pady=10)
 
 
-        f2_label = CTkLabel(data_frame, text="Fecha Final",fg_color='transparent',text_color="black",
+        f2_label = CTkLabel(data_frame, text="Fecha Final",fg_color='transparent',text_color=("black", "white"),
                         font=("Ubuntu",16))
         f2_label.grid(row=2,column=0, padx=10,pady=10)
-        f2_entry = CTkEntry(data_frame,fg_color="#c2f1c1",text_color="black", border_color="#00501B",validate="key",
+        f2_entry = CTkEntry(data_frame,fg_color=("#c2f1c1", "#2D2D2D"),text_color=("black", "white"), border_color="#00501B",validate="key",
         validatecommand=(data_frame.register(validate_fecha), "%P"))
         f2_entry.grid(row=2,column=1,padx=10,pady=10)
 
-        plac_label = CTkLabel(data_frame, text="Placa",fg_color='transparent',text_color="black",
+        plac_label = CTkLabel(data_frame, text="Placa",fg_color='transparent',text_color=("black", "white"),
                         font=("Ubuntu",16))
         plac_label.grid(row=2,column=2, padx=10,pady=10)
-        plac_entry = CTkEntry(data_frame,fg_color="#c2f1c1",text_color="black", border_color="#00501B")
+        plac_entry = CTkEntry(data_frame,fg_color=("#c2f1c1", "#2D2D2D"),text_color=("black", "white"), border_color="#00501B")
         plac_entry.grid(row=2,column=3,padx=10,pady=10)
 
-        mar_label = CTkLabel(data_frame, text="Marca",fg_color='transparent',text_color="black",
+        mar_label = CTkLabel(data_frame, text="Marca",fg_color='transparent',text_color=("black", "white"),
                         font=("Ubuntu",16))
         mar_label.grid(row=2,column=4, padx=10,pady=10)
-        mar_entry = CTkEntry(data_frame,fg_color="#c2f1c1",text_color="black", border_color="#00501B")
+        mar_entry = CTkEntry(data_frame,fg_color=("#c2f1c1", "#2D2D2D"),text_color=("black", "white"), border_color="#00501B")
         mar_entry.grid(row=2,column=5,padx=10,pady=10)
 
-        modelo_label = CTkLabel(data_frame, text="Modelo",fg_color='transparent',text_color="black",
+        modelo_label = CTkLabel(data_frame, text="Modelo",fg_color='transparent',text_color=("black", "white"),
                         font=("Ubuntu",16))
         modelo_label.grid(row=2,column=6, padx=10,pady=10)
-        modelo_entry = CTkEntry(data_frame,fg_color="#c2f1c1",text_color="black", border_color="#00501B")
+        modelo_entry = CTkEntry(data_frame,fg_color=("#c2f1c1", "#2D2D2D"),text_color=("black", "white"), border_color="#00501B")
         modelo_entry.grid(row=2,column=7,padx=10,pady=10)
 
         ci_entry.bind("<Button-1>", lambda e: self.open_tipo_menu(e, menu_tipo))

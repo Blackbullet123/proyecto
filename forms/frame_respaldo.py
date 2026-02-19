@@ -225,7 +225,8 @@ class FrameBackup(CTkToplevel):
         volver.pack(pady=10, padx=20, side=LEFT)
 
         titulo = CTkLabel(frame_superior, text="Backup & Restore",
-                        text_color="#00501B", font=("Impact", 45))
+                        text_color=("#00501B", "#00FF7F"), font=("Impact", 45))
+
         titulo.pack(pady=0, padx=60 ,side=RIGHT)
 
         frame_principal = Frame(self.frame_main, bg="#EEEEEE")

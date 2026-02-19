@@ -11,7 +11,8 @@ from forms.imprimir_funcion import imprimir_grafica
 
 class FrameEstadisticas(CTkFrame):
     def __init__(self, parent,controlador):
-        super().__init__(parent, fg_color="#EEEEEE")
+        super().__init__(parent, fg_color=("#EEEEEE", "#1A1A1A"))
+
         self.controlador=controlador
 
         ctk.set_default_color_theme("green")
@@ -27,21 +28,27 @@ class FrameEstadisticas(CTkFrame):
         self.datos_actuales = None
         self.canvas = None
 
-        frame_superior = CTkFrame(self, fg_color="#EEEEEE")
+        frame_superior = CTkFrame(self, fg_color=("#EEEEEE", "#1A1A1A"))
+
         frame_superior.pack(fill=X, pady=10)
 
 
-        titulo = CTkLabel(frame_superior,text="ESTADÍSTICAS",text_color="#00501B",font=("Impact", 45))
+        titulo = CTkLabel(frame_superior,text="ESTADÍSTICAS",text_color=("#00501B", "#00FF7F"),font=("Impact", 45))
+
         titulo.pack(side=RIGHT, padx=60)
 
         img = Image.open("imagenes/imprimir.png")
-        imprimir_icon = CTkImage(dark_image=img, light_image=img, size=(40,40))
-        imprimir = CTkButton(frame_superior, hover_color="#EEEEEE", command=imprimir_grafica,cursor="hand2" ,image=imprimir_icon , text="", fg_color="transparent",
+        img_white = Image.open("imagenes/imprimir_white.png")
+        imprimir_icon = CTkImage(light_image=img, dark_image=img_white, size=(40,40))
+
+        imprimir = CTkButton(frame_superior, hover_color=("#EEEEEE", "#2D2D2D"), command=imprimir_grafica,cursor="hand2" ,image=imprimir_icon , text="", fg_color="transparent",
+
                                width=30, height=30)
         imprimir.pack(side=RIGHT,padx=3)
 
 
-        self.frame_grafico = CTkFrame(self, fg_color="#EEEEEE")
+        self.frame_grafico = CTkFrame(self, fg_color=("#EEEEEE", "#1A1A1A"))
+
         self.frame_grafico.pack(expand=True, fill=BOTH, padx=30, pady=20)
 
         self.actualizar_en_tiempo_real()
@@ -83,12 +90,16 @@ class FrameEstadisticas(CTkFrame):
         fig = Figure(figsize=(8, 4.5), dpi=80)
         ax = fig.add_subplot(111)
 
-        ax.bar(marcas, cantidades, color="#00501B")
-        ax.set_xlabel("Marca")
-        ax.set_ylabel("Total")
+        ax.bar(marcas, cantidades, color="#00501B" if get_appearance_mode() == "Light" else "#00FF7F")
+        ax.set_xlabel("Marca", color="black" if get_appearance_mode() == "Light" else "white")
+        ax.set_ylabel("Total", color="black" if get_appearance_mode() == "Light" else "white")
+        ax.tick_params(colors="black" if get_appearance_mode() == "Light" else "white")
         ax.yaxis.set_major_locator(MaxNLocator(integer=True))
-        ax.set_facecolor("#EEEEEE")
-        fig.patch.set_facecolor("#EEEEEE")
+        
+        bg_color = "#EEEEEE" if get_appearance_mode() == "Light" else "#1A1A1A"
+        ax.set_facecolor(bg_color)
+        fig.patch.set_facecolor(bg_color)
+
 
         self.canvas = FigureCanvasTkAgg(fig, master=self.frame_grafico)
         self.canvas.draw()

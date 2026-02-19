@@ -9,7 +9,8 @@ from shutil import copyfile
 
 class FrameNuevoVehiculo(CTkFrame):
     def __init__(self, parent, controlador):
-        super().__init__(parent, fg_color='#EEEEEE')
+        super().__init__(parent, fg_color=('#EEEEEE', '#1A1A1A'))
+
         self.controlador = controlador
         self.ruta_imagen_seleccionada = None
 
@@ -41,12 +42,13 @@ class FrameNuevoVehiculo(CTkFrame):
         return texto
 
     def crear_ui(self):
-        frame_superior = CTkFrame(self, fg_color="#EEEEEE")
+        frame_superior = CTkFrame(self, fg_color=("#EEEEEE", "#1A1A1A"))
         frame_superior.pack(pady=10, fill=X, expand=True)
         
-        CTkLabel(frame_superior, text="Nuevo Vehículo", text_color="#00501B",
+        CTkLabel(frame_superior, text="Nuevo Vehículo", text_color=("#00501B", "#00FF7F"),
                  font=("Impact", 45)).pack(pady=5, padx=60, side=RIGHT)
-        CTkLabel(frame_superior, text="Buscar:", text_color="black",
+
+        CTkLabel(frame_superior, text="Buscar:", text_color=("black", "white"),
                  font=("Ubuntu", 14)).pack(side=LEFT, padx=(20,5))
         self.busqueda_entry = CTkEntry(frame_superior, width=250)
         self.busqueda_entry.pack(side=LEFT, padx=(0,10))
@@ -94,7 +96,7 @@ class FrameNuevoVehiculo(CTkFrame):
                 self.entries["color"].grid(row=0, column=i*2+1, padx=(0,8))
                 self.entries["color"].set("")
             else:
-                self.entries[label.lower()] = CTkEntry(frame_campos, fg_color="#c2f1c1",text_color="black", border_color="#00501B",width=120, height=28)
+                self.entries[label.lower()] = CTkEntry(frame_campos, fg_color=("#c2f1c1", "#2D2D2D"),text_color=("black", "white"), border_color="#00501B",width=120, height=28)
                 self.entries[label.lower()].grid(row=0, column=i*2+1, padx=(0,8))
 
 

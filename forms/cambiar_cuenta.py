@@ -22,7 +22,8 @@ class VentanaCambiarUsuario(CTkToplevel):
         frame = CTkFrame(self)
         frame.pack(expand=True, fill=BOTH, padx=20, pady=20)
 
-        CTkLabel(frame, text="Iniciar sesión", font=("Ubuntu", 22, "bold")).pack(pady=(0, 20))
+        CTkLabel(frame, text="Iniciar sesión", text_color=("#00501B", "#00FF7F"), font=("Ubuntu", 22, "bold")).pack(pady=(0, 20))
+
         CTkLabel(frame, text="Usuario").pack(anchor="w")
         self.entry_usuario = CTkEntry(frame, placeholder_text="Ingrese usuario")
         self.entry_usuario.pack(fill=X, pady=5)
