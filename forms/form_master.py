@@ -464,8 +464,8 @@ class Principal:
         self.my_tree['columns']=("COD","FechaI","FechaF","RIF","Empresa","TLF","CI","Placa","Modelo","Marca")
 
         self.my_tree.column("COD",anchor=CENTER,width=85)
-        self.my_tree.column("FechaI",anchor=CENTER,width=85)
-        self.my_tree.column("FechaF",anchor=CENTER,width=85)
+        self.my_tree.column("FechaI",anchor=CENTER,width=75)
+        self.my_tree.column("FechaF",anchor=CENTER,width=75)
         self.my_tree.column("RIF",anchor=CENTER,width=120)
         self.my_tree.column("Empresa",anchor=CENTER,width=120)
         self.my_tree.column("TLF",anchor=CENTER,width=120)
@@ -500,7 +500,7 @@ class Principal:
                 return False
             return text.isdecimal()
         
-        def abrir_calendario(entry):
+        def abrir_calendario(event, entry):
             top = tk.Toplevel(self.root)
             top.title("Seleccionar fecha")
             top.geometry("290x250+650+300")
@@ -576,8 +576,7 @@ class Principal:
         ff_label = CTkLabel(fecha2_frame, text="Fecha Final",fg_color="transparent",text_color="black",
                                     font=("Ubuntu",16))
         ff_label.grid(row=0,column=0, padx=10, pady=1)
-        ff_entry = CTkEntry(fecha2_frame, justify=CENTER,fg_color="#c2f1c1",text_color="black", width=130, border_color="#00501B",
-                            validate="key", validatecommand=(self.data_frame.register, "%P"))
+        ff_entry = CTkEntry(fecha2_frame, justify=CENTER,fg_color="#c2f1c1",text_color="black", width=130, border_color="#00501B")
         ff_entry.grid(row=1,column=0, padx=10, pady=1)
         self.ocultar_entry()
 
@@ -587,8 +586,7 @@ class Principal:
         rif_label = CTkLabel(rif_frame, text="RIF",fg_color="transparent",text_color="black",
                                     font=("Ubuntu",16))
         rif_label.grid(row=0,column=0, padx=10, pady=1)
-        rif_entry = CTkEntry(rif_frame, justify=CENTER,fg_color="#c2f1c1", text_color="black", width=130,  border_color="#00501B",
-                             validate="key", validatecommand=(self.data_frame.register(validate_entry), "%S","%P"))
+        rif_entry = CTkEntry(rif_frame, justify=CENTER,fg_color="#c2f1c1", text_color="black", width=130,  border_color="#00501B")
         rif_entry.grid(row=1,column=0, padx=10, pady=1)
 
         empresa_frame = CTkFrame(self.data_frame, fg_color="transparent",corner_radius=6, width=35, height=20,)
@@ -616,8 +614,7 @@ class Principal:
         tlf_label = CTkLabel(tlf_frame, text="Teléfono",fg_color="transparent",text_color="black",
                                     font=("Ubuntu",16))
         tlf_label.grid(row=0,column=0, padx=10, pady=1)
-        tlf_entry = CTkEntry(tlf_frame,justify=CENTER, fg_color="#c2f1c1",text_color="black", width=130, border_color="#00501B",
-                             validate="key", validatecommand=(self.data_frame.register(validate_entry), "%S","%P"))
+        tlf_entry = CTkEntry(tlf_frame,justify=CENTER, fg_color="#c2f1c1",text_color="black", width=130, border_color="#00501B")
         tlf_entry.grid(row=1,column=0, padx=10, pady=1)
 
         placa_frame = CTkFrame(self.data_frame, fg_color="transparent",corner_radius=6, width=50, height=20,)

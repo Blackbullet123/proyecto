@@ -9,6 +9,7 @@ from forms.frame_datos import FrameDatosDetallados
 from forms.frame_vehiculos import FrameVehiculos
 from forms.frame_nuevo_vehiculo import FrameNuevoVehiculo
 from forms.frame_mantenimiento import FrameMantenimiento
+from forms.frame_estadisticas import FrameEstadisticas
 from forms.imprimir import ventana_imprimir
 from forms.frame_configuracion import FrameConfiguracion
 import os
@@ -237,6 +238,7 @@ class usuario:
                 messagebox.showerror(titulo, mensaje)
             finally:
                 self.actualizar_tree()
+                self.frame_estadisticas.actualizar_grafico()
                 clear_entries()
 
             
@@ -268,6 +270,7 @@ class usuario:
         self.frame_vehiculos_disponibles = FrameVehiculos(self.frame_main,self)
         self.frame_mantenimeinto = FrameMantenimiento(self.frame_main, self)
         self.frame_configuracion = FrameConfiguracion(self.frame_main, self)
+        self.frame_estadisticas = FrameEstadisticas(self.frame_main, self)
 
 
         frame_top = CTkFrame(self.frame_form_l, fg_color="#000000")
@@ -307,19 +310,12 @@ class usuario:
                                     command=self.mostrar_vehiculos_disponibles)
         alquilar.pack(pady=5, padx=2, fill=X)
 
-        '''img = Image.open("imagenes/registro.png")
-        datos_icon = CTkImage(dark_image=img, light_image=img, size=(24,24))
-        date_detalles = CTkButton(frame_botones, text="Datos detallados",fg_color="transparent",text_color="white",
-                                  width=150, height=40,hover_color="#00501B",
-                                  font=("Ubuntu",17), anchor=W, image=datos_icon, compound="left",
-                                  command=self.mostrar_datos_detallados)
-        date_detalles.pack(pady=5, padx=2, fill=X)'''
 
         img = Image.open("imagenes/nuevo.png")
         nuevo_vehiculo_icon = CTkImage(dark_image=img, light_image=img, size=(24,24))
-        nuevo_vehiculo = CTkButton(frame_botones, text="Nuevo Vehiculo", state=DISABLED,fg_color="transparent",text_color="white",
+        nuevo_vehiculo = CTkButton(frame_botones, text="Nuevo Vehiculo",fg_color="transparent",text_color="white",
                                   width=150, height=40,hover_color="#00501B", command=self.mostrar_nuevo_vehiculo,
-                                  font=("Ubuntu",17), anchor=W, image=nuevo_vehiculo_icon, compound="left")
+                                  font=("Ubuntu",17), state=DISABLED,anchor=W, image=nuevo_vehiculo_icon, compound="left")
         nuevo_vehiculo.pack(pady=5, padx=2, fill=X)
 
         img = Image.open("imagenes/mantenimiento.png")
@@ -330,21 +326,29 @@ class usuario:
                                   command=self.mostrar_mantenimiento)
         mantenimiento.pack(pady=5, padx=2, fill=X)
 
+        img = Image.open("imagenes/estadisticas.png")
+        datos_icon = CTkImage(dark_image=img, light_image=img, size=(24,24))
+        date_detalles = CTkButton(frame_botones, text="Estadisticas",fg_color="transparent",text_color="white",
+                                  width=150, height=40,hover_color="#00501B",
+                                  font=("Ubuntu",17), anchor=W, image=datos_icon, compound="left",
+                                  command=self.mostrar_estadisticas)
+        date_detalles.pack(pady=5, padx=2, fill=X)
+
         img = Image.open("imagenes/configuraciones.png")
         configuracion_icon = CTkImage(dark_image=img, light_image=img, size=(24,24))
-        configuracion = CTkButton(frame_botones,state=DISABLED, text="Configuración",fg_color="transparent",text_color="white",
+        configuracion = CTkButton(frame_botones, text="Configuración",fg_color="transparent",text_color="white",
                                   width=150, height=40,hover_color="#00501B",
                                   font=("Ubuntu",17), anchor=W, image=configuracion_icon, compound="left",
                                   command=self.mostrar_configuracion)
         configuracion.pack(pady=5, padx=2, fill=X)
 
-        img = Image.open("imagenes/ayuda.png")
+        '''img = Image.open("imagenes/ayuda.png")
         ayuda_icon = CTkImage(dark_image=img, light_image=img, size=(24,24))
         ayuda = CTkButton(frame_botones, text="Ayuda",fg_color="transparent",text_color="white",
                                   width=150, height=40,hover_color="#00501B",
                                   font=("Ubuntu",17), anchor=W, image=ayuda_icon, compound="left"
                                   , command=abrir_pdf)
-        ayuda.pack(pady=5,padx=2, fill=X)
+        ayuda.pack(pady=5,padx=2, fill=X)'''
 
         self.ocultar_btn = CTkButton(frame_ocultar, text="☰ Ocultar",
                                      text_color="white", fg_color="#0E0F0F",hover_color="#00501B",
@@ -460,8 +464,8 @@ class usuario:
         self.my_tree['columns']=("COD","FechaI","FechaF","RIF","Empresa","TLF","CI","Placa","Modelo","Marca")
 
         self.my_tree.column("COD",anchor=CENTER,width=85)
-        self.my_tree.column("FechaI",anchor=CENTER,width=85)
-        self.my_tree.column("FechaF",anchor=CENTER,width=85)
+        self.my_tree.column("FechaI",anchor=CENTER,width=75)
+        self.my_tree.column("FechaF",anchor=CENTER,width=75)
         self.my_tree.column("RIF",anchor=CENTER,width=120)
         self.my_tree.column("Empresa",anchor=CENTER,width=120)
         self.my_tree.column("TLF",anchor=CENTER,width=120)
@@ -496,7 +500,7 @@ class usuario:
                 return False
             return text.isdecimal()
         
-        def abrir_calendario(entry):
+        def abrir_calendario(event, entry):
             top = tk.Toplevel(self.root)
             top.title("Seleccionar fecha")
             top.geometry("290x250+650+300")
@@ -572,8 +576,7 @@ class usuario:
         ff_label = CTkLabel(fecha2_frame, text="Fecha Final",fg_color="transparent",text_color="black",
                                     font=("Ubuntu",16))
         ff_label.grid(row=0,column=0, padx=10, pady=1)
-        ff_entry = CTkEntry(fecha2_frame, justify=CENTER,fg_color="#c2f1c1",text_color="black", width=130, border_color="#00501B",
-                            validate="key", validatecommand=(self.data_frame.register, "%P"))
+        ff_entry = CTkEntry(fecha2_frame, justify=CENTER,fg_color="#c2f1c1",text_color="black", width=130, border_color="#00501B")
         ff_entry.grid(row=1,column=0, padx=10, pady=1)
         self.ocultar_entry()
 
@@ -583,8 +586,7 @@ class usuario:
         rif_label = CTkLabel(rif_frame, text="RIF",fg_color="transparent",text_color="black",
                                     font=("Ubuntu",16))
         rif_label.grid(row=0,column=0, padx=10, pady=1)
-        rif_entry = CTkEntry(rif_frame, justify=CENTER,fg_color="#c2f1c1", text_color="black", width=130,  border_color="#00501B",
-                             validate="key", validatecommand=(self.data_frame.register(validate_entry), "%S","%P"))
+        rif_entry = CTkEntry(rif_frame, justify=CENTER,fg_color="#c2f1c1", text_color="black", width=130,  border_color="#00501B")
         rif_entry.grid(row=1,column=0, padx=10, pady=1)
 
         empresa_frame = CTkFrame(self.data_frame, fg_color="transparent",corner_radius=6, width=35, height=20,)
@@ -612,8 +614,7 @@ class usuario:
         tlf_label = CTkLabel(tlf_frame, text="Teléfono",fg_color="transparent",text_color="black",
                                     font=("Ubuntu",16))
         tlf_label.grid(row=0,column=0, padx=10, pady=1)
-        tlf_entry = CTkEntry(tlf_frame,justify=CENTER, fg_color="#c2f1c1",text_color="black", width=130, border_color="#00501B",
-                             validate="key", validatecommand=(self.data_frame.register(validate_entry), "%S","%P"))
+        tlf_entry = CTkEntry(tlf_frame,justify=CENTER, fg_color="#c2f1c1",text_color="black", width=130, border_color="#00501B")
         tlf_entry.grid(row=1,column=0, padx=10, pady=1)
 
         placa_frame = CTkFrame(self.data_frame, fg_color="transparent",corner_radius=6, width=50, height=20,)
@@ -747,6 +748,7 @@ class usuario:
         self.frame_principal.pack_forget()
         self.frame_configuracion.pack_forget()
         self.frame_mantenimeinto.pack_forget()
+        self.frame_estadisticas.pack_forget()
         self.frame_nuevo_vehiculo.pack_forget()
         self.frame_vehiculos_disponibles.pack(expand=True, fill=BOTH)
         self.frame_vehiculos_disponibles.actualizar_tree_2()
@@ -755,6 +757,7 @@ class usuario:
         self.frame_principal.pack_forget()
         self.frame_configuracion.pack_forget()
         self.frame_mantenimeinto.pack_forget()
+        self.frame_estadisticas.pack_forget()
         self.frame_vehiculos_disponibles.pack_forget()
         self.frame_nuevo_vehiculo.pack(expand=True, fill=BOTH)
         self.frame_nuevo_vehiculo.cargar_marcas()
@@ -763,6 +766,7 @@ class usuario:
         self.frame_principal.pack_forget()
         self.frame_nuevo_vehiculo.pack_forget()
         self.frame_configuracion.pack_forget()
+        self.frame_estadisticas.pack_forget()
         self.frame_vehiculos_disponibles.pack_forget()
         self.frame_mantenimeinto.pack(expand=True, fill=BOTH)
 
@@ -770,13 +774,24 @@ class usuario:
         self.frame_mantenimeinto.pack_forget()
         self.frame_principal.pack_forget()
         self.frame_nuevo_vehiculo.pack_forget()
+        self.frame_estadisticas.pack_forget()
         self.frame_vehiculos_disponibles.pack_forget()
         self.frame_configuracion.pack(expand=True, fill=BOTH)
+        self.frame_configuracion.btn_backup.configure(state=DISABLED)
+
+    def mostrar_estadisticas(self):
+        self.frame_mantenimeinto.pack_forget()
+        self.frame_principal.pack_forget()
+        self.frame_nuevo_vehiculo.pack_forget()
+        self.frame_vehiculos_disponibles.pack_forget()
+        self.frame_configuracion.pack_forget()
+        self.frame_estadisticas.pack(expand=True, fill=BOTH)
 
     def mostrar_contenido_principal(self):
         self.frame_vehiculos_disponibles.pack_forget()
         self.frame_configuracion.pack_forget()
         self.frame_nuevo_vehiculo.pack_forget()
+        self.frame_estadisticas.pack_forget()
         self.frame_mantenimeinto.pack_forget()
         self.frame_principal.pack(expand=True, fill=BOTH)
         self.actualizar_tree()
@@ -824,14 +839,3 @@ class usuario:
     def no_ver(self):
         self.ver_mas.place_forget()
         self.ver_menos.place(x=10, y=2)
-
-def abrir_pdf():
-    ruta_pdf = get_project_root() / "PDF" / "manual.pdf"
-    
-    if os.path.exists(ruta_pdf):
-        url_pdf = f"file://{ruta_pdf.absolute()}"
-        webbrowser.open_new(url_pdf)
-
-pdf_path = get_project_root() / "PDF" / "manual.pdf"        
-ruta_pdf = pdf_path
-
