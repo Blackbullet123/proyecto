@@ -44,14 +44,17 @@ class FrameMantenimiento(CTkFrame):
 
         frame_leyenda = CTkFrame(frame_superior, fg_color="transparent")
         frame_leyenda.pack(side=LEFT, padx=20)
+        self.legend_canvases = []
 
         def crear_item_leyenda(parent, color, texto):
             item = CTkFrame(parent, fg_color="transparent")
             item.pack(side=LEFT, padx=10)
 
+            # Usamos colores dinámicos para el fondo del mini canvas de la leyenda
             bg_item = "#EEEEEE" if get_appearance_mode() == "Light" else "#1A1A1A"
             canvas = CTkCanvas(item, width=14, height=14, bg=bg_item, highlightthickness=0)
             canvas.pack(side=LEFT)
+            self.legend_canvases.append(canvas)
 
             canvas.create_oval(2, 2, 12, 12, fill=color, outline=color)
 
@@ -78,9 +81,28 @@ class FrameMantenimiento(CTkFrame):
 
         self.cargar_vehiculos()
 
+    def actualizar_ahora(self):
+        """Fuerza un refresco inmediato de la interfaz para actualizar colores de canvas"""
+        bg_color = "#EEEEEE" if get_appearance_mode() == "Light" else "#1A1A1A"
+        
+        # Actualizar canvas principal
+        self.canvas.configure(bg=bg_color)
+        
+        # Actualizar mini-canvases de la leyenda
+        for leg_canvas in getattr(self, 'legend_canvases', []):
+            leg_canvas.configure(bg=bg_color)
+
+        # Actualizar marcadores de estado en las tarjetas
+        bg_card = "#FFFFFF" if get_appearance_mode() == "Light" else "#2B2B2B"
+        for alert_canvas in getattr(self, 'vehicle_canvases', []):
+            alert_canvas.configure(bg=bg_card)
+            
+        self.cargar_vehiculos()
+
     def cargar_vehiculos(self):
         for widget in self.frame_centro.winfo_children():
             widget.destroy()
+        self.vehicle_canvases = []
 
         try:
             mydb = mysql.connector.connect(
@@ -138,10 +160,12 @@ class FrameMantenimiento(CTkFrame):
 
             color_marcador = self.obtener_color_marcador(placa, dias_mantenimiento)
             if color_marcador:
-                bg_alert = "white" if get_appearance_mode() == "Light" else "#2B2B2B"
-                alert_canvas = CTkCanvas(card, width=20, height=20, bg=bg_alert, highlightthickness=0)
+                # Determinamos el color de fondo manualmente ya que CTkCanvas no acepta tuplas de color
+                bg_card = "#FFFFFF" if get_appearance_mode() == "Light" else "#2B2B2B"
+                alert_canvas = CTkCanvas(card, width=20, height=20, bg=bg_card, highlightthickness=0)
                 alert_canvas.place(relx=1.0, y=5, anchor="ne")
                 alert_canvas.create_oval(2, 2, 18, 18, fill=color_marcador, outline=color_marcador)
+                self.vehicle_canvases.append(alert_canvas)
 
             botones_superior = CTkFrame(card, fg_color="transparent")
 

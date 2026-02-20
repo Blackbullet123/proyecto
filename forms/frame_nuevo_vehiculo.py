@@ -292,6 +292,7 @@ class FrameNuevoVehiculo(CTkFrame):
         self.img_label.configure(image="", text="")
         self.ruta_imagen_seleccionada = None
         self.cargar_treeview()
+        
 
     def seleccionar_fila(self, event):
         seleccionado = self.my_tree.focus()

@@ -96,6 +96,10 @@ class FrameConfiguracion(CTkFrame):
             set_appearance_mode("Dark")
         else:
             set_appearance_mode("Light")
+            
+        # Notificar al controlador para actualizar gráficos inmediatamente
+        if hasattr(self.controlador, 'actualizar_graficos_por_apariencia'):
+            self.controlador.actualizar_graficos_por_apariencia()
 
 
     def cambiar_cuenta(self):

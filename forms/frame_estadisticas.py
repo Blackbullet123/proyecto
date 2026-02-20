@@ -69,41 +69,67 @@ class FrameEstadisticas(CTkFrame):
 
     def actualizar_en_tiempo_real(self):
         nuevos_datos = self.consultar_datos()
+        modo_actual = get_appearance_mode()
+        
+        # Inicializamos ultimo_modo si no existe
+        if not hasattr(self, 'ultimo_modo'):
+            self.ultimo_modo = modo_actual
 
-        if nuevos_datos != self.datos_actuales:
+        # Redibujar si los datos cambiaron O si el modo de apariencia cambió
+        if nuevos_datos != self.datos_actuales or modo_actual != self.ultimo_modo:
             self.datos_actuales = nuevos_datos
+            self.ultimo_modo = modo_actual
             self.redibujar_grafico(nuevos_datos)
 
         self.after(3000, self.actualizar_en_tiempo_real)
+
+    def actualizar_ahora(self):
+        """Fuerza un redibujado inmediato del gráfico"""
+        nuevos_datos = self.consultar_datos()
+        self.datos_actuales = nuevos_datos
+        self.ultimo_modo = get_appearance_mode()
+        self.redibujar_grafico(nuevos_datos)
 
     def redibujar_grafico(self, datos):
         for widget in self.frame_grafico.winfo_children():
             widget.destroy()
 
         if not datos:
-            CTkLabel(self.frame_grafico,text="No hay datos",font=("Arial", 16),text_color="gray").pack(pady=30)
+            CTkLabel(self.frame_grafico, text="No hay datos", font=("Arial", 16), text_color="gray").pack(pady=30)
             return
 
         marcas = [d[0] for d in datos]
         cantidades = [d[1] for d in datos]
 
-        fig = Figure(figsize=(8, 4.5), dpi=80)
-        ax = fig.add_subplot(111)
+        is_light = get_appearance_mode() == "Light"
+        text_color = "black" if is_light else "white"
+        bg_color = "#EEEEEE" if is_light else "#1A1A1A"
+        bar_color = "#00501B" if is_light else "#00FF7F"
 
-        ax.bar(marcas, cantidades, color="#00501B" if get_appearance_mode() == "Light" else "#00FF7F")
-        ax.set_xlabel("Marca", color="black" if get_appearance_mode() == "Light" else "white")
-        ax.set_ylabel("Total", color="black" if get_appearance_mode() == "Light" else "white")
-        ax.tick_params(colors="black" if get_appearance_mode() == "Light" else "white")
+        fig = Figure(figsize=(8, 4.5), dpi=90)
+        fig.patch.set_facecolor(bg_color)
+        
+        ax = fig.add_subplot(111)
+        ax.set_facecolor(bg_color)
+
+        ax.bar(marcas, cantidades, color=bar_color)
+        ax.set_xlabel("Marca", color=text_color)
+        ax.set_ylabel("Total", color=text_color)
+        ax.tick_params(colors=text_color)
         ax.yaxis.set_major_locator(MaxNLocator(integer=True))
         
-        bg_color = "#EEEEEE" if get_appearance_mode() == "Light" else "#1A1A1A"
-        ax.set_facecolor(bg_color)
-        fig.patch.set_facecolor(bg_color)
+        # Color de los bordes del gráfico
+        for spine in ax.spines.values():
+            spine.set_color(text_color)
 
+        fig.tight_layout()
 
         self.canvas = FigureCanvasTkAgg(fig, master=self.frame_grafico)
         self.canvas.draw()
-        self.canvas.get_tk_widget().pack(expand=True, fill=BOTH)
+        
+        canvas_widget = self.canvas.get_tk_widget()
+        canvas_widget.configure(bg=bg_color, highlightthickness=0)
+        canvas_widget.pack(expand=True, fill=BOTH)
 
     def destroy(self):
         if self.mydb.is_connected():

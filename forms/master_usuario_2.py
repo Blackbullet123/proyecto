@@ -455,7 +455,7 @@ class usuario:
         imprimir.pack(side="right", padx=3)
 
         #treeview
-        self.tree_frame = Frame(self.frame_principal, bg="#EEEEEE")
+        self.tree_frame = CTkFrame(self.frame_principal, fg_color=("#EEEEEE", "#1A1A1A"))
         self.tree_frame.pack(pady=0, expand=True, fill=BOTH)
 
         tree_scroll = Scrollbar(self.tree_frame)
@@ -549,7 +549,7 @@ class usuario:
 
         
         #Frame de los inferior    
-        frame_inferior = Frame(self.frame_principal,bg=("#EEEEEE", "#1A1A1A"))
+        frame_inferior = CTkFrame(self.frame_principal, fg_color=("#EEEEEE", "#1A1A1A"))
         frame_inferior.pack(fill="x", expand=True, padx=70, side="bottom")
 
         self.data_frame = CTkFrame(frame_inferior, fg_color="transparent")
@@ -791,6 +791,12 @@ class usuario:
         self.frame_vehiculos_disponibles.pack_forget()
         self.frame_configuracion.pack(expand=True, fill=BOTH)
         self.frame_configuracion.btn_backup.configure(state=DISABLED)
+
+    def actualizar_graficos_por_apariencia(self):
+        if hasattr(self, 'frame_estadisticas'):
+            self.frame_estadisticas.actualizar_ahora()
+        if hasattr(self, 'frame_mantenimeinto'):
+            self.frame_mantenimeinto.actualizar_ahora()
 
     def mostrar_estadisticas(self):
         self.frame_mantenimeinto.pack_forget()

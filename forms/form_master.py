@@ -795,6 +795,12 @@ class Principal:
         self.frame_nuevo_vehiculo.pack(expand=True, fill=BOTH)
         self.frame_nuevo_vehiculo.cargar_marcas()
 
+    def actualizar_graficos_por_apariencia(self):
+        if hasattr(self, 'frame_estadisticas'):
+            self.frame_estadisticas.actualizar_ahora()
+        if hasattr(self, 'frame_mantenimeinto'):
+            self.frame_mantenimeinto.actualizar_ahora()
+
     def mostrar_mantenimiento(self):
         self.frame_principal.pack_forget()
         self.frame_nuevo_vehiculo.pack_forget()
