@@ -29,6 +29,7 @@ class usuario:
         self.root.title('ALQUITECH')
         self.root.geometry("1280x650+35+15")
         self.root.iconbitmap("imagenes/letra-r.ico")
+        set_appearance_mode("light")
         # El fondo se maneja automáticamente por CTk al cambiar el modo de apariencia
 
 

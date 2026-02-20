@@ -595,7 +595,7 @@ class App:
         icon = ImageTk.PhotoImage(image)
         self.ventana_login.tk.call('wm', 'iconphoto', self.ventana_login._w, icon)
         self.ventana_login.resizable()
-        self.ventana_login._set_appearance_mode("dark")
+        set_appearance_mode("light")
 
 
         fondo_path = get_project_root() / "imagenes" / "fondo.jpg"
