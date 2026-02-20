@@ -50,7 +50,7 @@ class FrameNuevoVehiculo(CTkFrame):
 
         CTkLabel(frame_superior, text="Buscar:", text_color=("black", "white"),
                  font=("Ubuntu", 14)).pack(side=LEFT, padx=(20,5))
-        self.busqueda_entry = CTkEntry(frame_superior, width=250)
+        self.busqueda_entry = CTkEntry(frame_superior, border_color="#00501B",width=250)
         self.busqueda_entry.pack(side=LEFT, padx=(0,10))
         CTkButton(frame_superior, text="Buscar", font=("Ubuntu",13),
                   fg_color="#0E0F0F", text_color="white", width=100, height=30,

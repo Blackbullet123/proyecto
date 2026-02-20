@@ -138,6 +138,7 @@ class FrameVehiculos(CTkFrame):
                 messagebox.showerror("Error al alquilar", f"Ocurrió un problema:\n{e}")
             finally:
                 self.actualizar_tree_2()
+                clear_entries_2()
                 try:
                     my_cursor.close()
                 except:
@@ -195,7 +196,7 @@ class FrameVehiculos(CTkFrame):
                                 text_color=("black", "white"), font=("Ubuntu", 15))
         buscar_label_2.pack(side="left", padx=15, pady=10)
 
-        self.buscar = CTkEntry(frame_superior, width=250)
+        self.buscar = CTkEntry(frame_superior, border_color="#00501B",width=250)
         self.buscar.pack(side="left", padx=5)
 
         searh = CTkButton(frame_superior, text="Buscar", font=("Ubuntu",13),
