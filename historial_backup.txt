@@ -1,2 +1,2 @@
-backup=2026-02-24 23:34:01
-restore=2026-02-24 23:27:28
+backup=No registrado
+restore=No registrado
