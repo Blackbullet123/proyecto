@@ -224,12 +224,17 @@ class FrameVehiculos(CTkFrame):
 
         img = Image.open("imagenes/imprimir.png")
         img_white = Image.open("imagenes/imprimir_white.png")
-        imprimir_icon = CTkImage(light_image=img, dark_image=img_white, size=(40,40))
-
-        imprimir = CTkButton(frame_superior, hover_color=("#EEEEEE", "#2D2D2D") ,image=imprimir_icon , text="", fg_color="transparent",
-
-                               width=30, height=30, command=imprimir_vehiculos)
-        imprimir.pack(side="right", padx=3)
+        imprimir_icon = CTkImage(light_image=img_white, dark_image=img_white, size=(28, 28))
+        imprimir = CTkButton(frame_superior, 
+                             image=imprimir_icon, 
+                             text="", 
+                             fg_color=("#00501B", "#008a4f"),
+                             hover_color=("#003D14", "#00501B"),
+                             width=50, 
+                             height=50, 
+                             corner_radius=15,
+                             command=imprimir_vehiculos)
+        imprimir.pack(side="right", padx=10)
 
 
         tabla_contenedor = CTkFrame(self, fg_color="transparent")

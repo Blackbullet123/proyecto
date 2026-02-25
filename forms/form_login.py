@@ -599,10 +599,9 @@ class App:
 
 
         fondo_path = get_project_root() / "imagenes" / "fondo.jpg"
-        self.frame_logo = Image.open(fondo_path)
-        photo = ImageTk.PhotoImage(self.frame_logo)
-        self.bg_panel = CTkLabel(self.ventana_login, image=photo, fg_color="#040405", bg_color="#040405")
-        self.bg_panel.image = photo
+        self.img_fondo = Image.open(fondo_path)
+        self.photo_fondo = CTkImage(light_image=self.img_fondo, dark_image=self.img_fondo, size=(1280, 680))
+        self.bg_panel = CTkLabel(self.ventana_login, image=self.photo_fondo, text="", fg_color="#040405", bg_color="#040405")
         self.bg_panel.pack(fill='both', expand='yes')
 
 
@@ -635,10 +634,9 @@ class App:
         self.sing_ing.place(x=650, y=242)
 
         usuario_path = get_project_root() / "imagenes" / "usuario.png"
-        self.sign_imagen = Image.open(usuario_path)
-        photo = ImageTk.PhotoImage(self.sign_imagen)
-        self.sign_imagen_label = Label(self.lgn_frame, image=photo, bg='#040405')
-        self.sign_imagen_label.image = photo
+        self.img_usuario = Image.open(usuario_path)
+        self.photo_usuario = CTkImage(light_image=self.img_usuario, dark_image=self.img_usuario, size=(100, 100))
+        self.sign_imagen_label = CTkLabel(self.lgn_frame, image=self.photo_usuario, text="", bg_color='#040405')
         self.sign_imagen_label.place(x=620, y=110)
 
         #CUADRO CENTARL/DONDE SE ENCUENTRAN LOS ENTRYS Y BOTONES
@@ -660,11 +658,10 @@ class App:
         self.username_line = Canvas(self.lgn_frame, width=300, height=2.0, bg="#bdb9b1", highlightthickness=0)
         self.username_line.place(x=550, y=359)
 
-        username_icon_path = get_project_root() / "imagenes" / "username_icon.png"
-        self.username_icon = Image.open(username_icon_path)
-        photo = ImageTk.PhotoImage(self.username_icon)
-        self.username_icon_label = Label(self.lgn_frame, image=photo, bg='#040405')
-        self.username_icon_label.image = photo
+        username_icon_path = get_project_root() / "imagenes" / "username_icon_white.png"
+        self.img_username = Image.open(username_icon_path)
+        self.photo_username = CTkImage(light_image=self.img_username, dark_image=self.img_username, size=(25, 25))
+        self.username_icon_label = CTkLabel(self.lgn_frame, image=self.photo_username, text="", bg_color='#040405')
         self.username_icon_label.place(x=550, y=332)
 
         #CONTRASEÑA
@@ -679,11 +676,10 @@ class App:
         self.password_line = Canvas(self.lgn_frame, width=300, height=2.0, bg="#bdb9b1", highlightthickness=0)
         self.password_line.place(x=550, y=440)
 
-        password_icon_path = get_project_root() / "imagenes" / "password_icon.png"
-        self.password_icon = Image.open(password_icon_path)
-        photo = ImageTk.PhotoImage(self.password_icon)
-        self.password_icon_label = Label(self.lgn_frame, image=photo, bg='#040405')
-        self.password_icon_label.image = photo
+        password_icon_path = get_project_root() / "imagenes" / "password_icon_white.png"
+        self.img_password = Image.open(password_icon_path)
+        self.photo_password = CTkImage(light_image=self.img_password, dark_image=self.img_password, size=(25, 25))
+        self.password_icon_label = CTkLabel(self.lgn_frame, image=self.photo_password, text="", bg_color='#040405')
         self.password_icon_label.place(x=550, y=412)
 
         image_path_open = get_project_root() / "imagenes" / "ojo-abierto.png"

@@ -60,21 +60,37 @@ def ventana_imprimir():
             frame_botones = CTkFrame(self.frame_form_l, fg_color="transparent")
             frame_botones.pack(side="top", fill=X, pady=20)
 
-            img = Image.open("imagenes/imprimir_fila.png")
-            imprimir_seleccion = CTkImage(dark_image=img, light_image=img, size=(30,30))
-            imprimir_fila = CTkButton(frame_botones, text="Imprimir Seleccion",
-                                    fg_color="transparent",command=self.imprimir_datos,compound="left",image=imprimir_seleccion,hover_color="#00501B", text_color="white",
-                                    width=150, height=30,
-                                    font=("Ubuntu", 18))
-            imprimir_fila.pack(fill=X, pady=5, padx=2)
+            img_white = Image.open("imagenes/imprimir_fila_white.png")
+            imprimir_seleccion = CTkImage(dark_image=img_white, light_image=img_white, size=(24,24))
+            imprimir_fila = CTkButton(frame_botones, 
+                                     text="Imprimir Selección",
+                                     image=imprimir_seleccion,
+                                     compound="left",
+                                     fg_color="transparent",
+                                     hover_color="#00501B", 
+                                     text_color="white",
+                                     width=180, 
+                                     height=40,
+                                     font=("Ubuntu", 16, "bold"),
+                                     anchor="w",
+                                     command=self.imprimir_datos)
+            imprimir_fila.pack(fill=X, pady=5, padx=10)
 
-            img = Image.open("imagenes/registro.png")
-            imprimir_icon_todo = CTkImage(dark_image=img, light_image=img, size=(30,30))
-            imprimir_todo = CTkButton(frame_botones, text="Imprimir todo",
-                                    fg_color="transparent", command=imprimir_todos,compound="left",image=imprimir_icon_todo,hover_color="#00501B",text_color="white",
-                                    width=150, height=30,
-                                    font=("Ubuntu", 18))
-            imprimir_todo.pack(fill=X,pady=5, padx=2)
+            img_white = Image.open("imagenes/registro_white.png")
+            imprimir_icon_todo = CTkImage(dark_image=img_white, light_image=img_white, size=(24,24))
+            imprimir_todo = CTkButton(frame_botones, 
+                                     text="Imprimir Todo",
+                                     image=imprimir_icon_todo,
+                                     compound="left",
+                                     fg_color="transparent", 
+                                     hover_color="#00501B",
+                                     text_color="white",
+                                     width=180, 
+                                     height=40,
+                                     font=("Ubuntu", 16, "bold"),
+                                     anchor="w",
+                                     command=imprimir_todos)
+            imprimir_todo.pack(fill=X, pady=5, padx=10)
 
             frame_botones2 = CTkFrame(self.frame_form_l, fg_color="transparent")
             frame_botones2.pack(side="bottom", fill=X, pady=20)

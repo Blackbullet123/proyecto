@@ -51,21 +51,26 @@ class FrameEstadisticas(CTkFrame):
         try:
             img = Image.open("imagenes/imprimir.png")
             img_white = Image.open("imagenes/imprimir_white.png")
-            imprimir_icon = CTkImage(light_image=img, dark_image=img_white, size=(35, 35))
+            imprimir_icon = CTkImage(light_image=img_white, dark_image=img_white, size=(28, 28))
             
-            imprimir_btn = CTkButton(self.frame_superior, text="", 
+            imprimir_btn = CTkButton(self.frame_superior, 
+                                     text="", 
                                      image=imprimir_icon, 
-                                     fg_color="transparent", hover_color=("#EEEEEE", "#2D2D2D"),
-                                     command=imprimir_grafica, cursor="hand2",
-                                     width=40)
-            imprimir_btn.pack(side=RIGHT, padx=5)
+                                     fg_color=("#00501B", "#008a4f"),
+                                     hover_color=("#003D14", "#00501B"),
+                                     width=50, 
+                                     height=50, 
+                                     corner_radius=15,
+                                     command=imprimir_grafica, 
+                                     cursor="hand2")
+            imprimir_btn.pack(side=RIGHT, padx=10)
         except Exception as e:
             print(f"Error loading print icon: {e}")
 
         # Botón Historial
         if hasattr(self.controlador, 'mostrar_historial'):
             try:
-                img_historial = Image.open("imagenes/historial.png")
+                img_historial = Image.open("imagenes/historial_white.png")
                 historial_icon = CTkImage(light_image=img_historial, dark_image=img_historial, size=(30, 30))
                 btn_historial = CTkButton(self.frame_superior, text=" Historial",
                                          fg_color="transparent", command=self.controlador.mostrar_historial,

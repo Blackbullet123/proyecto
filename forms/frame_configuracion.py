@@ -49,7 +49,7 @@ class FrameConfiguracion(CTkFrame):
 
         img = Image.open("imagenes/perfil.png")
         img_white = Image.open("imagenes/perfil_white.png")
-        micuenta_icon = CTkImage(light_image=img, dark_image=img_white, size=(65,65))
+        micuenta_icon = CTkImage(light_image=img_white, dark_image=img_white, size=(65,65))
         self.btn_micuenta = CTkButton(self.grid_botones,text="Mi Cuenta",font=("Ubuntu",20,"bold"),
                                         fg_color=("#E9EEF3", "#333333"),hover_color=("#D5DBE0", "#444444"),text_color=("#1F2937", "#FFFFFF"),corner_radius=16,border_width=1,
                                     border_color=("#E0E3E7", "#444444"),height=140, command=self.cambiar_cuenta,image=micuenta_icon, compound="top")
@@ -60,7 +60,7 @@ class FrameConfiguracion(CTkFrame):
 
         img = Image.open("imagenes/backup.png")
         img_white = Image.open("imagenes/backup_white.png")
-        backup_icon = CTkImage(light_image=img, dark_image=img_white, size=(65,65))
+        backup_icon = CTkImage(light_image=img_white, dark_image=img_white, size=(65,65))
         self.btn_backup = CTkButton(self.grid_botones,text="Backup & Restore",font=("Ubuntu",20,"bold"),fg_color=("#E9EEF3", "#333333"),
                                     hover_color=("#D5DBE0", "#444444"),text_color=("#1F2937", "#FFFFFF"),corner_radius=16,border_width=1,
                                     border_color=("#E0E3E7", "#444444"),height=140, command=self.abrir_backup,image=backup_icon,compound="top")
@@ -71,7 +71,7 @@ class FrameConfiguracion(CTkFrame):
 
         img = Image.open("imagenes/ayuda.png")
         img_white = Image.open("imagenes/ayuda_white.png")
-        ayuda_icon = CTkImage(light_image=img, dark_image=img_white, size=(65,65))
+        ayuda_icon = CTkImage(light_image=img_white, dark_image=img_white, size=(65,65))
         self.btn_ayuda =CTkButton(self.grid_botones,text="Ayuda",font=("Ubuntu",20,"bold"),fg_color=("#E9EEF3", "#333333"),
                                         hover_color=("#D5DBE0", "#444444"),text_color=("#1F2937", "#FFFFFF"),corner_radius=16,border_width=1,
                                     border_color=("#E0E3E7", "#444444"), command=abrir_pdf,height=140, image=ayuda_icon, compound="top")
@@ -81,7 +81,7 @@ class FrameConfiguracion(CTkFrame):
 
         img = Image.open("imagenes/apariencia.png")
         img_white = Image.open("imagenes/apariencia_white.png")
-        apariencia_icon = CTkImage(light_image=img, dark_image=img_white, size=(65,65))
+        apariencia_icon = CTkImage(light_image=img_white, dark_image=img_white, size=(65,65))
         self.btn_apariencia = CTkButton(self.grid_botones,text="Apariencia",font=("Ubuntu",20,"bold"),
                                         fg_color=("#E9EEF3", "#333333"),hover_color=("#D5DBE0", "#444444"),text_color=("#1F2937", "#FFFFFF"),corner_radius=16,
                                     border_width=1,border_color=("#E0E3E7", "#444444"),height=140, image=apariencia_icon, compound="top",

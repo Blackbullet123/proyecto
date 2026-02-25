@@ -31,19 +31,29 @@ class FrameHistorial(CTkFrame):
 
         img = Image.open("imagenes/imprimir.png")
         img_white = Image.open("imagenes/imprimir_white.png")
-        imprimir_icon_todo = CTkImage(light_image=img, dark_image=img_white, size=(30, 30))
-        btn_imprimir = CTkButton(frame_superior, text=" Imprimir Reporte",
-                                 fg_color="transparent", command=imprimir_historial,
-                                 image=imprimir_icon_todo, hover_color="#00501B", text_color=("black", "white"),
-                                 font=("Ubuntu", 18, "bold"))
+        imprimir_icon_todo = CTkImage(light_image=img_white, dark_image=img_white, size=(28, 28))
+        btn_imprimir = CTkButton(frame_superior, 
+                                 text="",
+                                 image=imprimir_icon_todo, 
+                                 fg_color=("#00501B", "#008a4f"),
+                                 hover_color=("#003D14", "#00501B"),
+                                 width=50, 
+                                 height=50, 
+                                 corner_radius=15,
+                                 command=imprimir_historial)
         btn_imprimir.pack(side=RIGHT, padx=10)
 
-        img_refresh = Image.open("imagenes/update.png")
-        refresh_icon = CTkImage(dark_image=img_refresh, light_image=img_refresh, size=(30, 30))
-        btn_refresh = CTkButton(frame_superior, text=" Actualizar",
-                                 fg_color="transparent", command=self.actualizar_historial,
-                                 image=refresh_icon, hover_color="#00501B", text_color=("black", "white"),
-                                 font=("Ubuntu", 18, "bold"))
+        img_refresh = Image.open("imagenes/update_white.png")
+        refresh_icon = CTkImage(dark_image=img_refresh, light_image=img_refresh, size=(28, 28))
+        btn_refresh = CTkButton(frame_superior, 
+                                 text="",
+                                 image=refresh_icon, 
+                                 fg_color=("#FFA000", "#FFB300"), 
+                                 hover_color=("#FF8F00", "#FFA000"),
+                                 width=50, 
+                                 height=50, 
+                                 corner_radius=15,
+                                 command=self.actualizar_historial)
         btn_refresh.pack(side=RIGHT, padx=10)
 
         # Main Content Area
