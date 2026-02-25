@@ -12,6 +12,8 @@ from forms.frame_mantenimiento import FrameMantenimiento
 from forms.frame_estadisticas import FrameEstadisticas
 from forms.imprimir import ventana_imprimir
 from forms.frame_configuracion import FrameConfiguracion
+from forms.frame_respaldo import FrameBackup
+from forms.historial import FrameHistorial
 import os
 from tkcalendar import Calendar
 from datetime import date, datetime
@@ -133,111 +135,70 @@ class Principal:
         
 
         def remove_one():
-            mydb = mysql.connector.connect(
-                host = "localhost",
-                user = "root",
-                password = "123456",
-                port = "3306",
-                database = "control_alquiler_Reych"
-            )
-            my_cursor = mydb.cursor()
-            conn = mydb
-            sql = "DELETE FROM alquiler WHERE COD_Alquiler = '{0}'"
-            #my_cursor.execute(sql.format(COD_entry.get()))
-            #conn.commit()
-            #conn.close()
-
-            mydb = mysql.connector.connect(
-                host = "localhost",
-                user = "root",
-                password = "123456",
-                port = "3306",
-                database = "control_alquiler_Reych"
-            )
-            my_cursor = mydb.cursor()
-            conn = mydb
-            sql2 = "DELETE FROM contratista WHERE RIF = '{0}'"
-            #my_cursor.execute(sql2.format(rif_entry.get()))
-            #conn.commit()
-            #conn.close()
-            
-            mydb = mysql.connector.connect(
-                host = "localhost",
-                user = "root",
-                password = "123456",
-                port = "3306",
-                database = "control_alquiler_Reych"
-            )
-            my_cursor = mydb.cursor()
-            conn = mydb
-            sql3 = "DELETE FROM representante WHERE CI = '{0}'"
-
+            if not messagebox.askyesno('Confirmar', '¿Está seguro de eliminar este alquiler?'):
+                return
             try:
+                mydb = mysql.connector.connect(
+                    host="localhost",
+                    user="root",
+                    password="123456",
+                    port="3306",
+                    database="control_alquiler_Reych"
+                )
+                my_cursor = mydb.cursor()
+                conn = mydb
+                # Insert into history before deleting
+                sql_history = "INSERT INTO historial_alquileres (COD_Alquiler, Fecha, RIF_Empresa, Placa_Vehiculo, Fecha_Expiracion) SELECT COD_Alquiler, Fecha, RIF_Empresa, Placa_Vehiculo, Fecha_Expiracion FROM alquiler WHERE COD_Alquiler = '{0}'"
+                my_cursor.execute(sql_history.format(COD_entry.get()))
+                conn.commit()
+                # Delete the rental record
+                sql = "DELETE FROM alquiler WHERE COD_Alquiler = '{0}'"
                 my_cursor.execute(sql.format(COD_entry.get()))
                 conn.commit()
-                #conn.close()
+                # Delete related contractor and representative records
+                sql2 = "DELETE FROM contratista WHERE RIF = '{0}'"
                 my_cursor.execute(sql2.format(rif_entry.get()))
                 conn.commit()
-                #conn.close()
+                sql3 = "DELETE FROM representante WHERE CI = '{0}'"
                 my_cursor.execute(sql3.format(ci_entry.get()))
                 conn.commit()
-                #conn.close()
-                titulo = 'Alquilado'
-                mensaje = 'Vehiculo eliminado con exito'
-                messagebox.showinfo(titulo, mensaje)
-            except:
-                titulo = 'error'
-                mensaje = 'Ocurrio un problema'
-                messagebox.showerror(titulo, mensaje)
+                # Reset COD_Alquiler to be consecutive
+                my_cursor.execute("SET @cnt = 0")
+                my_cursor.execute("UPDATE alquiler SET COD_Alquiler = (@cnt := @cnt + 1) ORDER BY COD_Alquiler")
+                my_cursor.execute("ALTER TABLE alquiler AUTO_INCREMENT = 1")
+                conn.commit()
+                messagebox.showinfo('Eliminar', 'Vehículo eliminado con éxito.')
+            except Exception as e:
+                messagebox.showerror('Error', f'Ocurrió un problema:\n{e}')
             finally:
                 self.actualizar_tree()
                 clear_entries()
         
         
         def update():
-                        
-            mydb = mysql.connector.connect(
-                host = "localhost",
-                user = "root",
-                password = "123456",
-                port = "3306",
-                database = "control_alquiler_Reych"
-            )
-            my_cursor = mydb.cursor()
-            conn = mydb
-            sql = "UPDATE alquiler SET COD_Alquiler='{0}',Fecha='{1}',Fecha_Expiracion='{2}' WHERE COD_Alquiler = '{0}'"
-            #my_cursor.execute(sql.format(COD_entry.get(),fi_entry.get(),ff_entry.get()))
-            #conn.commit()
-            #conn.close()
-
-            mydb = mysql.connector.connect(
-                host = "localhost",
-                user = "root",
-                password = "123456",
-                port = "3306",
-                database = "control_alquiler_Reych"
-            )
-            my_cursor = mydb.cursor()
-            conn = mydb
-            sql2 = "UPDATE contratista SET RIF='{0}', nombre='{1}', telefono='{2}' WHERE RIF='{0}'"
-            #my_cursor.execute(sql.format(rif_entry.get(),em_entry.get(),tlf_entry.get(),rif_entry.get()))
-            #conn.commit()
-            #conn.close()
-
+            if not messagebox.askyesno('Confirmar', '¿Está seguro de actualizar este alquiler?'):
+                return
             try:
-                my_cursor.execute(sql.format(COD_entry.get(),fi_entry.get(),ff_entry.get()))
+                mydb = mysql.connector.connect(
+                    host="localhost",
+                    user="root",
+                    password="123456",
+                    port="3306",
+                    database="control_alquiler_Reych"
+                )
+                my_cursor = mydb.cursor()
+                conn = mydb
+                # Update alquiler record
+                sql = "UPDATE alquiler SET COD_Alquiler='{0}',Fecha='{1}',Fecha_Expiracion='{2}' WHERE COD_Alquiler = '{0}'"
+                my_cursor.execute(sql.format(COD_entry.get(), fi_entry.get(), ff_entry.get()))
                 conn.commit()
-                #conn.close()
-                my_cursor.execute(sql2.format(rif_entry.get(),em_entry.get(),tlf_entry.get(),rif_entry.get()))
+                # Update contratista record
+                sql2 = "UPDATE contratista SET RIF='{0}', nombre='{1}', telefono='{2}' WHERE RIF='{0}'"
+                my_cursor.execute(sql2.format(rif_entry.get(), em_entry.get(), tlf_entry.get(), rif_entry.get()))
                 conn.commit()
-                #conn.close()
-                titulo = 'Alquilado'
-                mensaje = 'Actualizado con exito'
-                messagebox.showinfo(titulo, mensaje)
-            except:
-                titulo = 'error'
-                mensaje = 'Ocurrio un problema'
-                messagebox.showerror(titulo, mensaje)
+                messagebox.showinfo('Alquilado', 'Actualizado con éxito')
+            except Exception as e:
+                messagebox.showerror('Error', f'Ocurrió un problema:\n{e}')
             finally:
                 self.actualizar_tree()
                 self.frame_estadisticas.actualizar_grafico()
@@ -275,6 +236,8 @@ class Principal:
         self.frame_mantenimeinto = FrameMantenimiento(self.frame_main, self)
         self.frame_configuracion = FrameConfiguracion(self.frame_main, self)
         self.frame_estadisticas = FrameEstadisticas(self.frame_main, self)
+        self.frame_backup = FrameBackup(self.frame_main, self)
+        self.frame_historial = FrameHistorial(self.frame_main, self)
 
 
         frame_top = CTkFrame(self.frame_form_l, fg_color="#000000")
@@ -404,7 +367,7 @@ class Principal:
 
 
 
-        def search_now():
+        def search_now(event=None):
                 
             for item in self.my_tree.get_children():
                 self.my_tree.delete(item)
@@ -418,33 +381,47 @@ class Principal:
             )
             my_cursor = mydb.cursor()
             conn = mydb
-            sql = "SELECT a.COD_Alquiler, a.Fecha, a.Fecha_Expiracion, c.RIF, c.nombre, c.telefono, r.CI, v.Placa, m.Nombre, o.Nombre FROM representante r INNER JOIN contratista c ON r.CI = c.Representante_CI INNER JOIN alquiler a ON c.RIF = a.RIF_Empresa INNER JOIN vehiculo v ON a.Placa_Vehiculo = v.Placa INNER JOIN marca m ON v.ID_Marca = m.ID INNER JOIN modelo o ON v.ID_Modelo = o.ID WHERE COD_Alquiler = {0}"
 
-            my_cursor.execute(sql.format(buscar.get()))
+            searched = buscar.get()
+
+            if not searched.strip():
+                sql = "SELECT a.COD_Alquiler, a.Fecha, a.Fecha_Expiracion, c.RIF, c.nombre, c.telefono, r.CI, v.Placa, m.Nombre, o.Nombre FROM representante r INNER JOIN contratista c ON r.CI = c.Representante_CI INNER JOIN alquiler a ON c.RIF = a.RIF_Empresa INNER JOIN vehiculo v ON a.Placa_Vehiculo = v.Placa INNER JOIN marca m ON v.ID_Marca = m.ID INNER JOIN modelo o ON v.ID_Modelo = o.ID ORDER BY a.COD_Alquiler ASC;"
+                my_cursor.execute(sql)
+            else:
+                like_pattern = f"%{searched}%"
+                sql = """SELECT a.COD_Alquiler, a.Fecha, a.Fecha_Expiracion, c.RIF, c.nombre, c.telefono, r.CI, v.Placa, m.Nombre, o.Nombre 
+                         FROM representante r 
+                         INNER JOIN contratista c ON r.CI = c.Representante_CI 
+                         INNER JOIN alquiler a ON c.RIF = a.RIF_Empresa 
+                         INNER JOIN vehiculo v ON a.Placa_Vehiculo = v.Placa 
+                         INNER JOIN marca m ON v.ID_Marca = m.ID 
+                         INNER JOIN modelo o ON v.ID_Modelo = o.ID 
+                         WHERE a.COD_Alquiler LIKE %s 
+                         OR r.nombre LIKE %s 
+                         OR r.apellido LIKE %s 
+                         OR m.Nombre LIKE %s 
+                         OR o.Nombre LIKE %s 
+                         ORDER BY a.COD_Alquiler ASC"""
+                my_cursor.execute(sql, (like_pattern, like_pattern, like_pattern, like_pattern, like_pattern))
+
             records = my_cursor.fetchall()
             
-            
-            for record in records:
-                            self.my_tree.insert(parent='',index='end',text='',values=(record[0],record[1],record[2],record[3],record[4],record[5],record[6],record[7],record[8],record[9]))
-
+            for count, record in enumerate(records):
+                tag = 'evenrow' if count % 2 == 0 else 'oddrow'
+                self.my_tree.insert(parent='', index='end', iid=count, text='', values=record, tags=(tag,))
 
             conn.commit()
             conn.close()
 
 
         buscar_label = CTkLabel(button_frame, text="Buscar:",
-                                text_color=("black", "white"), font=("Ubuntu", 15))
-
+                                text_color=("black", "white"), font=("Ubuntu", 15,"bold"))
         buscar_label.pack(side="left", padx=5, pady=10)
 
         buscar = CTkEntry(button_frame, width=250, fg_color=("#c2f1c1", "#2D2D2D"), text_color=("black", "white"), border_color="#00501B")
 
         buscar.pack(side="left", padx=5)
-
-        searh = CTkButton(button_frame, text="Buscar",
-                               fg_color="#0E0F0F", font=("Ubuntu",13), text_color="white", hover_color="#00501B",
-                               width=100, height=30, command=search_now)
-        searh.pack(side="left", padx=10)
+        buscar.bind("<KeyRelease>", search_now)
 
         img = Image.open("imagenes/imprimir.png")
         img_white = Image.open("imagenes/imprimir_white.png")
@@ -746,6 +723,12 @@ class Principal:
 
         my_cursor = mydb.cursor()
 
+        # Forzar re-secuenciación antes de mostrar para asegurar 1, 2, 3...
+        my_cursor.execute("SET @cnt = 0")
+        my_cursor.execute("UPDATE alquiler SET COD_Alquiler = (@cnt := @cnt + 1) ORDER BY COD_Alquiler")
+        my_cursor.execute("ALTER TABLE alquiler AUTO_INCREMENT = 1")
+        mydb.commit()
+
         my_cursor.execute("""
             SELECT a.COD_Alquiler, a.Fecha, a.Fecha_Expiracion, c.RIF, c.nombre, c.telefono, r.CI, v.Placa, m.Nombre, o.Nombre FROM representante r INNER JOIN contratista c ON r.CI = c.Representante_CI INNER JOIN alquiler a ON c.RIF = a.RIF_Empresa INNER JOIN vehiculo v ON a.Placa_Vehiculo = v.Placa INNER JOIN marca m ON v.ID_Marca = m.ID INNER JOIN modelo o ON v.ID_Modelo = o.ID ORDER BY a.COD_Alquiler ASC; """)
         items = my_cursor.fetchall()
@@ -784,6 +767,8 @@ class Principal:
         self.frame_mantenimeinto.pack_forget()
         self.frame_estadisticas.pack_forget()
         self.frame_nuevo_vehiculo.pack_forget()
+        self.frame_backup.pack_forget()
+        self.frame_historial.pack_forget()
         self.frame_vehiculos_disponibles.pack(expand=True, fill=BOTH)
         self.frame_vehiculos_disponibles.actualizar_tree_2()
 
@@ -793,6 +778,8 @@ class Principal:
         self.frame_mantenimeinto.pack_forget()
         self.frame_estadisticas.pack_forget()
         self.frame_vehiculos_disponibles.pack_forget()
+        self.frame_backup.pack_forget()
+        self.frame_historial.pack_forget()
         self.frame_nuevo_vehiculo.pack(expand=True, fill=BOTH)
         self.frame_nuevo_vehiculo.cargar_marcas()
 
@@ -808,6 +795,8 @@ class Principal:
         self.frame_configuracion.pack_forget()
         self.frame_estadisticas.pack_forget()
         self.frame_vehiculos_disponibles.pack_forget()
+        self.frame_backup.pack_forget()
+        self.frame_historial.pack_forget()
         self.frame_mantenimeinto.pack(expand=True, fill=BOTH)
 
     def mostrar_configuracion(self):
@@ -816,6 +805,8 @@ class Principal:
         self.frame_nuevo_vehiculo.pack_forget()
         self.frame_estadisticas.pack_forget()
         self.frame_vehiculos_disponibles.pack_forget()
+        self.frame_backup.pack_forget()
+        self.frame_historial.pack_forget()
         self.frame_configuracion.pack(expand=True, fill=BOTH)
 
     def mostrar_estadisticas(self):
@@ -824,7 +815,19 @@ class Principal:
         self.frame_nuevo_vehiculo.pack_forget()
         self.frame_vehiculos_disponibles.pack_forget()
         self.frame_configuracion.pack_forget()
+        self.frame_backup.pack_forget()
+        self.frame_historial.pack_forget()
         self.frame_estadisticas.pack(expand=True, fill=BOTH)
+
+    def mostrar_backup(self):
+        self.frame_principal.pack_forget()
+        self.frame_configuracion.pack_forget()
+        self.frame_mantenimeinto.pack_forget()
+        self.frame_estadisticas.pack_forget()
+        self.frame_vehiculos_disponibles.pack_forget()
+        self.frame_nuevo_vehiculo.pack_forget()
+        self.frame_historial.pack_forget()
+        self.frame_backup.pack(expand=True, fill=BOTH)
 
     def mostrar_contenido_principal(self):
         self.frame_vehiculos_disponibles.pack_forget()
@@ -832,9 +835,21 @@ class Principal:
         self.frame_nuevo_vehiculo.pack_forget()
         self.frame_estadisticas.pack_forget()
         self.frame_mantenimeinto.pack_forget()
+        self.frame_backup.pack_forget()
+        self.frame_historial.pack_forget()
         self.frame_principal.pack(expand=True, fill=BOTH)
         self.actualizar_tree()
         
+    def mostrar_historial(self):
+        self.frame_vehiculos_disponibles.pack_forget()
+        self.frame_configuracion.pack_forget()
+        self.frame_mantenimeinto.pack_forget()
+        self.frame_estadisticas.pack_forget()
+        self.frame_nuevo_vehiculo.pack_forget()
+        self.frame_backup.pack_forget()
+        self.frame_principal.pack_forget()
+        self.frame_historial.pack(expand=True, fill=BOTH)
+        self.frame_historial.actualizar_historial()
 
     def ocultar_botones(self):
         self.frame_botones_inferiores.pack_forget()

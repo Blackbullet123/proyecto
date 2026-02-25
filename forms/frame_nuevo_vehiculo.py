@@ -49,12 +49,10 @@ class FrameNuevoVehiculo(CTkFrame):
                  font=("Impact", 45)).pack(pady=5, padx=60, side=RIGHT)
 
         CTkLabel(frame_superior, text="Buscar:", text_color=("black", "white"),
-                 font=("Ubuntu", 14)).pack(side=LEFT, padx=(20,5))
-        self.busqueda_entry = CTkEntry(frame_superior, width=250)
+                 font=("Ubuntu", 15,"bold")).pack(side=LEFT, padx=5, pady=10)
+        self.busqueda_entry = CTkEntry(frame_superior, fg_color=("#c2f1c1", "#2D2D2D"),border_color="#00501B",width=250)
         self.busqueda_entry.pack(side=LEFT, padx=(0,10))
-        CTkButton(frame_superior, text="Buscar", font=("Ubuntu",13),
-                  fg_color="#0E0F0F", text_color="white", width=100, height=30,
-                  command=self.buscar_vehiculo).pack(side=LEFT, padx=(0,20))
+        self.busqueda_entry.bind("<KeyRelease>", self.buscar_vehiculo)
 
         tabla_contenedor = CTkFrame(self, fg_color="transparent")
         tabla_contenedor.pack(pady=10, fill=BOTH, expand=True)
@@ -329,8 +327,12 @@ class FrameNuevoVehiculo(CTkFrame):
             messagebox.showinfo("Éxito","Vehículo eliminado correctamente")
             self.limpiar_campos()
 
-    def buscar_vehiculo(self):
+    def buscar_vehiculo(self, event=None):
         busqueda = self.busqueda_entry.get().strip()
+        if not busqueda:
+            self.cargar_treeview()
+            return
+            
         for item in self.my_tree.get_children():
             self.my_tree.delete(item)
         query = """
@@ -339,10 +341,11 @@ class FrameNuevoVehiculo(CTkFrame):
             JOIN marca m ON v.ID_Marca = m.ID
             JOIN modelo mo ON v.ID_Modelo = mo.ID
             WHERE v.Placa LIKE %s OR m.Nombre LIKE %s OR mo.Nombre LIKE %s
+            ORDER BY m.Nombre ASC, mo.Nombre ASC
         """
         like = f"%{busqueda}%"
         self.mycursor.execute(query, (like, like, like))
         rows = self.mycursor.fetchall()
         for i, r in enumerate(rows):
             tag = 'evenrow' if i % 2 == 0 else 'oddrow'
-            self.my_tree.insert('', 'end', values=r, tags=(tag,))
+            self.my_tree.insert('', 'end', iid=i, values=r, tags=(tag,))

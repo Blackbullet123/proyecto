@@ -66,18 +66,18 @@ class VentanaCambiarUsuario(CTkToplevel):
         if not self.Validar_formulario_completo():
             return
 
-        usuario = self.entry_usuario.get()
+        usuario_input = self.entry_usuario.get()
         password = self.entry_password.get()
 
         try:
-            if self.Validar_login_2(usuario, password):
-                from forms.master_usuario_2 import usuario
+            if self.Validar_login_2(usuario_input, password):
+                from forms.master_usuario_2 import usuario as UsuarioInvitado
                 messagebox.showinfo("BIENVENIDO", "Datos correctos")
                 self.destroy()
                 self.ventana_principal.root.destroy()
-                usuario()
+                UsuarioInvitado()
 
-            elif self.Validar_login(usuario, password):
+            elif self.Validar_login(usuario_input, password):
                 from forms.form_master import Principal
                 messagebox.showinfo("BIENVENIDO", "Datos correctos")
                 self.destroy()

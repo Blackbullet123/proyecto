@@ -1,7 +1,6 @@
 from customtkinter import *
 from tkinter import *
 from PIL import Image, ImageTk
-from forms.cambiar_cuenta import VentanaCambiarUsuario
 from forms.frame_respaldo import FrameBackup
 import webbrowser
 import os   
@@ -103,10 +102,11 @@ class FrameConfiguracion(CTkFrame):
 
 
     def cambiar_cuenta(self):
+        from forms.cambiar_cuenta import VentanaCambiarUsuario
         ventana_cambiar_usuario = VentanaCambiarUsuario(self.controlador)
 
     def abrir_backup(self):
-        ventana_backup = FrameBackup(self.controlador)
+        self.controlador.mostrar_backup()
 
 
 

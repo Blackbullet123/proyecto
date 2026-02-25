@@ -30,19 +30,22 @@ class FrameVehiculos(CTkFrame):
         def clear_entries_2():
             f1_entry.delete(0,END)
             f2_entry.delete(0,END)
-            ci_entry.delete(0,END)
+            # Limpiar nuevos campos
+            ci_num_entry.delete(0, END)
+            ci_prefix_menu.set("V")
+            rif_num_entry.delete(0, END)
+            rif_prefix_menu.set("V")
+            tlf_num_entry.delete(0, END)
+            tlf_prefix_menu.set("0414")
+            
             r_name_entry.delete(0,END)
             apell_entry.delete(0,END)
-            J_entry.delete(0,END)
             e_name_entry.delete(0,END)
             dir_entry.delete(0,END)
-            cell_entry.delete(0,END)
             plac_entry.delete(0,END)
             mar_entry.delete(0,END)
             modelo_entry.delete(0,END)
             mostrar_imagen("default")
-            self.update_ci_prefix()
-            self.update_tlf_prefix()
 
 
         def query_db():
@@ -77,13 +80,13 @@ class FrameVehiculos(CTkFrame):
                 )
                 my_cursor = mydb.cursor()
 
-                ci_val = ci_entry.get().strip()
+                ci_val = f"{ci_prefix_menu.get()}-{ci_num_entry.get().strip()}"
                 nombre_val = r_name_entry.get().strip()
                 apellido_val = apell_entry.get().strip()
-                rif_val = J_entry.get().strip()
+                rif_val = f"{rif_prefix_menu.get()}-{rif_num_entry.get().strip()}"
                 empresa_val = e_name_entry.get().strip()
                 direccion_val = dir_entry.get().strip()
-                telefono_val = cell_entry.get().strip()
+                telefono_val = f"{tlf_prefix_menu.get()}-{tlf_num_entry.get().strip()}"
                 placa_val = plac_entry.get().strip()
                 fecha_inicio = f1_entry.get().strip()
                 fecha_fin = f2_entry.get().strip()
@@ -128,8 +131,12 @@ class FrameVehiculos(CTkFrame):
                 else:
                     raise ValueError("El campo RIF está vacío.")
 
-                sql3 = "INSERT INTO alquiler (Fecha, RIF_Empresa, Placa_Vehiculo, Fecha_Expiracion) VALUES (%s, %s, %s, %s)"
-                my_cursor.execute(sql3, (fecha_inicio_sql, rif_val, placa_val, fecha_fin_sql))
+                # Calcular el siguiente COD_Alquiler manualmente para asegurar continuidad
+                my_cursor.execute("SELECT IFNULL(MAX(COD_Alquiler), 0) + 1 FROM alquiler")
+                next_id = my_cursor.fetchone()[0]
+
+                sql3 = "INSERT INTO alquiler (COD_Alquiler, Fecha, RIF_Empresa, Placa_Vehiculo, Fecha_Expiracion) VALUES (%s, %s, %s, %s, %s)"
+                my_cursor.execute(sql3, (next_id, fecha_inicio_sql, rif_val, placa_val, fecha_fin_sql))
                 mydb.commit()
 
                 messagebox.showinfo("Alquilado", "Vehiculo alquilado con éxito")
@@ -138,6 +145,7 @@ class FrameVehiculos(CTkFrame):
                 messagebox.showerror("Error al alquilar", f"Ocurrió un problema:\n{e}")
             finally:
                 self.actualizar_tree_2()
+                clear_entries_2()
                 try:
                     my_cursor.close()
                 except:
@@ -148,10 +156,9 @@ class FrameVehiculos(CTkFrame):
                     pass
 
 
-        def search_now():
+        def search_now(event=None):
                 
                 searched = self.buscar.get()
-                name = (searched, )
                 
                 for item in self.my_tree.get_children():
                     self.my_tree.delete(item)
@@ -165,18 +172,33 @@ class FrameVehiculos(CTkFrame):
                 )
                 my_cursor = mydb.cursor()
                 conn = mydb
-                sql = "SELECT a.COD_Alquiler, v.Placa, m.Nombre, o.Nombre FROM vehiculo v LEFT JOIN alquiler a ON a.Placa_Vehiculo = v.Placa RIGHT JOIN marca m ON m.ID = v.ID_Marca INNER JOIN modelo o ON v.ID_Modelo = o.ID WHERE m.Nombre = %s WHERE a.COD_Alquiler IS NULL ORDER BY a.COD_Alquiler ASC;"
 
-                my_cursor.execute(sql,name)
+                if not searched.strip():
+                    sql = """SELECT a.COD_Alquiler, v.Placa, m.Nombre, o.Nombre 
+                             FROM vehiculo v 
+                             LEFT JOIN alquiler a ON a.Placa_Vehiculo = v.Placa 
+                             RIGHT JOIN marca m ON m.ID = v.ID_Marca 
+                             INNER JOIN modelo o ON v.ID_Modelo = o.ID 
+                             WHERE a.COD_Alquiler IS NULL 
+                             ORDER BY m.Nombre ASC;"""
+                    my_cursor.execute(sql)
+                else:
+                    like_pattern = f"%{searched}%"
+                    sql = """SELECT a.COD_Alquiler, v.Placa, m.Nombre, o.Nombre 
+                             FROM vehiculo v 
+                             LEFT JOIN alquiler a ON a.Placa_Vehiculo = v.Placa 
+                             RIGHT JOIN marca m ON m.ID = v.ID_Marca 
+                             INNER JOIN modelo o ON v.ID_Modelo = o.ID 
+                             WHERE (m.Nombre LIKE %s OR o.Nombre LIKE %s) 
+                             AND a.COD_Alquiler IS NULL 
+                             ORDER BY m.Nombre ASC;"""
+                    my_cursor.execute(sql, (like_pattern, like_pattern))
+
                 records = my_cursor.fetchall()
                 
-                count = 0
-                for record in records:
-                        if count % 2 == 0:
-                            self.my_tree.insert(parent='',index='end',text='',values=(record[0],record[1],record[2],record[3]),tags=('evenrow',))#,
-                        else:
-                            self.my_tree.insert(parent='',index='end',text='',values=(record[0],record[1],record[2],record[3]),tags=('oddrow',))#,
-                        count +=1
+                for count, record in enumerate(records):
+                    tag = 'evenrow' if count % 2 == 0 else 'oddrow'
+                    self.my_tree.insert(parent='', index='end', iid=count, text='', values=(record[0], record[1], record[2], record[3]), tags=(tag,))
 
                 conn.commit()
                 conn.close()
@@ -191,17 +213,13 @@ class FrameVehiculos(CTkFrame):
 
         titulo.pack(pady=0, padx=60 ,side=RIGHT)
 
-        buscar_label_2 = CTkLabel(frame_superior, text="Buscar Vehículo:",
-                                text_color=("black", "white"), font=("Ubuntu", 15))
-        buscar_label_2.pack(side="left", padx=15, pady=10)
+        buscar_label_2 = CTkLabel(frame_superior, text="Buscar:",
+                                text_color=("black", "white"), font=("Ubuntu", 15,"bold"))
+        buscar_label_2.pack(side="left", padx=5, pady=10)
 
-        self.buscar = CTkEntry(frame_superior, width=250)
+        self.buscar = CTkEntry(frame_superior, fg_color=("#c2f1c1", "#2D2D2D"),border_color="#00501B",width=250)
         self.buscar.pack(side="left", padx=5)
-
-        searh = CTkButton(frame_superior, text="Buscar", font=("Ubuntu",13),
-                               fg_color="#0E0F0F", text_color="white",
-                               width=100, height=30, command=search_now)
-        searh.pack(side="left", padx=10)
+        self.buscar.bind("<KeyRelease>", search_now)
 
 
         img = Image.open("imagenes/imprimir.png")
@@ -284,6 +302,19 @@ class FrameVehiculos(CTkFrame):
                 return False
             return text.isdecimal()
         
+        def validate_num_9(new_text):
+            if len(new_text) > 9:
+                return False
+            return new_text == "" or new_text.isdigit()
+
+        def validate_num_7(new_text):
+            if len(new_text) > 7:
+                return False
+            return new_text == "" or new_text.isdigit()
+
+        def validate_no_nums(new_text):
+            return not any(char.isdigit() for char in new_text)
+
         def get_current_date():
             current_date = datetime.now().strftime('%d-%m-%Y')
             f1_entry.delete(0, END)
@@ -337,110 +368,96 @@ class FrameVehiculos(CTkFrame):
         data_frame = CTkFrame(frame_inferior, fg_color="transparent")
         data_frame.pack(anchor="center")
 
-        self.tipo_ci_var = StringVar(value="V")
-        self.numero_ci_var = StringVar()
+        # CEDULA REDISEÑADA
+        ci_label = CTkLabel(data_frame, text="Cedula", fg_color='transparent', text_color=("black", "white"), font=("Ubuntu", 16))
+        ci_label.grid(row=0, column=0, padx=10, pady=10)
+        
+        ci_frame = CTkFrame(data_frame, fg_color="transparent")
+        ci_frame.grid(row=0, column=1, padx=10, pady=10)
+        ci_prefix_menu = CTkOptionMenu(ci_frame, values=["V", "E", "J"], width=50, fg_color=("#c2f1c1", "#2D2D2D"), text_color=("black", "white"), button_color="#00501B")
+        ci_prefix_menu.pack(side=LEFT, padx=(0, 5))
+        ci_num_entry = CTkEntry(ci_frame, width=90, fg_color=("#c2f1c1", "#2D2D2D"), text_color=("black", "white"), border_color="#00501B",
+                                validate="key", validatecommand=(data_frame.register(validate_num_9), "%P"))
+        ci_num_entry.pack(side=LEFT)
 
-        ci_label = CTkLabel(data_frame, text="Cedula",fg_color='transparent',text_color=("black", "white"),
-                        font=("Ubuntu",16))
-        ci_label.grid(row=0,column=0, padx=10,pady=10, sticky="ew")
-        ci_entry = CTkEntry(data_frame, width=140, textvariable=self.numero_ci_var,
-                    fg_color=("#c2f1c1", "#2D2D2D"), text_color=("black", "white"), border_color="#00501B")
-        ci_entry.grid(row=0,column=1,padx=10,pady=10)
+        r_name_label = CTkLabel(data_frame, text="Nombre", fg_color='transparent', text_color=("black", "white"), font=("Ubuntu", 16))
+        r_name_label.grid(row=0, column=2, padx=10, pady=10)
+        r_name_entry = CTkEntry(data_frame, fg_color=("#c2f1c1", "#2D2D2D"), text_color=("black", "white"), border_color="#00501B",
+                                validate="key", validatecommand=(data_frame.register(validate_no_nums), "%P"))
+        r_name_entry.grid(row=0, column=3, padx=10, pady=10)
 
-        menu_tipo = Menu(ci_entry,bg="#333333",fg="white", activebackground="#0761AA", tearoff=0)
-        for tipo in ["V", "E", "J"]:
-            menu_tipo.add_command(label=tipo, command=lambda t=tipo: self.select_tipo(t, ci_entry))
- 
+        apell_label = CTkLabel(data_frame, text="Apellido", fg_color='transparent', text_color=("black", "white"), font=("Ubuntu", 16))
+        apell_label.grid(row=0, column=4, padx=10, pady=10)
+        apell_entry = CTkEntry(data_frame, fg_color=("#c2f1c1", "#2D2D2D"), text_color=("black", "white"), border_color="#00501B",
+                                validate="key", validatecommand=(data_frame.register(validate_no_nums), "%P"))
+        apell_entry.grid(row=0, column=5, padx=10, pady=10)
 
-        r_name_label = CTkLabel(data_frame, text="Nombre",fg_color='transparent',text_color=("black", "white"),
-                        font=("Ubuntu",16))
-        r_name_label.grid(row=0,column=2, padx=10,pady=10)
-        r_name_entry = CTkEntry(data_frame,fg_color=("#c2f1c1", "#2D2D2D"),text_color=("black", "white"), border_color="#00501B")
-        r_name_entry.grid(row=0,column=3,padx=10,pady=10)
+        # RIF REDISEÑADO
+        J_label = CTkLabel(data_frame, text="RIF", fg_color='transparent', text_color=("black", "white"), font=("Ubuntu", 16))
+        J_label.grid(row=0, column=6, padx=10, pady=10)
+        
+        rif_frame = CTkFrame(data_frame, fg_color="transparent")
+        rif_frame.grid(row=0, column=7, padx=10, pady=10)
+        rif_prefix_menu = CTkOptionMenu(rif_frame, values=["V", "E", "J", "G", "P", "C"], width=50, fg_color=("#c2f1c1", "#2D2D2D"), text_color=("black", "white"), button_color="#00501B")
+        rif_prefix_menu.set("V")
+        rif_prefix_menu.pack(side=LEFT, padx=(0, 5))
+        rif_num_entry = CTkEntry(rif_frame, width=90, fg_color=("#c2f1c1", "#2D2D2D"), text_color=("black", "white"), border_color="#00501B",
+                                 validate="key", validatecommand=(data_frame.register(validate_num_9), "%P"))
+        rif_num_entry.pack(side=LEFT)
 
-        apell_label = CTkLabel(data_frame, text="Apellido",fg_color='transparent',text_color=("black", "white"),
-                        font=("Ubuntu",16))
-        apell_label.grid(row=0,column=4, padx=10,pady=10)
-        apell_entry = CTkEntry(data_frame,fg_color=("#c2f1c1", "#2D2D2D"),text_color=("black", "white"), border_color="#00501B")
-        apell_entry.grid(row=0,column=5,padx=10,pady=10)
+        e_name_label = CTkLabel(data_frame, text="Empresa", fg_color='transparent', text_color=("black", "white"), font=("Ubuntu", 16))
+        e_name_label.grid(row=1, column=0, padx=10, pady=10)
+        e_name_entry = CTkEntry(data_frame, fg_color=("#c2f1c1", "#2D2D2D"), text_color=("black", "white"), border_color="#00501B")
+        e_name_entry.grid(row=1, column=1, padx=10, pady=10)
 
-        J_label = CTkLabel(data_frame, text="RIF",fg_color='transparent',text_color=("black", "white"),
-                        font=("Ubuntu",16))
-        J_label.grid(row=0,column=6, padx=10,pady=10)
-        J_entry = CTkEntry(data_frame,fg_color=("#c2f1c1", "#2D2D2D"),text_color=("black", "white"), border_color="#00501B", validate="key",validatecommand=(data_frame.register(validate_entry), "%S","%P"))
-        J_entry.grid(row=0,column=7,padx=10,pady=10)
+        dir_label = CTkLabel(data_frame, text="Direccion", fg_color='transparent', text_color=("black", "white"), font=("Ubuntu", 16))
+        dir_label.grid(row=1, column=2, padx=10, pady=10)
+        dir_entry = CTkEntry(data_frame, fg_color=("#c2f1c1", "#2D2D2D"), text_color=("black", "white"), border_color="#00501B")
+        dir_entry.grid(row=1, column=3, padx=10, pady=10)
 
-        e_name_label = CTkLabel(data_frame, text="Empresa",fg_color='transparent',text_color=("black", "white"),
-                        font=("Ubuntu",16))
-        e_name_label.grid(row=1,column=0, padx=10,pady=10)
-        e_name_entry = CTkEntry(data_frame,fg_color=("#c2f1c1", "#2D2D2D"),text_color=("black", "white"), border_color="#00501B")
-        e_name_entry.grid(row=1,column=1,padx=10,pady=10)
+        # TELEFONO REDISEÑADO
+        cell_label = CTkLabel(data_frame, text="Teléfono", fg_color='transparent', text_color=("black", "white"), font=("Ubuntu", 16))
+        cell_label.grid(row=1, column=4, padx=10, pady=10)
+        
+        tlf_frame = CTkFrame(data_frame, fg_color="transparent")
+        tlf_frame.grid(row=1, column=5, padx=10, pady=10)
+        tlf_prefix_menu = CTkOptionMenu(tlf_frame, values=["0414", "0424", "0416", "0426", "0412", "0422"], width=60, fg_color=("#c2f1c1", "#2D2D2D"), text_color=("black", "white"), button_color="#00501B")
+        tlf_prefix_menu.set("0414")
+        tlf_prefix_menu.pack(side=LEFT, padx=(0, 5))
+        tlf_num_entry = CTkEntry(tlf_frame, width=70, fg_color=("#c2f1c1", "#2D2D2D"), text_color=("black", "white"), border_color="#00501B",
+                                 validate="key", validatecommand=(data_frame.register(validate_num_7), "%P"))
+        tlf_num_entry.pack(side=LEFT)
 
-        dir_label = CTkLabel(data_frame, text="Direccion",fg_color='transparent',text_color=("black", "white"),
-                        font=("Ubuntu",16))
-        dir_label.grid(row=1,column=2, padx=10,pady=10)
-        dir_entry = CTkEntry(data_frame,fg_color=("#c2f1c1", "#2D2D2D"),text_color=("black", "white"), border_color="#00501B")
-        dir_entry.grid(row=1,column=3,padx=10,pady=10)
-
-        self.tipo_tlf_var = StringVar(value="0414")
-        self.numero_tlf_var = StringVar()
-
-        cell_label = CTkLabel(data_frame, text="Teléfono",fg_color='transparent',text_color=("black", "white"),
-                        font=("Ubuntu",16))
-        cell_label.grid(row=1,column=4, padx=10,pady=10)
-        cell_entry = CTkEntry(data_frame,fg_color=("#c2f1c1", "#2D2D2D"),textvariable=self.numero_tlf_var ,text_color=("black", "white"), border_color="#00501B")
-        cell_entry.grid(row=1,column=5,padx=10,pady=10)
-
-        menu_tlf = Menu(cell_entry,bg="#333333",fg="white", activebackground="#0761AA", tearoff=0)
-        for tipo in ["0414", "0424", "0416", "0426", "0412", "0422"]:
-            menu_tlf.add_command(label=tipo, command=lambda t=tipo: self.select_tipo_tlf(t, cell_entry))
-
-        f1_label = CTkLabel(data_frame, text="Fecha Inicial",fg_color='transparent',text_color=("black", "white"),
-                        font=("Ubuntu",16))
-        f1_label.grid(row=1,column=6, padx=10,pady=10)
+        f1_label = CTkLabel(data_frame, text="Fecha Inicial", fg_color='transparent', text_color=("black", "white"), font=("Ubuntu", 16))
+        f1_label.grid(row=1, column=6, padx=10, pady=10)
         f1_entry = CTkEntry(data_frame, fg_color=("#c2f1c1", "#2D2D2D"), text_color=("black", "white"), border_color="#00501B")
         f1_entry.grid(row=1, column=7, padx=10, pady=10)
 
+        f2_label = CTkLabel(data_frame, text="Fecha Final", fg_color='transparent', text_color=("black", "white"), font=("Ubuntu", 16))
+        f2_label.grid(row=2, column=0, padx=10, pady=10)
+        f2_entry = CTkEntry(data_frame, fg_color=("#c2f1c1", "#2D2D2D"), text_color=("black", "white"), border_color="#00501B")
+        f2_entry.grid(row=2, column=1, padx=10, pady=10)
 
-        f2_label = CTkLabel(data_frame, text="Fecha Final",fg_color='transparent',text_color=("black", "white"),
-                        font=("Ubuntu",16))
-        f2_label.grid(row=2,column=0, padx=10,pady=10)
-        f2_entry = CTkEntry(data_frame,fg_color=("#c2f1c1", "#2D2D2D"),text_color=("black", "white"), border_color="#00501B",validate="key",
-        validatecommand=(data_frame.register(validate_fecha), "%P"))
-        f2_entry.grid(row=2,column=1,padx=10,pady=10)
+        plac_label = CTkLabel(data_frame, text="Placa", fg_color='transparent', text_color=("black", "white"), font=("Ubuntu", 16))
+        plac_label.grid(row=2, column=2, padx=10, pady=10)
+        plac_entry = CTkEntry(data_frame, fg_color=("#c2f1c1", "#2D2D2D"), text_color=("black", "white"), border_color="#00501B")
+        plac_entry.grid(row=2, column=3, padx=10, pady=10)
 
-        plac_label = CTkLabel(data_frame, text="Placa",fg_color='transparent',text_color=("black", "white"),
-                        font=("Ubuntu",16))
-        plac_label.grid(row=2,column=2, padx=10,pady=10)
-        plac_entry = CTkEntry(data_frame,fg_color=("#c2f1c1", "#2D2D2D"),text_color=("black", "white"), border_color="#00501B")
-        plac_entry.grid(row=2,column=3,padx=10,pady=10)
+        mar_label = CTkLabel(data_frame, text="Marca", fg_color='transparent', text_color=("black", "white"), font=("Ubuntu", 16))
+        mar_label.grid(row=2, column=4, padx=10, pady=10)
+        mar_entry = CTkEntry(data_frame, fg_color=("#c2f1c1", "#2D2D2D"), text_color=("black", "white"), border_color="#00501B")
+        mar_entry.grid(row=2, column=5, padx=10, pady=10)
 
-        mar_label = CTkLabel(data_frame, text="Marca",fg_color='transparent',text_color=("black", "white"),
-                        font=("Ubuntu",16))
-        mar_label.grid(row=2,column=4, padx=10,pady=10)
-        mar_entry = CTkEntry(data_frame,fg_color=("#c2f1c1", "#2D2D2D"),text_color=("black", "white"), border_color="#00501B")
-        mar_entry.grid(row=2,column=5,padx=10,pady=10)
+        modelo_label = CTkLabel(data_frame, text="Modelo", fg_color='transparent', text_color=("black", "white"), font=("Ubuntu", 16))
+        modelo_label.grid(row=2, column=6, padx=10, pady=10)
+        modelo_entry = CTkEntry(data_frame, fg_color=("#c2f1c1", "#2D2D2D"), text_color=("black", "white"), border_color="#00501B")
+        modelo_entry.grid(row=2, column=7, padx=10, pady=10)
 
-        modelo_label = CTkLabel(data_frame, text="Modelo",fg_color='transparent',text_color=("black", "white"),
-                        font=("Ubuntu",16))
-        modelo_label.grid(row=2,column=6, padx=10,pady=10)
-        modelo_entry = CTkEntry(data_frame,fg_color=("#c2f1c1", "#2D2D2D"),text_color=("black", "white"), border_color="#00501B")
-        modelo_entry.grid(row=2,column=7,padx=10,pady=10)
-
-        ci_entry.bind("<Button-1>", lambda e: self.open_tipo_menu(e, menu_tipo))
-        ci_entry.bind("<KeyRelease>", self.on_ci_key_release)
-        ci_entry.bind("<KeyPress>", self.proteger_prefijo)
-        cell_entry.bind("<Button-1>", lambda e: self.open_tipo_menu_tlf(e, menu_tlf))
-        cell_entry.bind("<KeyRelease>", self.on_tlf_key_release)
-        cell_entry.bind("<KeyPress>", self.guardar_prefijo)
         r_name_entry.bind("<KeyRelease>", lambda e: mayusculas(e, r_name_entry))
         apell_entry.bind("<KeyRelease>", lambda e: mayusculas(e, apell_entry))
         e_name_entry.bind("<KeyRelease>", lambda e: mayusculas(e, e_name_entry))
         dir_entry.bind("<KeyRelease>", lambda e: mayusculas(e, dir_entry))
         f2_entry.bind("<Button-1>", lambda e: abrir_calendario(e, f2_entry))
-
-        self.update_ci_prefix()
-        self.update_tlf_prefix()
 
         get_current_date()
 
@@ -448,25 +465,26 @@ class FrameVehiculos(CTkFrame):
         def select_record(e):
             f1_entry.delete(0,END)
             f2_entry.delete(0,END)
-            ci_entry.delete(0,END)
+            # Limpiar nuevos campos
+            ci_num_entry.delete(0, END)
+            rif_num_entry.delete(0, END)
+            tlf_num_entry.delete(0, END)
+            
             r_name_entry.delete(0,END)
             apell_entry.delete(0,END)
-            J_entry.delete(0,END)
             e_name_entry.delete(0,END)
             dir_entry.delete(0,END)
-            cell_entry.delete(0,END)
             plac_entry.delete(0,END)
             mar_entry.delete(0,END)
             modelo_entry.delete(0,END)
 
             selected = self.my_tree.focus()
             values = self.my_tree.item(selected,'values')
+            if not values: return
 
             plac_entry.insert(0,values[1])
             mar_entry.insert(0,values[2])
             modelo_entry.insert(0,values[3])
-            self.update_ci_prefix()
-            self.update_tlf_prefix()
             mostrar_imagen(values[1])
 
         def mostrar_imagen(placa):
@@ -530,105 +548,5 @@ class FrameVehiculos(CTkFrame):
         mydb.close()
     
 
-    def open_tipo_menu(self, event, menu):
-        x = event.widget.winfo_rootx()
-        y = event.widget.winfo_rooty() + event.widget.winfo_height()
-        menu.tk_popup(x, y)
-
-
-    def select_tipo(self, tipo, entry):
-        self.tipo_ci_var.set(tipo)
-        self.update_ci_prefix()
-        entry.focus_set()
-        
-        try:
-            entry.unpost() 
-        except Exception:
-            pass
-
-    def update_ci_prefix(self):
-        current = self.numero_ci_var.get()
-        numeros = current.split("-", 1)[-1] if "-" in current else current
-        self.numero_ci_var.set(f"{self.tipo_ci_var.get()}-{numeros}")
-
-        ci_entry_widget = self.numero_ci_var._tk.globalgetvar(str(self.numero_ci_var))
-        try:
-            pass
-        except Exception:
-            pass
-
-
-    def on_ci_key_release(self, event):
-        current = self.numero_ci_var.get()
-        if "-" in current:
-            tipo, numeros = current.split("-", 1)
-        else:
-            tipo, numeros = self.tipo_ci_var.get(), current
-
-        numeros = ''.join(filter(str.isdigit, numeros))[:10]
-        self.numero_ci_var.set(f"{tipo}-{numeros}")
-        entry_widget = event.widget
-        entry_widget.icursor(len(f"{tipo}-") + len(numeros))
-
-    def proteger_prefijo(self, event):
-        entry = event.widget
-        cursor_pos = entry.index(tk.INSERT)
-        text = entry.get()
-        if cursor_pos <= 2:
-            if event.keysym in ("BackSpace", "Delete", "Left"):
-                return "break"
-
-    
-    def open_tipo_menu_tlf(self, event, menu):
-        x = event.widget.winfo_rootx()
-        y = event.widget.winfo_rooty() + event.widget.winfo_height()
-        menu.tk_popup(x, y)
-
-
-    def select_tipo_tlf(self, tipo, entry):
-        self.tipo_tlf_var.set(tipo)
-        self.update_tlf_prefix()
-        entry.focus_set()
-        
-        try:
-            entry.unpost() 
-        except Exception:
-            pass
-
-    def update_tlf_prefix(self):
-        current = self.numero_tlf_var.get()
-        numeros = current.split("-", 1)[-1] if "-" in current else current
-        self.numero_tlf_var.set(f"{self.tipo_tlf_var.get()}-{numeros}")
-
-        ci_entry_widget = self.numero_tlf_var._tk.globalgetvar(str(self.numero_tlf_var))
-        try:
-            pass
-        except Exception:
-            pass
-
-
-    def on_tlf_key_release(self, event):
-        current = self.numero_tlf_var.get()
-        if "-" in current:
-            tipo, numeros = current.split("-", 1)
-        else:
-            tipo, numeros = self.tipo_tlf_var.get(), current
-
-        numeros = ''.join(filter(str.isdigit, numeros))[:7]
-        self.numero_tlf_var.set(f"{tipo}-{numeros}")
-        entry_widget = event.widget
-        entry_widget.icursor(len(f"{tipo}-") + len(numeros))
-
-    def guardar_prefijo(self, event):
-        entry = event.widget
-        cursor_pos = entry.index(tk.INSERT)
-
-        prefijo = f"{self.tipo_tlf_var.get()}-"
-        len_pref = len(prefijo)
-        if cursor_pos < len_pref:
-            entry.icursor(len_pref)
-            return "break"
-        if event.keysym == "BackSpace" and cursor_pos == len_pref:
-            return "break"
 
 

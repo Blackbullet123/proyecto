@@ -8,17 +8,11 @@ import datetime
 import os
 import platform
 
-class FrameBackup(CTkToplevel):
-    def __init__(self, controlador):
-        super().__init__()
+class FrameBackup(CTkFrame):
+    def __init__(self, parent, controlador):
+        super().__init__(parent, fg_color=("#EEEEEE", "#1A1A1A"))
         
         self.controlador = controlador
-
-        self.title("Respaldo")
-        self.geometry("800x650+205+15")
-        self.resizable(False, False)
-        self.grab_set()
-        self.focus_force()
 
 
 
@@ -197,12 +191,30 @@ class FrameBackup(CTkToplevel):
                     BASEDATOS,
                 ]
 
+                try:
+                    conn_killer = mysql.connector.connect(host=HOST, user=USUARIO, password=CONTRASENA, port=port)
+                    cursor_killer = conn_killer.cursor()
+                    cursor_killer.execute("SELECT CONCAT('KILL ', id, ';') FROM information_schema.processlist WHERE db = %s AND id != CONNECTION_ID()", (BASEDATOS,))
+                    for (kill_stmt,) in cursor_killer.fetchall():
+                        try:
+                            cursor_killer.execute(kill_stmt)
+                        except Exception as e_kill:
+                            print(f"Error al matar conexion: {e_kill}")
+                            pass
+                    conn_killer.close()
+                except Exception as e_conn:
+                    print(f"Error al intentar matar conexiones: {e_conn}")
+                    pass
+
                 with open(archivo_sql, "rb") as archivo:
                         resultado = subprocess.run(comando_restore, stdin=archivo, stderr=subprocess.PIPE)
 
                         if resultado.returncode == 0:
-                            messagebox.showinfo("Éxito", f"✅ Base de datos '{BASEDATOS}' restaurada desde:\n{archivo_sql}")
+                            messagebox.showinfo("Éxito", f"✅ Base de datos '{BASEDATOS}' restaurada desde:\n{archivo_sql}\nEl sistema se reiniciará para aplicar los cambios.")
                             guardar_historial("restore")
+                            import sys
+                            subprocess.Popen([sys.executable] + sys.argv)
+                            self.controlador.root.destroy()
                         else:
                             messagebox.showerror("Error", f"Error al restaurar backup:\n{resultado.stderr.decode('utf-8')}")
 
@@ -210,9 +222,7 @@ class FrameBackup(CTkToplevel):
                 messagebox.showerror("Error", f"Excepción inesperada:\n{str(e)}")
 
         def volver():
-            self.destroy()
-
-
+            self.controlador.mostrar_configuracion()
 
         self.frame_main = CTkFrame(self, fg_color="#EEEEEE")
         self.frame_main.pack(fill=BOTH, expand=True)              
@@ -220,9 +230,9 @@ class FrameBackup(CTkToplevel):
         frame_superior = CTkFrame(self.frame_main, fg_color="#EEEEEE")
         frame_superior.pack(pady=10, fill=X, expand=True, side="top")
 
-        volver = CTkButton(frame_superior, text="← Volver", fg_color="#0E0F0F", cursor="hand2", text_color="white",
+        volver_btn = CTkButton(frame_superior, text="← Volver", fg_color="#0E0F0F", cursor="hand2", text_color="white",
                            width=100, command=volver,height=40)
-        volver.pack(pady=10, padx=20, side=LEFT)
+        volver_btn.pack(pady=10, padx=20, side=LEFT)
 
         titulo = CTkLabel(frame_superior, text="Backup & Restore",
                         text_color=("#00501B", "#00FF7F"), font=("Impact", 45))
@@ -246,7 +256,7 @@ class FrameBackup(CTkToplevel):
         frame_ruta_backup = tk.Frame(frame_backup)
         frame_ruta_backup.pack(fill="x", pady=5)
 
-        entry_backup = CTkEntry(frame_ruta_backup, font=("Arial", 10))
+        entry_backup = CTkEntry(frame_ruta_backup, font=("Arial", 10), fg_color=("#2D2D2D", "#2D2D2D"), text_color=("white", "white"), border_color="#00501B")
         entry_backup.pack(side="left", fill="x", expand=True, padx=5)
 
         btn_examinar_backup = CTkButton(frame_ruta_backup, text="Examinar", text_color="white", fg_color="black", width=10, command=seleccionar_carpeta_backup)
@@ -266,7 +276,7 @@ class FrameBackup(CTkToplevel):
         frame_ruta_restore = tk.Frame(frame_restore)
         frame_ruta_restore.pack(fill="x", pady=5)
 
-        entry_restore = CTkEntry(frame_ruta_restore, font=("Arial", 10))
+        entry_restore = CTkEntry(frame_ruta_restore, font=("Arial", 10), fg_color=('#2D2D2D', '#2D2D2D'), text_color=("white", "white"), border_color="#00501B")
         entry_restore.pack(side="left", fill="x", expand=True, padx=5)
 
         btn_examinar_restore = CTkButton(frame_ruta_restore, text="Examinar", text_color="white",width=10,fg_color="black", command=seleccionar_archivo_restore)
