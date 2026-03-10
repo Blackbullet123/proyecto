@@ -255,16 +255,16 @@ class usuario:
         frame_botones = CTkFrame(self.frame_form_l, fg_color="transparent")
         frame_botones.pack(side="top",fill=X, pady=20)
 
-        img = Image.open("imagenes/hogar.png")
-        inicio_icon = CTkImage(dark_image=img, light_image=img, size=(24,24))
+        img_white = Image.open("imagenes/hogar_white.png")
+        inicio_icon = CTkImage(dark_image=img_white, light_image=img_white, size=(24,24))
         inicio = CTkButton(frame_botones, text="Inicio",fg_color="transparent",text_color="white",
                                   width=150, height=30,hover_color="#00501B",
                                   font=("Ubuntu",17), anchor=W, image=inicio_icon, compound="left",
                                   command=self.mostrar_contenido_principal)
         inicio.pack(pady=5, padx=2, fill=X)        
 
-        img = Image.open("imagenes/alquiler.png")
-        alquilar_icon = CTkImage(dark_image=img, light_image=img, size=(24,24))
+        img_white = Image.open("imagenes/alquiler_white.png")
+        alquilar_icon = CTkImage(dark_image=img_white, light_image=img_white, size=(24,24))
         alquilar = CTkButton(frame_botones, text="Alquilar",fg_color="transparent",text_color="white",
                                   width=150, height=30,hover_color="#00501B",
                                   font=("Ubuntu",17),anchor=W, image=alquilar_icon, compound="left",
@@ -272,31 +272,31 @@ class usuario:
         alquilar.pack(pady=5, padx=2, fill=X)
 
 
-        img = Image.open("imagenes/nuevo.png")
-        nuevo_vehiculo_icon = CTkImage(dark_image=img, light_image=img, size=(24,24))
+        img_white = Image.open("imagenes/nuevo_white.png")
+        nuevo_vehiculo_icon = CTkImage(dark_image=img_white, light_image=img_white, size=(24,24))
         nuevo_vehiculo = CTkButton(frame_botones, text="Nuevo Vehiculo",fg_color="transparent",text_color="white",
                                   width=150, height=40,hover_color="#00501B", command=self.mostrar_nuevo_vehiculo,
                                   font=("Ubuntu",17), state=DISABLED,anchor=W, image=nuevo_vehiculo_icon, compound="left")
         nuevo_vehiculo.pack(pady=5, padx=2, fill=X)
 
-        img = Image.open("imagenes/mantenimiento.png")
-        mantenimiento_icon = CTkImage(dark_image=img, light_image=img, size=(24,24))
+        img_white = Image.open("imagenes/mantenimiento_white.png")
+        mantenimiento_icon = CTkImage(dark_image=img_white, light_image=img_white, size=(24,24))
         mantenimiento = CTkButton(frame_botones, text="Mantenimiento",fg_color="transparent",text_color="white",
                                   width=150, height=40,hover_color="#00501B",
                                   font=("Ubuntu",17), anchor=W, image=mantenimiento_icon, compound="left",
                                   command=self.mostrar_mantenimiento)
         mantenimiento.pack(pady=5, padx=2, fill=X)
 
-        img = Image.open("imagenes/estadisticas.png")
-        datos_icon = CTkImage(dark_image=img, light_image=img, size=(24,24))
+        img_white = Image.open("imagenes/estadisticas_white.png")
+        datos_icon = CTkImage(dark_image=img_white, light_image=img_white, size=(24,24))
         date_detalles = CTkButton(frame_botones, text="Estadisticas",fg_color="transparent",text_color="white",
                                   width=150, height=40,hover_color="#00501B",
                                   font=("Ubuntu",17), anchor=W, image=datos_icon, compound="left",
                                   command=self.mostrar_estadisticas)
         date_detalles.pack(pady=5, padx=2, fill=X)
 
-        img = Image.open("imagenes/configuraciones.png")
-        configuracion_icon = CTkImage(dark_image=img, light_image=img, size=(24,24))
+        img_white = Image.open("imagenes/configuraciones_white.png")
+        configuracion_icon = CTkImage(dark_image=img_white, light_image=img_white, size=(24,24))
         configuracion = CTkButton(frame_botones, text="Configuración",fg_color="transparent",text_color="white",
                                   width=150, height=40,hover_color="#00501B",
                                   font=("Ubuntu",17), anchor=W, image=configuracion_icon, compound="left",
@@ -329,8 +329,8 @@ class usuario:
         frame_botones2 = CTkFrame(self.frame_form_l, fg_color="transparent")
         frame_botones2.pack(side="bottom",fill=X, pady=20)
 
-        img = Image.open("imagenes/salir.png")
-        salir = CTkImage(dark_image=img, light_image=img, size=(24,24))
+        img_white = Image.open("imagenes/salir_white.png")
+        salir = CTkImage(dark_image=img_white, light_image=img_white, size=(24,24))
         boton = CTkButton(frame_botones2, text="Cerrar Sesión",fg_color="transparent", text_color="white",
                                   width=100, height=30,hover_color="#00501B",
                                   font=("Ubuntu",18), command=romper,image=salir, compound="left")
@@ -404,12 +404,17 @@ class usuario:
 
         img = Image.open("imagenes/imprimir.png")
         img_white = Image.open("imagenes/imprimir_white.png")
-        imprimir_icon = CTkImage(light_image=img, dark_image=img_white, size=(40,40))
-
-        imprimir = CTkButton(button_frame, hover_color=("#EEEEEE", "#2D2D2D"),command=ventana_imprimir ,image=imprimir_icon , text="", fg_color="transparent",
-
-                               width=30, height=30, )
-        imprimir.pack(side="right", padx=3)
+        imprimir_icon = CTkImage(light_image=img_white, dark_image=img_white, size=(28, 28))
+        imprimir = CTkButton(button_frame, 
+                             image=imprimir_icon, 
+                             text="", 
+                             fg_color=("#00501B", "#008a4f"),
+                             hover_color=("#003D14", "#00501B"),
+                             width=50, 
+                             height=50, 
+                             corner_radius=15,
+                             command=ventana_imprimir)
+        imprimir.pack(side="right", padx=10)
 
         #treeview
         self.tree_frame = CTkFrame(self.frame_principal, fg_color=("#EEEEEE", "#1A1A1A"))
