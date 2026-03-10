@@ -118,9 +118,6 @@ def ventana_imprimir():
                                 font=("Ubuntu", 20))
             label_hola.pack(pady=50)
 
-
-            self.root.mainloop()
-
         def imprimir_datos(self):
             if hasattr(self, "frame_datos_detallados"):
                 FrameDatosDetallados.imprimir_fila_seleccionada(self, parent=self.root)

@@ -10,7 +10,11 @@ from reportlab.lib import colors
 from datetime import datetime
 import mysql.connector
 import pandas as pd
-from forms.vista_previa import vista_previa_3,vista_previa_2,vista_previa_grafica, vista_previa_historial
+import warnings
+from forms.vista_previa import vista_previa_3,vista_previa_2,vista_previa_grafica, vista_previa_historial, vista_previa_mantenimiento
+
+# Silenciar advertencia de pandas sobre conexiones DBAPI2 (no soportadas oficialmente pero funcionales aquí)
+warnings.filterwarnings("ignore", category=UserWarning, message=".*pandas only supports SQLAlchemy.*")
 
 def imprimir_grafica():
     conn = mysql.connector.connect(
@@ -226,7 +230,7 @@ def imprimir_todos():
             
 
         # Construir el documento PDF y añadir la función add_image al canvas
-        doc.build([imagen_alq, imagen], onFirstPage=add_image)
+
 
         # Crear la tabla en el PDF
         table = Table(data)
@@ -243,7 +247,8 @@ def imprimir_todos():
         # Añadir las etiquetas al PDF
         elements = [p_label0, p_label3, p_label4, p_label9, p_label10, p_title, Spacer(1, 20), table]
         
-        doc.build(elements)
+        doc.build(elements, onFirstPage=add_image)
+        conn.close()
         vista_previa_3()
     
 def imprimir_vehiculos():
@@ -255,7 +260,7 @@ def imprimir_vehiculos():
         )
 
         # Consulta a la base de datos
-        query = ("SELECT v.Placa, m.Nombre, o.Nombre FROM vehiculo v LEFT JOIN alquiler a ON a.Placa_Vehiculo = v.Placa RIGHT JOIN marca m ON m.ID = v.ID_Marca INNER JOIN modelo o ON m.ID = o.ID_Marca ORDER BY v.Placa;")
+        query = ("SELECT v.Placa, m.Nombre, o.Nombre FROM vehiculo v LEFT JOIN alquiler a ON a.Placa_Vehiculo = v.Placa INNER JOIN marca m ON v.ID_Marca = m.ID INNER JOIN modelo o ON v.ID_Modelo = o.ID WHERE a.COD_Alquiler IS NULL ORDER BY v.Placa;")
         df = pd.read_sql(query, conn)
         
         # Crear el PDF
@@ -306,8 +311,7 @@ def imprimir_vehiculos():
             imagen.drawOn(canvas, pdx, pdy)
             
 
-        # Construir el documento PDF y añadir la función add_image al canvas
-        doc.build([imagen_alq, imagen], onFirstPage=add_image)
+
 
         # Crear la tabla en el PDF
         table = Table(data)
@@ -323,7 +327,8 @@ def imprimir_vehiculos():
         # Añadir las etiquetas al PDF
         elements = [p_label0, p_label3, p_label4, p_label9, p_label10, p_title, Spacer(1, 20), table]
         
-        doc.build(elements)
+        doc.build(elements, onFirstPage=add_image)
+        conn.close()
         vista_previa_2()
 
 def imprimir_historial():
@@ -384,8 +389,7 @@ def imprimir_historial():
     def add_image(canvas, doc):
         imagen_alq.drawOn(canvas, x, y)
         imagen.drawOn(canvas, pdx, pdy)
-        
-    doc.build([imagen_alq, imagen], onFirstPage=add_image)
+
 
     table = Table(data)
     style = TableStyle([('BACKGROUND', (0, 0), (-1, 0), colors.seagreen),
@@ -400,5 +404,110 @@ def imprimir_historial():
 
     elements = [p_label0, p_label3, p_label4, p_label9, p_label10, p_title, Spacer(1, 20), table]
     
-    doc.build(elements)
+    doc.build(elements, onFirstPage=add_image)
     vista_previa_historial()
+
+def imprimir_mantenimiento():
+    conn = mysql.connector.connect(
+        host='localhost',
+        user='root',
+        password='123456',
+        database='control_alquiler_Reych'
+    )
+    cursor = conn.cursor()
+
+    # Obtener todos los vehículos con su última fecha de mantenimiento
+    query = """
+        SELECT v.Placa, m.Nombre AS Marca, o.Nombre AS Modelo, v.dias_mantenimiento,
+               (SELECT MAX(Fecha) FROM mantenimiento WHERE Placa = v.Placa) AS UltimaFecha
+        FROM vehiculo v
+        INNER JOIN marca m ON v.ID_Marca = m.ID
+        INNER JOIN modelo o ON v.ID_Modelo = o.ID
+    """
+    cursor.execute(query)
+    vehiculos = cursor.fetchall()
+    conn.close()
+
+    necesario = []
+    sin_registro = []
+    al_dia = []
+
+    hoy = datetime.now().date()
+
+    for placa, marca, modelo, dias_mantenimiento, ultima_fecha in vehiculos:
+        row = [placa, marca, modelo, dias_mantenimiento, str(ultima_fecha) if ultima_fecha else "N/A"]
+        
+        if not ultima_fecha:
+            sin_registro.append(row)
+        else:
+            dias_pasados = (hoy - ultima_fecha).days
+            dias_restantes = dias_mantenimiento - dias_pasados
+            if dias_restantes <= 1:
+                necesario.append(row)
+            else:
+                al_dia.append(row)
+
+    # Crear el PDF
+    doc = SimpleDocTemplate("PDF/Mantenimiento.pdf", pagesize=letter)
+    styles = getSampleStyleSheet()
+    
+    def fecha_pdf():
+        return datetime.now().strftime("%d/%m/%Y %I:%M %p")
+
+    elements = []
+    
+    # Membrete y Datos Generales
+    elements.extend([
+        Paragraph("<b>    <br/></b>"),
+        Paragraph("<b>RIF:</b> J-080204204"),
+        Paragraph("<b>Telefono:</b> 02832550911"),
+        Paragraph(f"<b>Fecha:</b> {fecha_pdf()}"),
+        Paragraph("<b>    <br/></b>"),
+        Paragraph("<b>Reporte de Mantenimiento de Vehículos</b>", styles['Title']),
+        Spacer(1, 20)
+    ])
+
+    def crear_seccion(titulo, datos, color_fondo):
+        if not datos:
+            return []
+        
+        elements_sec = [
+            Paragraph(f"<b>{titulo}</b>", styles['Heading2']),
+            Spacer(1, 10)
+        ]
+        
+        headers = ["Placa", "Marca", "Modelo", "Frecuencia (Días)", "Último Mantenimiento"]
+        table_data = [headers] + datos
+        
+        table = Table(table_data, colWidths=[80, 100, 100, 100, 120])
+        style = TableStyle([
+            ('BACKGROUND', (0, 0), (-1, 0), color_fondo),
+            ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
+            ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+            ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+            ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
+            ('BACKGROUND', (0, 1), (-1, -1), colors.beige),
+            ('GRID', (0, 0), (-1, -1), 0.5, colors.grey)
+        ])
+        table.setStyle(style)
+        elements_sec.append(table)
+        elements_sec.append(Spacer(1, 20))
+        return elements_sec
+
+    # Agregar Secciones
+    elements.extend(crear_seccion("MANTENIMIENTO NECESARIO", necesario, colors.red))
+    elements.extend(crear_seccion("SIN REGISTRO DE MANTENIMIENTO", sin_registro, colors.dodgerblue))
+    elements.extend(crear_seccion("ÓPTIMAS CONDICIONES", al_dia, colors.seagreen))
+
+    # Imágenes (Membrete)
+    imagen_path = "imagenes/membrete.jpg"
+    imagen = Image(imagen_path, width=570, height=70)
+    imagen_2 = "imagenes/Reych_imp.png"
+    imagen_alq = Image(imagen_2, width=130, height=110)
+
+    def add_image(canvas, doc):
+        imagen_alq.drawOn(canvas, 450, 610)
+        imagen.drawOn(canvas, 20, 715)
+
+    doc.build(elements, onFirstPage=add_image)
+    vista_previa_mantenimiento()

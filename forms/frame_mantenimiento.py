@@ -5,6 +5,7 @@ from datetime import datetime
 import mysql.connector
 from PIL import Image
 import os
+from forms.imprimir_funcion import imprimir_mantenimiento
 
 class FrameMantenimiento(CTkFrame):
     def __init__(self, parent, controlador):
@@ -23,6 +24,17 @@ class FrameMantenimiento(CTkFrame):
         titulo = CTkLabel(frame_superior, text="MANTENIMIENTO",
                           text_color=("#00501B", "#00FF7F"), font=("Impact", 45))
         titulo.pack(pady=0, padx=20, side=RIGHT)
+
+        # Cargar iconos para el botón de reporte (igual que en frame_vehiculos.py)
+        img = Image.open("imagenes/imprimir.png")
+        img_white = Image.open("imagenes/imprimir_white.png")
+        imprimir_icon = CTkImage(light_image=img, dark_image=img_white, size=(40,40))
+
+        CTkButton(frame_superior, hover_color=("#EEEEEE", "#2D2D2D"),
+                  image=imprimir_icon, text="", fg_color="transparent",
+                  width=30, height=30,
+                  command=imprimir_mantenimiento
+                  ).pack(side=RIGHT, padx=3)
 
 
         frame_centro_container = CTkFrame(self, fg_color=("#EEEEEE", "#1A1A1A"))
@@ -181,15 +193,6 @@ class FrameMantenimiento(CTkFrame):
                       command=lambda p=placa: self.registrar_mantenimiento(p)
                       ).pack(side=LEFT, padx=5)
 
-            botones_inferior = CTkFrame(card, fg_color="transparent")
-
-            botones_inferior.pack(pady=5)
-            CTkButton(botones_inferior, text="Configurar",
-                      fg_color="#FFA500", text_color="white",
-                      width=110, height=25,
-                      command=lambda p=placa: self.configurar_mantenimiento_vehiculo(p)
-                      ).pack()
-
     def obtener_color_marcador(self, placa, dias_mantenimiento):
         try:
             mydb = mysql.connector.connect(
@@ -226,65 +229,6 @@ class FrameMantenimiento(CTkFrame):
             print(f"Error al obtener marcador de mantenimiento: {err}")
             return None
 
-    def configurar_mantenimiento_vehiculo(self, placa):
-        ventana = Toplevel(self)
-        ventana.title(f"Configurar mantenimiento - {placa}")
-        ventana.geometry("300x200+550+250")
-        ventana.grab_set()
-
-        CTkLabel(ventana, text="Cada cuántos días \n realizar mantenimiento?",text_color="#00501B",
-                 font=("Ubuntu", 14, "bold")).pack(pady=20)
-
-        try:
-            mydb = mysql.connector.connect(
-                host="localhost",
-                user="root",
-                password="123456",
-                port="3306",
-                database="control_alquiler_Reych"
-            )
-            cursor = mydb.cursor()
-            cursor.execute("SELECT dias_mantenimiento FROM vehiculo WHERE Placa = %s", (placa,))
-            resultado = cursor.fetchone()
-            mydb.close()
-            dias_actual = resultado[0] if resultado else 30
-        except mysql.connector.Error as err:
-            messagebox.showerror("Error", f"No se pudo obtener la configuración:\n{err}")
-            dias_actual = 30
-
-        dias_var = StringVar(value=str(dias_actual))
-        CTkEntry(ventana, textvariable=dias_var, width=100, fg_color=("#c2f1c1", "#2D2D2D"), text_color=("black", "white"), border_color="#00501B").pack(pady=10)
-
-
-        def guardar_config():
-            try:
-                dias = int(dias_var.get())
-                if dias <= 0:
-                    raise ValueError
-
-                mydb = mysql.connector.connect(
-                    host="localhost",
-                    user="root",
-                    password="123456",
-                    port="3306",
-                    database="control_alquiler_Reych"
-                )
-                cursor = mydb.cursor()
-                cursor.execute("UPDATE vehiculo SET dias_mantenimiento = %s WHERE Placa = %s", (dias, placa))
-                mydb.commit()
-                mydb.close()
-
-                messagebox.showinfo("Éxito", f"Tiempo de mantenimiento configurado a {dias} días para {placa}")
-                self.cargar_vehiculos()
-                ventana.destroy()
-
-            except ValueError:
-                messagebox.showerror("Error", "Ingrese un número válido mayor a 0.")
-            except mysql.connector.Error as err:
-                messagebox.showerror("Error", f"No se pudo guardar la configuración:\n{err}")
-
-        CTkButton(ventana, text="Guardar", fg_color="#00501B", text_color="white",
-                  command=guardar_config).pack(pady=20)
 
     def verificar_mantenimiento(self, placa, dias_mantenimiento):
         try:
@@ -340,7 +284,6 @@ class FrameMantenimiento(CTkFrame):
         fecha_var = StringVar(value=datetime.now().strftime("%Y-%m-%d"))
         km_var = StringVar()
         desc_var = StringVar()
-        costo_var = StringVar()
 
         CTkLabel(ventana, text_color="#00501B",text="Kilometraje actual:").pack(pady=(10, 0))
         km_entry = CTkEntry(ventana, textvariable=km_var, width=250, fg_color=("#c2f1c1", "#2D2D2D"), text_color=("black", "white"), border_color="#00501B")
@@ -352,13 +295,29 @@ class FrameMantenimiento(CTkFrame):
 
         desc_entry.pack()
 
-        CTkLabel(ventana, text_color="#00501B",text="Costo (opcional):").pack(pady=(10, 0))
-        costo_entry = CTkEntry(ventana, textvariable=costo_var, width=250, fg_color=("#c2f1c1", "#2D2D2D"), text_color=("black", "white"), border_color="#00501B")
+        try:
+            mydb_freq = mysql.connector.connect(
+                host="localhost", user="root", password="123456", port="3306", database="control_alquiler_Reych"
+            )
+            cursor_freq = mydb_freq.cursor()
+            cursor_freq.execute("SELECT dias_mantenimiento FROM vehiculo WHERE Placa = %s", (placa,))
+            res_freq = cursor_freq.fetchone()
+            mydb_freq.close()
+            dias_actual = res_freq[0] if res_freq else 30
+        except:
+            dias_actual = 30
 
-        costo_entry.pack()
+        frecuencia_var = StringVar(value=str(dias_actual))
+        CTkLabel(ventana, text_color="#00501B", text="Frecuencia (Días):").pack(pady=(10, 0))
+        CTkEntry(ventana, textvariable=frecuencia_var, width=250, fg_color=("#c2f1c1", "#2D2D2D"), text_color=("black", "white"), border_color="#00501B").pack()
+        # -----------------------------------------------------------------
 
         def guardar():
             try:
+                nueva_frecuencia = int(frecuencia_var.get())
+                if nueva_frecuencia <= 0:
+                    raise ValueError("La frecuencia debe ser mayor a 0")
+
                 mydb = mysql.connector.connect(
                     host="localhost",
                     user="root",
@@ -367,15 +326,22 @@ class FrameMantenimiento(CTkFrame):
                     database="control_alquiler_Reych"
                 )
                 cursor = mydb.cursor()
+                # Registrar mantenimiento
                 cursor.execute("""
-                    INSERT INTO mantenimiento (Placa, Fecha, Kilometraje, Descripcion, Costo)
-                    VALUES (%s, %s, %s, %s, %s)
-                """, (placa, fecha_var.get(), km_var.get(), desc_var.get(), costo_var.get() or None))
+                    INSERT INTO mantenimiento (Placa, Fecha, Kilometraje, Descripcion)
+                    VALUES (%s, %s, %s, %s)
+                """, (placa, fecha_var.get(), km_var.get(), desc_var.get() or None))
+                
+                # Actualizar frecuencia en tabla vehiculo
+                cursor.execute("UPDATE vehiculo SET dias_mantenimiento = %s WHERE Placa = %s", (nueva_frecuencia, placa))
+                
                 mydb.commit()
                 mydb.close()
-                messagebox.showinfo("Éxito", f"Mantenimiento registrado para {placa}.")
+                messagebox.showinfo("Éxito", f"Mantenimiento registrado y frecuencia actualizada para {placa}.")
                 self.cargar_vehiculos() 
                 ventana.destroy()
+            except ValueError as e:
+                messagebox.showerror("Error", str(e) if str(e) else "Kilometraje o frecuencia inválidos")
             except mysql.connector.Error as err:
                 messagebox.showerror("Error al guardar", f"No se pudo registrar:\n{err}")
 
