@@ -41,6 +41,14 @@ class FrameNuevoVehiculo(CTkFrame):
             return texto.upper()
         return texto
 
+    def validar_num_4(self, new_text):
+        if len(new_text) > 4:
+            return False
+        return new_text == "" or new_text.isdigit()
+
+    def validar_placa(self, new_text):
+        return len(new_text) <= 7
+
     def crear_ui(self):
         frame_superior = CTkFrame(self, fg_color=("#EEEEEE", "#1A1A1A"))
         frame_superior.pack(pady=10, fill=X, expand=True)
@@ -83,34 +91,40 @@ class FrameNuevoVehiculo(CTkFrame):
 
         labels = ["Placa","Color","Año"]
         self.entries = {}
+        
+        # Placa
+        CTkLabel(frame_campos, text="Placa:", text_color="white", font=("Ubuntu",13,"bold")).grid(row=0, column=0, padx=(5,2), sticky="e")
+        self.entries["placa"] = CTkEntry(frame_campos, fg_color=("#c2f1c1", "#2D2D2D"), text_color=("black", "white"), border_color="#00501B", width=100, height=28,
+                                         validate="key", validatecommand=(self.register(self.validar_placa), "%P"))
+        self.entries["placa"].grid(row=0, column=1, padx=(0,5))
+        
+        # Color
+        CTkLabel(frame_campos, text="Color:", text_color="white", font=("Ubuntu",13,"bold")).grid(row=0, column=2, padx=(5,2), sticky="e")
+        colores_comunes = ["BLANCO", "NEGRO", "GRIS", "ROJO", "AZUL", "VERDE","VINOTINTO" ,"AMARILLO", "PLATA"]
+        self.entries["color"] = CTkComboBox(frame_campos, state="readonly", values=colores_comunes, width=100)
+        self.entries["color"].grid(row=0, column=3, padx=(0,2))
+        self.entries["color"].set("")
+        CTkButton(frame_campos, text="+", width=25, height=28, fg_color="#00BFA5", hover_color="#009688", command=self.agregar_nuevo_color).grid(row=0, column=4, padx=(0,8))
 
-        for i, label in enumerate(labels):
-            CTkLabel(frame_campos, text=f"{label}:", text_color="white",
-                    font=("Ubuntu",13,"bold")).grid(row=0, column=i*2, padx=(5,2), sticky="e")
+        # Año
+        CTkLabel(frame_campos, text="Año:", text_color="white", font=("Ubuntu",13,"bold")).grid(row=0, column=5, padx=(5,2), sticky="e")
+        self.entries["año"] = CTkEntry(frame_campos, fg_color=("#c2f1c1", "#2D2D2D"), text_color=("black", "white"), border_color="#00501B", width=100, height=28,
+                                       validate="key", validatecommand=(self.register(self.validar_num_4), "%P"))
+        self.entries["año"].grid(row=0, column=6, padx=(0,8))
 
-            if label == "Color":  
-                colores_comunes = ["BLANCO", "NEGRO", "GRIS", "ROJO", "AZUL", "VERDE","VINOTINTO" ,"AMARILLO", "PLATA"]
-                self.entries["color"] = CTkComboBox(frame_campos, state="readonly", values=colores_comunes, width=120)
-                self.entries["color"].grid(row=0, column=i*2+1, padx=(0,8))
-                self.entries["color"].set("")
-            else:
-                self.entries[label.lower()] = CTkEntry(frame_campos, fg_color=("#c2f1c1", "#2D2D2D"),text_color=("black", "white"), border_color="#00501B",width=120, height=28)
-                self.entries[label.lower()].grid(row=0, column=i*2+1, padx=(0,8))
-
-
-        CTkLabel(frame_campos, text="Marca:", text_color="white", font=("Ubuntu",13,"bold")).grid(row=0, column=6, padx=(5,2), sticky="e")
-        self.marca_combobox = CTkComboBox(frame_campos, state="readonly",values=self.cargar_marcas(), width=120, command=self.actualizar_modelos)
-        self.marca_combobox.grid(row=0, column=7, padx=(0,5))
+        # Marca
+        CTkLabel(frame_campos, text="Marca:", text_color="white", font=("Ubuntu",13,"bold")).grid(row=0, column=7, padx=(5,2), sticky="e")
+        self.marca_combobox = CTkComboBox(frame_campos, state="readonly", values=self.cargar_marcas(), width=100, command=self.actualizar_modelos)
+        self.marca_combobox.grid(row=0, column=8, padx=(0,2))
         self.marca_combobox.set("")
-        CTkButton(frame_campos, text="+", width=25, height=28, fg_color="#00BFA5",
-                  hover_color="#009688", command=self.agregar_nueva_marca).grid(row=0, column=8, padx=(0,8))
+        CTkButton(frame_campos, text="+", width=25, height=28, fg_color="#00BFA5", hover_color="#009688", command=self.agregar_nueva_marca).grid(row=0, column=9, padx=(0,8))
 
-        CTkLabel(frame_campos, text="Modelo:", text_color="white", font=("Ubuntu",13,"bold")).grid(row=0, column=9, padx=(5,2), sticky="e")
-        self.modelo_combobox = CTkComboBox(frame_campos,state="readonly", values=[], width=120)
-        self.modelo_combobox.grid(row=0, column=10, padx=(0,5))
+        # Modelo
+        CTkLabel(frame_campos, text="Modelo:", text_color="white", font=("Ubuntu",13,"bold")).grid(row=0, column=10, padx=(5,2), sticky="e")
+        self.modelo_combobox = CTkComboBox(frame_campos, state="readonly", values=[], width=110)
+        self.modelo_combobox.grid(row=0, column=11, padx=(0,2))
         self.modelo_combobox.set("")
-        CTkButton(frame_campos, text="+", width=25, height=28, fg_color="#00BFA5",
-                  hover_color="#009688", command=self.agregar_nuevo_modelo).grid(row=0, column=11, padx=(0,8))
+        CTkButton(frame_campos, text="+", width=25, height=28, fg_color="#00BFA5", hover_color="#009688", command=self.agregar_nuevo_modelo).grid(row=0, column=12, padx=(0,8))
 
         frame_imagen = CTkFrame(barra_inferior, fg_color="#00695C", corner_radius=8)
         frame_imagen.pack(side="left", padx=15, pady=5)
@@ -150,6 +164,19 @@ class FrameNuevoVehiculo(CTkFrame):
             self.marca_combobox.configure(values=self.cargar_marcas())
             self.marca_combobox.set(nueva_marca)
             self.modelo_combobox.configure(values=[])
+
+    def agregar_nuevo_color(self):
+        nuevo_color = askstring("Nuevo Color", "Ingrese el nombre del nuevo color:")
+        if nuevo_color:
+            nuevo_color = self.convertir_mayusculas(nuevo_color)
+            valores_actuales = list(self.entries["color"].cget("values"))
+            if nuevo_color in valores_actuales:
+                messagebox.showerror("Error", "El color ya existe en la lista")
+                return
+            valores_actuales.append(nuevo_color)
+            self.entries["color"].configure(values=valores_actuales)
+            self.entries["color"].set(nuevo_color)
+            messagebox.showinfo("Éxito", f"Color '{nuevo_color}' agregado a la lista")
 
     def actualizar_modelos(self, marca_seleccionada):
         self.mycursor.execute("SELECT ID FROM marca WHERE Nombre=%s", (marca_seleccionada,))

@@ -56,7 +56,7 @@ class FrameEstadisticas(CTkFrame):
             imprimir_btn = CTkButton(self.frame_superior, text="", 
                                      image=imprimir_icon, 
                                      fg_color="transparent", hover_color=("#EEEEEE", "#2D2D2D"),
-                                     command=imprimir_grafica, cursor="hand2",
+                                     command=lambda: imprimir_grafica(self.controlador.tipo_usuario), cursor="hand2",
                                      width=40)
             imprimir_btn.pack(side=RIGHT, padx=5)
         except Exception as e:

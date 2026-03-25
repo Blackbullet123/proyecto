@@ -33,7 +33,7 @@ class FrameMantenimiento(CTkFrame):
         CTkButton(frame_superior, hover_color=("#EEEEEE", "#2D2D2D"),
                   image=imprimir_icon, text="", fg_color="transparent",
                   width=30, height=30,
-                  command=imprimir_mantenimiento
+                  command=lambda: imprimir_mantenimiento(self.controlador.tipo_usuario)
                   ).pack(side=RIGHT, padx=3)
 
 
@@ -325,12 +325,38 @@ class FrameMantenimiento(CTkFrame):
                     port="3306",
                     database="control_alquiler_Reych"
                 )
+                # Validar que el kilometraje sea un número válido
+                try:
+                    km_nuevo = int(km_var.get())
+                    if km_nuevo < 0:
+                        raise ValueError
+                except ValueError:
+                    messagebox.showerror("Error", "El kilometraje debe ser un número entero positivo")
+                    return
+
                 cursor = mydb.cursor()
+                
+                # Obtener el último kilometraje registrado para este vehículo
+                cursor.execute("""
+                    SELECT Kilometraje FROM mantenimiento 
+                    WHERE Placa = %s 
+                    ORDER BY Fecha DESC, Kilometraje DESC LIMIT 1
+                """, (placa,))
+                u_mante = cursor.fetchone()
+                
+                if u_mante:
+                    ultimo_km = u_mante[0]
+                    if km_nuevo < ultimo_km:
+                        messagebox.showerror("Error de Kilometraje", 
+                                           f"El kilometraje ingresado ({km_nuevo}) no puede ser inferior al último registrado ({ultimo_km}).")
+                        mydb.close()
+                        return
+
                 # Registrar mantenimiento
                 cursor.execute("""
                     INSERT INTO mantenimiento (Placa, Fecha, Kilometraje, Descripcion)
                     VALUES (%s, %s, %s, %s)
-                """, (placa, fecha_var.get(), km_var.get(), desc_var.get() or None))
+                """, (placa, fecha_var.get(), km_nuevo, desc_var.get() or None))
                 
                 # Actualizar frecuencia en tabla vehiculo
                 cursor.execute("UPDATE vehiculo SET dias_mantenimiento = %s WHERE Placa = %s", (nueva_frecuencia, placa))

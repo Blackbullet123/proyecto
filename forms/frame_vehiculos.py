@@ -228,7 +228,7 @@ class FrameVehiculos(CTkFrame):
 
         imprimir = CTkButton(frame_superior, hover_color=("#EEEEEE", "#2D2D2D") ,image=imprimir_icon , text="", fg_color="transparent",
 
-                               width=30, height=30, command=imprimir_vehiculos)
+                               width=30, height=30, command=lambda: imprimir_vehiculos(self.controlador.tipo_usuario))
         imprimir.pack(side="right", padx=3)
 
 

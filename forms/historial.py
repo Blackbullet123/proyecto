@@ -33,7 +33,7 @@ class FrameHistorial(CTkFrame):
         img_white = Image.open("imagenes/imprimir_white.png")
         imprimir_icon_todo = CTkImage(light_image=img, dark_image=img_white, size=(30, 30))
         btn_imprimir = CTkButton(frame_superior, text=" Imprimir Reporte",
-                                 fg_color="transparent", command=imprimir_historial,
+                                 fg_color="transparent", command=lambda: imprimir_historial(self.controlador.tipo_usuario),
                                  image=imprimir_icon_todo, hover_color="#00501B", text_color=("black", "white"),
                                  font=("Ubuntu", 18, "bold"))
         btn_imprimir.pack(side=RIGHT, padx=10)

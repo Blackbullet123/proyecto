@@ -113,7 +113,7 @@ class FrameDatosDetallados(CTkFrame):
 
         self.my_tree.pack()
 
-    def imprimir_fila_seleccionada(self, parent=None):
+    def imprimir_fila_seleccionada(self, usuario_tipo="Desconocido", parent=None):
         selected_item = self.my_tree.selection()
         if not selected_item:
             messagebox.showerror("ERROR", "No se ha seleccionado una fila", parent=parent)
@@ -138,6 +138,7 @@ class FrameDatosDetallados(CTkFrame):
         label0 = "<b>    <br/></b>"
         label3 = "<b>RIF:</b> J-080204204"
         label4 = "<b>Telefono:</b> 02832550911"
+        label_user = f"<b>Generado por:</b> {usuario_tipo}"
         label9 = f"<b>Fecha:</b> {fecha_pdf()}"
         label10 = "<b>    <br/></b>"
 
@@ -145,6 +146,7 @@ class FrameDatosDetallados(CTkFrame):
         p_label0 = Paragraph(label0)
         p_label3 = Paragraph(label3)
         p_label4 = Paragraph(label4)
+        p_label_user = Paragraph(label_user)
         p_label9 = Paragraph(label9)
         p_label10 = Paragraph(label10)
 
@@ -189,7 +191,7 @@ class FrameDatosDetallados(CTkFrame):
         table.setStyle(style)
 
         # Añadir las etiquetas al PDF
-        elements = [p_label0, p_label3, p_label4, p_label9, p_label10, p_title, Spacer(1, 20), table]
+        elements = [p_label0, p_label3, p_label4, p_label_user, p_label9, p_label10, p_title, Spacer(1, 20), table]
         
         doc.build(elements)
         vista_previa_1()

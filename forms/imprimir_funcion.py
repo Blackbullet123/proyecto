@@ -16,7 +16,7 @@ from forms.vista_previa import vista_previa_3,vista_previa_2,vista_previa_grafic
 # Silenciar advertencia de pandas sobre conexiones DBAPI2 (no soportadas oficialmente pero funcionales aquí)
 warnings.filterwarnings("ignore", category=UserWarning, message=".*pandas only supports SQLAlchemy.*")
 
-def imprimir_grafica():
+def imprimir_grafica(usuario_tipo="Desconocido"):
     conn = mysql.connector.connect(
         host="localhost",
         user="root",
@@ -133,6 +133,7 @@ def imprimir_grafica():
     p_label0 = Paragraph("<b>    <br/></b>")
     p_label3 = Paragraph("<b>RIF:</b> J-080204204")
     p_label4 = Paragraph("<b>Telefono:</b> 02832550911")
+    p_label_user = Paragraph(f"<b>Generado por:</b> {usuario_tipo}")
     p_label9 = Paragraph(f"<b>Fecha:</b> {fecha_pdf()}")
     p_label10 = Paragraph("<b>    <br/></b>")
 
@@ -156,7 +157,7 @@ def imprimir_grafica():
     tabla_img_marcas.setStyle(TableStyle([('ALIGN', (0,0), (-1,-1), 'CENTER')]))
 
     elements = [
-        p_label0, p_label3, p_label4, p_label9, p_label10,
+        p_label0, p_label3, p_label4, p_label_user, p_label9, p_label10,
         Spacer(1, 20),
         p_title, 
         Spacer(1, 15),
@@ -171,7 +172,7 @@ def imprimir_grafica():
     vista_previa_grafica()
         
         
-def imprimir_todos():
+def imprimir_todos(usuario_tipo="Desconocido"):
         conn = mysql.connector.connect(
             host='localhost',
             user='root',
@@ -195,6 +196,7 @@ def imprimir_todos():
         label0 = "<b>    <br/></b>"
         label3 = "<b>RIF:</b> J-080204204"
         label4 = "<b>Telefono:</b> 02832550911"
+        label_user = f"<b>Generado por:</b> {usuario_tipo}"
         label9 = f"<b>Fecha:</b> {fecha_pdf()}"
         label10 = "<b>    <br/></b>"
 
@@ -202,6 +204,7 @@ def imprimir_todos():
         p_label0 = Paragraph(label0)
         p_label3 = Paragraph(label3)
         p_label4 = Paragraph(label4)
+        p_label_user = Paragraph(label_user)
         p_label9 = Paragraph(label9)
         p_label10 = Paragraph(label10)
 
@@ -245,13 +248,13 @@ def imprimir_todos():
         table.setStyle(style)
 
         # Añadir las etiquetas al PDF
-        elements = [p_label0, p_label3, p_label4, p_label9, p_label10, p_title, Spacer(1, 20), table]
+        elements = [p_label0, p_label3, p_label4, p_label_user, p_label9, p_label10, p_title, Spacer(1, 20), table]
         
         doc.build(elements, onFirstPage=add_image)
         conn.close()
         vista_previa_3()
     
-def imprimir_vehiculos():
+def imprimir_vehiculos(usuario_tipo="Desconocido"):
         conn = mysql.connector.connect(
             host='localhost',
             user='root',
@@ -275,6 +278,7 @@ def imprimir_vehiculos():
         label0 = "<b>    <br/></b>"
         label3 = "<b>RIF:</b> J-080204204"
         label4 = "<b>Telefono:</b> 02832550911"
+        label_user = f"<b>Generado por:</b> {usuario_tipo}"
         label9 = f"<b>Fecha:</b> {fecha_pdf_2()}"
         label10 = "<b>    <br/></b>"
 
@@ -282,6 +286,7 @@ def imprimir_vehiculos():
         p_label0 = Paragraph(label0)
         p_label3 = Paragraph(label3)
         p_label4 = Paragraph(label4)
+        p_label_user = Paragraph(label_user)
         p_label9 = Paragraph(label9)
         p_label10 = Paragraph(label10)
 
@@ -325,13 +330,13 @@ def imprimir_vehiculos():
         table.setStyle(style)
 
         # Añadir las etiquetas al PDF
-        elements = [p_label0, p_label3, p_label4, p_label9, p_label10, p_title, Spacer(1, 20), table]
+        elements = [p_label0, p_label3, p_label4, p_label_user, p_label9, p_label10, p_title, Spacer(1, 20), table]
         
         doc.build(elements, onFirstPage=add_image)
         conn.close()
         vista_previa_2()
 
-def imprimir_historial():
+def imprimir_historial(usuario_tipo="Desconocido"):
     conn = mysql.connector.connect(
         host='localhost',
         user='root',
@@ -364,12 +369,14 @@ def imprimir_historial():
     label0 = "<b>    <br/></b>"
     label3 = "<b>RIF:</b> J-080204204"
     label4 = "<b>Telefono:</b> 02832550911"
+    label_user = f"<b>Generado por:</b> {usuario_tipo}"
     label9 = f"<b>Fecha:</b> {fecha_pdf()}"
     label10 = "<b>    <br/></b>"
 
     p_label0 = Paragraph(label0)
     p_label3 = Paragraph(label3)
     p_label4 = Paragraph(label4)
+    p_label_user = Paragraph(label_user)
     p_label9 = Paragraph(label9)
     p_label10 = Paragraph(label10)
 
@@ -402,12 +409,12 @@ def imprimir_historial():
                         ])
     table.setStyle(style)
 
-    elements = [p_label0, p_label3, p_label4, p_label9, p_label10, p_title, Spacer(1, 20), table]
+    elements = [p_label0, p_label3, p_label4, p_label_user, p_label9, p_label10, p_title, Spacer(1, 20), table]
     
     doc.build(elements, onFirstPage=add_image)
     vista_previa_historial()
 
-def imprimir_mantenimiento():
+def imprimir_mantenimiento(usuario_tipo="Desconocido"):
     conn = mysql.connector.connect(
         host='localhost',
         user='root',
@@ -461,6 +468,7 @@ def imprimir_mantenimiento():
         Paragraph("<b>    <br/></b>"),
         Paragraph("<b>RIF:</b> J-080204204"),
         Paragraph("<b>Telefono:</b> 02832550911"),
+        Paragraph(f"<b>Generado por:</b> {usuario_tipo}"),
         Paragraph(f"<b>Fecha:</b> {fecha_pdf()}"),
         Paragraph("<b>    <br/></b>"),
         Paragraph("<b>Reporte de Mantenimiento de Vehículos</b>", styles['Title']),

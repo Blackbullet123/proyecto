@@ -7,10 +7,11 @@ from forms.frame_datos import FrameDatosDetallados
 from forms.imprimir_funcion import imprimir_todos
 from PIL import Image
 
-def ventana_imprimir():
+def ventana_imprimir(usuario_tipo="Desconocido"):
 
     class imprimir:
-        def __init__(self):
+        def __init__(self, usuario_tipo):
+            self.usuario_tipo = usuario_tipo
             self.root = tk.Toplevel()
             self.root.title('ALQUITECH')
             self.root.geometry("900x410+250+150")
@@ -71,7 +72,7 @@ def ventana_imprimir():
             img = Image.open("imagenes/registro.png")
             imprimir_icon_todo = CTkImage(dark_image=img, light_image=img, size=(30,30))
             imprimir_todo = CTkButton(frame_botones, text="Imprimir todo",
-                                    fg_color="transparent", command=imprimir_todos,compound="left",image=imprimir_icon_todo,hover_color="#00501B",text_color="white",
+                                    fg_color="transparent", command=lambda: imprimir_todos(self.usuario_tipo),compound="left",image=imprimir_icon_todo,hover_color="#00501B",text_color="white",
                                     width=150, height=30,
                                     font=("Ubuntu", 18))
             imprimir_todo.pack(fill=X,pady=5, padx=2)
@@ -120,7 +121,7 @@ def ventana_imprimir():
 
         def imprimir_datos(self):
             if hasattr(self, "frame_datos_detallados"):
-                FrameDatosDetallados.imprimir_fila_seleccionada(self, parent=self.root)
+                FrameDatosDetallados.imprimir_fila_seleccionada(self, usuario_tipo=self.usuario_tipo, parent=self.root)
             else:
                 messagebox.showwarning("Atención", "No hay datos detallados cargados.", parent=self.root)
 
@@ -141,5 +142,5 @@ def ventana_imprimir():
                 tag = 'evenrow' if i % 2 == 0 else 'oddrow'
                 self.my_tree.insert('', 'end', iid=i, values=record, tags=(tag,))
                 
-    imprimir()
+    imprimir(usuario_tipo)
 
