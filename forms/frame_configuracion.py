@@ -68,6 +68,9 @@ class FrameConfiguracion(CTkFrame):
 
         self.btn_backup.grid(row=0, column=1, padx=15, pady=15, sticky="nsew")
 
+        if hasattr(self.controlador, 'tipo_usuario') and self.controlador.tipo_usuario != "Administrador":
+            self.btn_backup.configure(state=DISABLED)
+
 
         img = Image.open("imagenes/ayuda.png")
         img_white = Image.open("imagenes/ayuda_white.png")
@@ -106,7 +109,8 @@ class FrameConfiguracion(CTkFrame):
         ventana_cambiar_usuario = VentanaCambiarUsuario(self.controlador)
 
     def abrir_backup(self):
-        self.controlador.mostrar_backup()
+        if hasattr(self.controlador, 'mostrar_backup'):
+            self.controlador.mostrar_backup()
 
 
 

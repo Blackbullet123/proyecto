@@ -1,5 +1,5 @@
 from tkinter import *
-from PIL import Image, ImageTk
+from PIL import Image, ImageTk, ImageDraw, ImageFont
 from tkinter import ttk
 import tkinter as tk
 import mysql.connector
@@ -22,6 +22,25 @@ import webbrowser
 
 def get_project_root() -> Path:
     return Path(__file__).parent if "__file__" in locals() else Path.cwd()
+
+def get_text_icon(texto, color_f):
+    try:
+        font = ImageFont.truetype("arialbd.ttf", 13)
+    except:
+        try:
+            font = ImageFont.truetype("arial.ttf", 13)
+        except:
+            font = ImageFont.load_default()
+    
+    temp_img = Image.new('RGBA', (120, 30))
+    draw = ImageDraw.Draw(temp_img)
+    bbox = draw.textbbox((0, 0), texto, font=font)
+    w, h = bbox[2] - bbox[0], bbox[3] - bbox[1]
+    
+    icon_img = Image.new('RGBA', (w + 10, h + 5), (255, 255, 255, 0))
+    d = ImageDraw.Draw(icon_img)
+    d.text((5, 2), texto, fill=color_f, font=font)
+    return icon_img
 
 class usuario:
     def __init__(self):
@@ -59,7 +78,7 @@ class usuario:
 
             my_cursor_local = mydb_conn.cursor()
 
-            my_cursor_local.execute("SELECT a.COD_Alquiler, a.Fecha, a.Fecha_Expiracion, c.RIF, c.nombre, c.telefono, r.CI, v.Placa, m.Nombre, o.Nombre FROM representante r INNER JOIN contratista c ON r.CI = c.Representante_CI INNER JOIN alquiler a ON c.RIF = a.RIF_Empresa INNER JOIN vehiculo v ON a.Placa_Vehiculo = v.Placa INNER JOIN marca m ON v.ID_Marca = m.ID INNER JOIN modelo o ON v.ID_Modelo = o.ID ORDER BY a.COD_Alquiler ASC;")
+            my_cursor_local.execute("SELECT a.COD_Alquiler, a.Fecha, a.Fecha_Expiracion, c.RIF, c.nombre, c.telefono, c.direccion, r.CI, r.nombre, r.apellido, v.Placa, v.Color, v.Año, m.Nombre, o.Nombre FROM representante r INNER JOIN contratista c ON r.CI = c.Representante_CI INNER JOIN alquiler a ON c.RIF = a.RIF_Empresa INNER JOIN vehiculo v ON a.Placa_Vehiculo = v.Placa INNER JOIN marca m ON v.ID_Marca = m.ID INNER JOIN modelo o ON v.ID_Modelo = o.ID ORDER BY a.COD_Alquiler ASC;")
             records = my_cursor_local.fetchall()
 
             for item in self.my_tree.get_children():
@@ -67,9 +86,27 @@ class usuario:
 
             count = 0
 
+            hoy = datetime.now().date()
             for record in records:
-                tag = 'evenrow' if count % 2 == 0 else 'oddrow'
-                self.my_tree.insert(parent='',index='end',iid=count,text='',values=record,tags=(tag,))
+                try:
+                    exp_date = record[2]
+                    if isinstance(exp_date, str):
+                        exp_date = datetime.strptime(exp_date, "%Y-%m-%d").date()
+                    elif isinstance(exp_date, datetime):
+                        exp_date = exp_date.date()
+                    
+                    if exp_date < hoy:
+                        img_icon = self.tk_fin_text
+                        tag_status = 'finalizado'
+                    else:
+                        img_icon = self.tk_act_text
+                        tag_status = 'activo'
+                except:
+                    img_icon = self.tk_desc_text
+                    tag_status = ''
+
+                tag = ('evenrow' if count % 2 == 0 else 'oddrow', tag_status)
+                self.my_tree.insert(parent='',index='end',iid=count,text='',values=record,tags=tag, image=img_icon)
                 count += 1
 
             mydb_conn.close()
@@ -88,7 +125,11 @@ class usuario:
         )
 
         style.map('Treeview',
-                background=[('selected',"#008fa8")])
+                background=[('selected',"#00574B")])
+        
+        self.tk_act_text = ImageTk.PhotoImage(get_text_icon("● Activo", "#2E7D32"))
+        self.tk_fin_text = ImageTk.PhotoImage(get_text_icon("● Finalizado", "#D32F2F"))
+        self.tk_desc_text = ImageTk.PhotoImage(Image.new('RGBA', (1, 1), (0,0,0,0))) 
 
         def clear_entries():
             COD_entry.delete(0,END)
@@ -131,10 +172,10 @@ class usuario:
             rif_entry.insert(0, values[3])
             em_entry.insert(0, values[4])
             tlf_entry.insert(0, values[5])
-            ci_entry.insert(0, values[6])
-            placa_entry.insert(0, values[7])
-            marca_entry.insert(0, values[8])
-            model_entry.insert(0, values[9])
+            ci_entry.insert(0, values[7])
+            placa_entry.insert(0, values[10])
+            marca_entry.insert(0, values[13])
+            model_entry.insert(0, values[14])
         
 
         def remove_one():
@@ -362,18 +403,28 @@ class usuario:
 
             searched = buscar.get()
 
+            if self.frame_datos_detallados.winfo_viewable():
+                self.frame_datos_detallados.buscar(searched)
+                return
+
+            sql_base = """
+                SELECT a.COD_Alquiler, a.Fecha, a.Fecha_Expiracion, c.RIF, c.nombre, c.telefono, c.direccion, r.CI, r.nombre, r.apellido, v.Placa, v.Color, v.Año, m.Nombre, o.Nombre 
+                FROM representante r 
+                INNER JOIN contratista c ON r.CI = c.Representante_CI 
+                INNER JOIN alquiler a ON c.RIF = a.RIF_Empresa 
+                INNER JOIN vehiculo v ON a.Placa_Vehiculo = v.Placa 
+                INNER JOIN marca m ON v.ID_Marca = m.ID 
+                INNER JOIN modelo o ON v.ID_Modelo = o.ID """
+
             if not searched.strip():
-                sql_s = "SELECT a.COD_Alquiler, a.Fecha, a.Fecha_Expiracion, c.RIF, c.nombre, c.telefono, r.CI, v.Placa, m.Nombre, o.Nombre FROM representante r INNER JOIN contratista c ON r.CI = c.Representante_CI INNER JOIN alquiler a ON c.RIF = a.RIF_Empresa INNER JOIN vehiculo v ON a.Placa_Vehiculo = v.Placa INNER JOIN marca m ON v.ID_Marca = m.ID INNER JOIN modelo o ON v.ID_Modelo = o.ID ORDER BY a.COD_Alquiler ASC;"
+                sql_s = sql_base + " ORDER BY a.COD_Alquiler ASC;"
                 my_cursor_search.execute(sql_s)
+            elif searched.isdigit():
+                sql_s = sql_base + " WHERE a.COD_Alquiler = %s ORDER BY a.COD_Alquiler ASC;"
+                my_cursor_search.execute(sql_s, (searched,))
             else:
                 like_pattern = f"%{searched}%"
-                sql_s = """SELECT a.COD_Alquiler, a.Fecha, a.Fecha_Expiracion, c.RIF, c.nombre, c.telefono, r.CI, v.Placa, m.Nombre, o.Nombre 
-                         FROM representante r 
-                         INNER JOIN contratista c ON r.CI = c.Representante_CI 
-                         INNER JOIN alquiler a ON c.RIF = a.RIF_Empresa 
-                         INNER JOIN vehiculo v ON a.Placa_Vehiculo = v.Placa 
-                         INNER JOIN marca m ON v.ID_Marca = m.ID 
-                         INNER JOIN modelo o ON v.ID_Modelo = o.ID 
+                sql_s = sql_base + """
                          WHERE CAST(a.COD_Alquiler AS CHAR) LIKE %s 
                          OR c.RIF LIKE %s 
                          OR c.nombre LIKE %s 
@@ -387,9 +438,27 @@ class usuario:
 
             records_s = my_cursor_search.fetchall()
             
+            hoy_s = datetime.now().date()
             for count_s, record_s in enumerate(records_s):
-                tag_s = 'evenrow' if count_s % 2 == 0 else 'oddrow'
-                self.my_tree.insert(parent='', index='end', iid=count_s, text='', values=record_s, tags=(tag_s,))
+                try:
+                    exp_date_s = record_s[2]
+                    if isinstance(exp_date_s, str):
+                        exp_date_s = datetime.strptime(exp_date_s, "%Y-%m-%d").date()
+                    elif isinstance(exp_date_s, datetime):
+                        exp_date_s = exp_date_s.date()
+                    
+                    if exp_date_s < hoy_s:
+                        img_icon_s = self.tk_fin_text
+                        tag_status_s = 'finalizado'
+                    else:
+                        img_icon_s = self.tk_act_text
+                        tag_status_s = 'activo'
+                except:
+                    img_icon_s = self.tk_desc_text
+                    tag_status_s = ''
+
+                tag_s = ('evenrow' if count_s % 2 == 0 else 'oddrow', tag_status_s)
+                self.my_tree.insert(parent='', index='end', iid=count_s, text='', values=record_s, tags=tag_s, image=img_icon_s)
 
             mydb_search.close()
 
@@ -402,6 +471,17 @@ class usuario:
 
         buscar.pack(side="left", padx=5)
         buscar.bind("<KeyRelease>", search_now)
+
+        frame_leyenda = CTkFrame(button_frame, fg_color="transparent")
+        frame_leyenda.pack(side="left", padx=20)
+        
+        self.lbl_act = CTkLabel(frame_leyenda, text="● Activo", text_color="#2E7D32", 
+                 font=("Ubuntu", 14, "bold"), compound="left")
+        self.lbl_act.pack(side="left", padx=10)
+
+        self.lbl_fin = CTkLabel(frame_leyenda, text="● Finalizado", text_color="#D32F2F", 
+                 font=("Ubuntu", 14, "bold"), compound="left")
+        self.lbl_fin.pack(side="left", padx=10)
 
         img_i = Image.open("imagenes/imprimir.png")
         img_iw = Image.open("imagenes/imprimir_white.png")
@@ -423,38 +503,53 @@ class usuario:
             self.tree_frame,
             yscrollcommand=tree_scroll.set,
             selectmode="extended",
-            show="headings"
+            show="tree headings"
         )
         self.my_tree.pack(fill=BOTH, expand=True)
 
         tree_scroll.config(command=self.my_tree.yview)
 
-        self.my_tree['columns']=("COD","FechaI","FechaF","RIF","Empresa","TLF","CI","Placa","Modelo","Marca")
+        self.my_tree['columns']=("COD","FechaI","FechaF","RIF","Empresa","TLF","Direccion","CI","Nom_R","Apel","Placa","Color","Año","Marca","Modelo")
 
+        self.my_tree.column("#0",anchor=CENTER,width=90)
         self.my_tree.column("COD",anchor=CENTER,width=85)
-        self.my_tree.column("FechaI",anchor=CENTER,width=75)
-        self.my_tree.column("FechaF",anchor=CENTER,width=75)
+        self.my_tree.column("FechaI",anchor=CENTER,width=85)
+        self.my_tree.column("FechaF",anchor=CENTER,width=85)
         self.my_tree.column("RIF",anchor=CENTER,width=120)
         self.my_tree.column("Empresa",anchor=CENTER,width=120)
         self.my_tree.column("TLF",anchor=CENTER,width=120)
+        self.my_tree.column("Direccion",anchor=CENTER,width=120)
         self.my_tree.column("CI",anchor=CENTER,width=120)
+        self.my_tree.column("Nom_R",anchor=CENTER,width=120)
+        self.my_tree.column("Apel",anchor=CENTER,width=120)
         self.my_tree.column("Placa",anchor=CENTER,width=120)
-        self.my_tree.column("Modelo",anchor=CENTER,width=120)
+        self.my_tree.column("Color",anchor=CENTER,width=120)
+        self.my_tree.column("Año",anchor=CENTER,width=120)
         self.my_tree.column("Marca",anchor=CENTER,width=120)
+        self.my_tree.column("Modelo",anchor=CENTER,width=120)
 
+        self.my_tree.heading("#0", text="Estado", anchor=CENTER)
         self.my_tree.heading("COD", text="Cod.",anchor=CENTER)
-        self.my_tree.heading("FechaI", text="Fecha Inicial",anchor=CENTER)
-        self.my_tree.heading("FechaF", text="Fecha Final",anchor=CENTER)
+        self.my_tree.heading("FechaI", text="F. Inicial",anchor=CENTER)
+        self.my_tree.heading("FechaF", text="F. Final",anchor=CENTER)
         self.my_tree.heading("RIF", text="RIF",anchor=CENTER)
         self.my_tree.heading("Empresa", text="Empresa",anchor=CENTER)
         self.my_tree.heading("TLF", text="Teléfono",anchor=CENTER)
+        self.my_tree.heading("Direccion", text="Direccion",anchor=CENTER)
         self.my_tree.heading("CI", text="Cedula",anchor=CENTER)
+        self.my_tree.heading("Nom_R", text="Rep. Nombre",anchor=CENTER)
+        self.my_tree.heading("Apel", text="Rep. Apellido",anchor=CENTER)
         self.my_tree.heading("Placa", text="Placa",anchor=CENTER)
-        self.my_tree.heading("Marca", text="Vehículo Marca",anchor=CENTER)
-        self.my_tree.heading("Modelo", text="Vehículo Modelo",anchor=CENTER)
+        self.my_tree.heading("Color", text="Color",anchor=CENTER)
+        self.my_tree.heading("Año", text="Año",anchor=CENTER)
+        self.my_tree.heading("Marca", text="Marca",anchor=CENTER)
+        self.my_tree.heading("Modelo", text="Modelo",anchor=CENTER)
 
-        self.my_tree.tag_configure('oddrow', background="white")
-        self.my_tree.tag_configure('evenrow', background="#00A86B")
+        self.my_tree.tag_configure('oddrow', background="white", foreground="black")
+        self.my_tree.tag_configure('evenrow', background="#00A86B", foreground="black")
+        
+        self.my_tree.tag_configure('activo', foreground="black") 
+        self.my_tree.tag_configure('finalizado', foreground="black") 
 
 
 
@@ -699,12 +794,37 @@ class usuario:
         my_cursor_tree = mydb_tree.cursor()
 
         my_cursor_tree.execute("""
-            SELECT a.COD_Alquiler, a.Fecha, a.Fecha_Expiracion, c.RIF, c.nombre, c.telefono, r.CI, v.Placa, m.Nombre, o.Nombre FROM representante r INNER JOIN contratista c ON r.CI = c.Representante_CI INNER JOIN alquiler a ON c.RIF = a.RIF_Empresa INNER JOIN vehiculo v ON a.Placa_Vehiculo = v.Placa INNER JOIN marca m ON v.ID_Marca = m.ID INNER JOIN modelo o ON v.ID_Modelo = o.ID ORDER BY a.COD_Alquiler ASC; """)
+            SELECT a.COD_Alquiler, a.Fecha, a.Fecha_Expiracion, c.RIF, c.nombre, c.telefono, c.direccion, r.CI, r.nombre, r.apellido, v.Placa, v.Color, v.Año, m.Nombre, o.Nombre 
+            FROM representante r 
+            INNER JOIN contratista c ON r.CI = c.Representante_CI 
+            INNER JOIN alquiler a ON c.RIF = a.RIF_Empresa 
+            INNER JOIN vehiculo v ON a.Placa_Vehiculo = v.Placa 
+            INNER JOIN marca m ON v.ID_Marca = m.ID 
+            INNER JOIN modelo o ON v.ID_Modelo = o.ID 
+            ORDER BY a.COD_Alquiler ASC; """)
         items_tree = my_cursor_tree.fetchall()
 
+        hoy_tree = datetime.now().date()
         for count_tree, item_tree in enumerate(items_tree):
-            tag_tree = 'evenrow' if count_tree % 2 == 0 else 'oddrow'
-            self.my_tree.insert(parent='', index='end', iid=count_tree, text='', values=item_tree, tags=(tag_tree,))
+            try:
+                exp_date_tree = item_tree[2]
+                if isinstance(exp_date_tree, str):
+                    exp_date_tree = datetime.strptime(exp_date_tree, "%Y-%m-%d").date()
+                elif isinstance(exp_date_tree, datetime):
+                    exp_date_tree = exp_date_tree.date()
+                
+                if exp_date_tree < hoy_tree:
+                    img_icon_tree = self.tk_fin_text
+                    tag_status_tree = 'finalizado'
+                else:
+                    img_icon_tree = self.tk_act_text
+                    tag_status_tree = 'activo'
+            except:
+                img_icon_tree = self.tk_desc_text
+                tag_status_tree = ''
+
+            tag_tree = ('evenrow' if count_tree % 2 == 0 else 'oddrow', tag_status_tree)
+            self.my_tree.insert(parent='', index='end', iid=count_tree, text='', values=item_tree, tags=tag_tree, image=img_icon_tree)
 
         mydb_tree.close()
 

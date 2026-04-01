@@ -5,7 +5,8 @@ import mysql.connector
 from customtkinter import *
 from forms.frame_datos import FrameDatosDetallados
 from forms.imprimir_funcion import imprimir_todos
-from PIL import Image
+from PIL import Image as PILImage, ImageTk, ImageDraw, ImageFont
+from datetime import datetime
 
 def ventana_imprimir(usuario_tipo="Desconocido"):
 
@@ -30,6 +31,27 @@ def ventana_imprimir(usuario_tipo="Desconocido"):
             )
             self.my_cursor = mydb.cursor()
 
+            def get_text_icon(texto, color_f):
+                try:
+                    font = ImageFont.truetype("arialbd.ttf", 13)
+                except:
+                    try:
+                        font = ImageFont.truetype("arial.ttf", 13)
+                    except:
+                        font = ImageFont.load_default()
+                temp_img = PILImage.new('RGBA', (120, 30))
+                draw = ImageDraw.Draw(temp_img)
+                bbox = draw.textbbox((0, 0), texto, font=font)
+                w, h = bbox[2] - bbox[0], bbox[3] - bbox[1]
+                icon_img = PILImage.new('RGBA', (w + 10, h + 5), (255, 255, 255, 0))
+                d = ImageDraw.Draw(icon_img)
+                d.text((5, 2), texto, fill=color_f, font=font)
+                return icon_img
+
+            self.tk_act_text = ImageTk.PhotoImage(get_text_icon("● Activo", "#2E7D32"))
+            self.tk_fin_text = ImageTk.PhotoImage(get_text_icon("● Finalizado", "#D32F2F"))
+            self.tk_desc_text = ImageTk.PhotoImage(PILImage.new('RGBA', (1, 1), (0,0,0,0))) 
+
 
             frame_form = Frame(self.root, bd=0, relief=SOLID, bg="#0E0F0F", height=50)
             frame_form.pack(side="top", expand=NO, fill=BOTH)
@@ -53,7 +75,7 @@ def ventana_imprimir(usuario_tipo="Desconocido"):
 
             title.pack(expand=YES, fill=BOTH, pady=5, padx=15)
 
-            imglogo = Image.open("imagenes/Reych.png")
+            imglogo = PILImage.open("imagenes/Reych.png")
             bg = CTkLabel(master=frame_top, text=None,
                             image=CTkImage(dark_image=imglogo, light_image=imglogo, size=(170, 170)))
             bg.pack(anchor="center", padx=30, pady=1)
@@ -61,7 +83,7 @@ def ventana_imprimir(usuario_tipo="Desconocido"):
             frame_botones = CTkFrame(self.frame_form_l, fg_color="transparent")
             frame_botones.pack(side="top", fill=X, pady=20)
 
-            img = Image.open("imagenes/imprimir_fila.png")
+            img = PILImage.open("imagenes/imprimir_fila.png")
             imprimir_seleccion = CTkImage(dark_image=img, light_image=img, size=(30,30))
             imprimir_fila = CTkButton(frame_botones, text="Imprimir Seleccion",
                                     fg_color="transparent",command=self.imprimir_datos,compound="left",image=imprimir_seleccion,hover_color="#00501B", text_color="white",
@@ -69,7 +91,7 @@ def ventana_imprimir(usuario_tipo="Desconocido"):
                                     font=("Ubuntu", 18))
             imprimir_fila.pack(fill=X, pady=5, padx=2)
 
-            img = Image.open("imagenes/registro.png")
+            img = PILImage.open("imagenes/registro.png")
             imprimir_icon_todo = CTkImage(dark_image=img, light_image=img, size=(30,30))
             imprimir_todo = CTkButton(frame_botones, text="Imprimir todo",
                                     fg_color="transparent", command=lambda: imprimir_todos(self.usuario_tipo),compound="left",image=imprimir_icon_todo,hover_color="#00501B",text_color="white",
@@ -95,17 +117,24 @@ def ventana_imprimir(usuario_tipo="Desconocido"):
             tree_scroll.pack(side=RIGHT, fill=Y)
 
             self.my_tree = ttk.Treeview(self.tree_frame, yscrollcommand=tree_scroll.set,
-                                        selectmode="extended", show="headings")
+                                        selectmode="extended", show="tree headings")
             self.my_tree.pack(expand=True, fill=BOTH)
             tree_scroll.config(command=self.my_tree.yview)
 
-            self.my_tree['columns']=("COD","RIF","Empresa","TLF","Direccion","Cedula","Nombre","Apellido","Placa","Color","Año","Marca","Modelo")
+            self.my_tree.column("#0", width=95, anchor=CENTER)
+            self.my_tree.heading("#0", text="Estado", anchor=CENTER)
+
+            self.my_tree.tag_configure('oddrow', background="white", foreground="black")
+            self.my_tree.tag_configure('evenrow', background="#00A86B", foreground="black")
+
+            self.my_tree['columns']=("COD","FechaI","FechaF","RIF","Empresa","TLF","Direccion","CI","Nombre_r","Apellido","Placa","Color","Año","Marca","Modelo")
             for col in self.my_tree['columns']:
                 self.my_tree.column(col, anchor=CENTER, width=100)
                 self.my_tree.heading(col, text=col, anchor=CENTER)
-
-            self.my_tree.tag_configure('oddrow', background="white")
-            self.my_tree.tag_configure('evenrow', background="#00A86B")
+            
+            self.my_tree.heading("FechaI", text="F. Inicial")
+            self.my_tree.heading("FechaF", text="F. Final")
+            self.my_tree.heading("Nombre_r", text="Representante")
 
             self.query_db()
 
@@ -136,11 +165,27 @@ def ventana_imprimir(usuario_tipo="Desconocido"):
             self.barra_visible = not self.barra_visible
 
         def query_db(self):
-            self.my_cursor.execute("SELECT a.COD_Alquiler, c.RIF, c.nombre, c.telefono, c.direccion, r.CI, r.nombre, r.apellido, v.Placa, v.Color,v.Año, m.Nombre, o.Nombre FROM contratista c INNER JOIN alquiler a ON c.RIF = a.RIF_Empresa INNER JOIN representante r ON c.Representante_CI = r.CI INNER JOIN vehiculo v ON a.Placa_Vehiculo = v.Placa INNER JOIN marca m ON v.ID_Marca = m.ID INNER JOIN modelo o ON v.ID_Modelo = o.ID ORDER BY a.COD_Alquiler ASC;")
+            self.my_cursor.execute("SELECT a.COD_Alquiler, a.Fecha, a.Fecha_Expiracion, c.RIF, c.nombre, c.telefono, c.direccion, r.CI, r.nombre, r.apellido, v.Placa, v.Color, v.Año, m.Nombre, o.Nombre FROM contratista c INNER JOIN alquiler a ON c.RIF = a.RIF_Empresa INNER JOIN representante r ON c.Representante_CI = r.CI INNER JOIN vehiculo v ON a.Placa_Vehiculo = v.Placa INNER JOIN marca m ON v.ID_Marca = m.ID INNER JOIN modelo o ON v.ID_Modelo = o.ID ORDER BY a.COD_Alquiler ASC;")
             records = self.my_cursor.fetchall()
+            
+            hoy = datetime.now().date()
             for i, record in enumerate(records):
+                try:
+                    exp_date = record[2] 
+                    if isinstance(exp_date, str):
+                        exp_date = datetime.strptime(exp_date, "%Y-%m-%d").date()
+                    elif isinstance(exp_date, datetime):
+                        exp_date = exp_date.date()
+                    
+                    if exp_date < hoy:
+                        img_icon = self.tk_fin_text
+                    else:
+                        img_icon = self.tk_act_text
+                except:
+                    img_icon = self.tk_desc_text
+
                 tag = 'evenrow' if i % 2 == 0 else 'oddrow'
-                self.my_tree.insert('', 'end', iid=i, values=record, tags=(tag,))
+                self.my_tree.insert('', 'end', iid=i, text='', values=record[:13], tags=(tag,), image=img_icon)
                 
     imprimir(usuario_tipo)
 

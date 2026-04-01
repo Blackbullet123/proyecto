@@ -25,7 +25,6 @@ class FrameEstadisticas(CTkFrame):
             autocommit=True
         )
 
-        # Cache para datos y estado
         self.datos_kpis = (None, None, None)
         self.datos_mensuales = None
         self.datos_marcas = None
@@ -38,7 +37,6 @@ class FrameEstadisticas(CTkFrame):
         self.actualizar_en_tiempo_real()
 
     def crear_interfaz(self):
-        # Frame Superior
         self.frame_superior = CTkFrame(self, fg_color="transparent", height=80)
         self.frame_superior.pack(fill=X, padx=30, pady=(20, 10))
 
@@ -47,7 +45,6 @@ class FrameEstadisticas(CTkFrame):
                           font=("Impact", 45))
         titulo.pack(side=RIGHT, padx=20)
 
-        # Botón Imprimir
         try:
             img = Image.open("imagenes/imprimir.png")
             img_white = Image.open("imagenes/imprimir_white.png")
@@ -62,7 +59,6 @@ class FrameEstadisticas(CTkFrame):
         except Exception as e:
             print(f"Error loading print icon: {e}")
 
-        # Botón Historial
         if hasattr(self.controlador, 'mostrar_historial'):
             try:
                 img_historial = Image.open("imagenes/historial.png")
@@ -75,26 +71,20 @@ class FrameEstadisticas(CTkFrame):
             except Exception as e:
                 print(f"Error loading history icon: {e}")
 
-        # Area de contenido con scroll
         self.scroll_frame = CTkScrollableFrame(self, fg_color="transparent")
         self.scroll_frame.pack(expand=True, fill=BOTH, padx=20, pady=10)
 
-        # KPI Cards Frame
         self.frame_kpis = CTkFrame(self.scroll_frame, fg_color="transparent")
         self.frame_kpis.pack(fill=X, pady=10)
         
-        # Grid para gráficos
         self.frame_grids = CTkFrame(self.scroll_frame, fg_color="transparent")
         self.frame_grids.pack(expand=True, fill=BOTH, pady=10)
         self.frame_grids.columnconfigure((0, 1), weight=1)
-
-        # Inicializar Placeholders para KPIs
         self.kpi_labels = {}
         self.kpi_labels['total'] = self.crear_kpi_card(self.frame_kpis, "TOTAL ALQUILERES", "0", 0)
         self.kpi_labels['mes'] = self.crear_kpi_card(self.frame_kpis, "ALQUILERES ESTE MES", "0", 1)
         self.kpi_labels['marca'] = self.crear_kpi_card(self.frame_kpis, "MARCA PREFERIDA", "N/A", 2)
 
-        # Inicializar Placeholders para Gráficos
         self.container_mensual = CTkFrame(self.frame_grids, fg_color=("#FFFFFF", "#1E1E1E"), corner_radius=15)
         self.container_mensual.grid(row=0, column=0, padx=10, pady=10, sticky="nsew")
         
@@ -116,7 +106,6 @@ class FrameEstadisticas(CTkFrame):
         try:
             cursor = self.mydb.cursor()
             
-            # Consultar KPIs
             cursor.execute("SELECT COUNT(*) FROM alquiler")
             total = cursor.fetchone()[0]
             cursor.execute("SELECT COUNT(*) FROM alquiler WHERE MONTH(Fecha) = MONTH(CURRENT_DATE()) AND YEAR(Fecha) = YEAR(CURRENT_DATE())")
@@ -128,14 +117,12 @@ class FrameEstadisticas(CTkFrame):
             res = cursor.fetchone()
             marca = res[0] if res else "N/A"
             
-            # Consultar Mensual
             cursor.execute("""
                 SELECT DATE_FORMAT(Fecha, '%Y-%m') as Mes, COUNT(*) as Total
                 FROM alquiler GROUP BY Mes ORDER BY Mes ASC LIMIT 12
             """)
             mensual = cursor.fetchall()
             
-            # Consultar Marcas
             cursor.execute("""
                 SELECT m.Nombre, COUNT(a.COD_Alquiler)
                 FROM alquiler a JOIN vehiculo v ON a.Placa_Vehiculo = v.Placa
@@ -165,15 +152,13 @@ class FrameEstadisticas(CTkFrame):
         kpis_new, mensual_new, marcas_new = self.consultar_data()
         modo_new = get_appearance_mode()
         
-        # 1. Actualizar KPIs (siempre, es barato y no parpadea)
         self.kpi_labels['total'].configure(text=str(kpis_new[0]))
         self.kpi_labels['mes'].configure(text=str(kpis_new[1]))
         self.kpi_labels['marca'].configure(text=kpis_new[2])
         
-        # 2. Actualizar Gráficos (solo si hay cambios de datos o tema)
         if mensual_new != self.datos_mensuales or modo_new != self.ultimo_modo:
             self.datos_mensuales = mensual_new
-            self.dibujar_linea_mensual()
+            self.dibujar_barras_mensuales()
             
         if marcas_new != self.datos_marcas or modo_new != self.ultimo_modo:
             self.datos_marcas = marcas_new
@@ -197,7 +182,7 @@ class FrameEstadisticas(CTkFrame):
         ax.title.set_color(text_color)
         return text_color
 
-    def dibujar_linea_mensual(self):
+    def dibujar_barras_mensuales(self):
         for w in self.container_mensual.winfo_children(): w.destroy()
         if not self.datos_mensuales:
             CTkLabel(self.container_mensual, text="Sin datos", text_color="gray").pack(pady=50)
@@ -205,16 +190,36 @@ class FrameEstadisticas(CTkFrame):
 
         meses = [d[0] for d in self.datos_mensuales]
         cantidades = [d[1] for d in self.datos_mensuales]
-
-        fig = Figure(figsize=(5, 3.5), dpi=90)
+        total_anual = sum(cantidades) if cantidades else 1
+        
+        colores_palette = ["#4DB6AC", "#2E7D32", "#8BC34A", "#795548", "#00838F"]
+        
+        fig = Figure(figsize=(6, 4.5), dpi=90)
         ax = fig.add_subplot(111)
         text_color = self.setup_plot_theme(fig, ax)
         
-        line_color = "#00501B" if self.ultimo_modo == "Light" else "#00FF7F"
-        ax.plot(meses, cantidades, marker='o', color=line_color, linewidth=2)
-        ax.set_title("Alquileres por Mes", fontsize=12, fontweight="bold")
-        ax.yaxis.set_major_locator(MaxNLocator(integer=True))
-        ax.grid(True, linestyle='--', alpha=0.3, color=text_color)
+        y_pos = np.arange(len(meses))
+        bar_height = 0.6
+        
+        ax.barh(y_pos, [100]*len(meses), height=bar_height, color="#E0E0E0", alpha=0.3, align='center')
+        
+        porcentajes = [(c / total_anual * 100) if total_anual > 0 else 0 for c in cantidades]
+        
+        for i, (p, c) in enumerate(zip(porcentajes, cantidades)):
+            color = colores_palette[i % len(colores_palette)]
+            ax.barh(y_pos[i], p, height=bar_height, color=color, align='center')
+            
+            ax.text(p - 2 if p > 10 else p + 2, y_pos[i], f"{int(p)}%", 
+                    va='center', ha='right' if p > 10 else 'left', 
+                    color='white' if p > 10 else text_color, 
+                    fontsize=10, fontweight='bold')
+            
+            ax.text(105, y_pos[i], meses[i], va='center', ha='left', color=text_color, fontsize=9)
+
+        ax.set_title("Alquileres Mensuales (% del Total Anual)", fontsize=13, fontweight="bold", pad=20)
+        ax.set_yticks([])
+        ax.set_xlim(0, 130)
+        ax.axis('off')
 
         canvas = FigureCanvasTkAgg(fig, master=self.container_mensual)
         canvas.draw()
@@ -243,7 +248,6 @@ class FrameEstadisticas(CTkFrame):
         canvas.get_tk_widget().pack(expand=True, fill=BOTH, padx=10, pady=10)
 
     def actualizar_ahora(self):
-        # Forzar actualización inmediata ignorando caché
         self.datos_mensuales = None
         self.datos_marcas = None
         self.actualizar_en_tiempo_real()

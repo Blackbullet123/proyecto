@@ -2,8 +2,8 @@ from tkinter import *
 import tkinter as tk
 import io
 import matplotlib.pyplot as plt
-from reportlab.lib.pagesizes import letter
-from reportlab.platypus import SimpleDocTemplate, Paragraph, Table, TableStyle, Image, Spacer
+from reportlab.lib.pagesizes import letter, landscape
+from reportlab.platypus import SimpleDocTemplate, Paragraph, Table, TableStyle, Image as RLImage, Spacer
 from reportlab.lib.styles import getSampleStyleSheet
 from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
 from reportlab.lib import colors
@@ -11,9 +11,9 @@ from datetime import datetime
 import mysql.connector
 import pandas as pd
 import warnings
+import numpy as np
 from forms.vista_previa import vista_previa_3,vista_previa_2,vista_previa_grafica, vista_previa_historial, vista_previa_mantenimiento
 
-# Silenciar advertencia de pandas sobre conexiones DBAPI2 (no soportadas oficialmente pero funcionales aquí)
 warnings.filterwarnings("ignore", category=UserWarning, message=".*pandas only supports SQLAlchemy.*")
 
 def imprimir_grafica(usuario_tipo="Desconocido"):
@@ -25,7 +25,6 @@ def imprimir_grafica(usuario_tipo="Desconocido"):
     )
     cursor = conn.cursor()
     
-    # 1. Consultar KPIs
     cursor.execute("SELECT COUNT(*) FROM alquiler")
     total_alquileres = cursor.fetchone()[0]
     
@@ -39,7 +38,6 @@ def imprimir_grafica(usuario_tipo="Desconocido"):
     res = cursor.fetchone()
     marca_preferida = res[0] if res else "N/A"
 
-    # 2. Consultar Datos para Gráfica de Marcas
     cursor.execute("""
         SELECT m.Nombre, COUNT(a.COD_Alquiler)
         FROM alquiler a
@@ -50,7 +48,6 @@ def imprimir_grafica(usuario_tipo="Desconocido"):
     """)
     datos_marcas = cursor.fetchall()
     
-    # 3. Consultar Datos para Gráfica Mensual
     cursor.execute("""
         SELECT DATE_FORMAT(Fecha, '%Y-%m') as Mes, COUNT(*) as Total
         FROM alquiler GROUP BY Mes ORDER BY Mes ASC LIMIT 12
@@ -64,7 +61,6 @@ def imprimir_grafica(usuario_tipo="Desconocido"):
         print("No hay datos para generar el reporte")
         return
 
-    # --- Generar Gráfica de Marcas ---
     marcas = [d[0] for d in datos_marcas]
     cantidades_marcas = [d[1] for d in datos_marcas]
     
@@ -80,28 +76,46 @@ def imprimir_grafica(usuario_tipo="Desconocido"):
     buf1.seek(0)
     plt.close(fig1)
     
-    img_marcas = Image(buf1, width=420, height=210)
+    img_marcas = RLImage(buf1, width=420, height=210)
 
-    # --- Generar Gráfica Mensual ---
-    meses = [d[0] for d in datos_mensual]
-    cantidades_mensual = [d[1] for d in datos_mensual]
+    meses_m = [d[0] for d in datos_mensual]
+    cantidades_m = [d[1] for d in datos_mensual]
+    total_anual = sum(cantidades_m) if cantidades_m else 1
+    colores_palette = ["#4DB6AC", "#2E7D32", "#8BC34A", "#795548", "#00838F"]
     
-    fig2, ax2 = plt.subplots(figsize=(8, 4))
-    ax2.plot(meses, cantidades_mensual, marker='o', color="#00501B", linewidth=2)
-    ax2.set_title("Alquileres Mensuales", fontweight="bold")
-    ax2.set_ylabel("Alquileres")
+    fig2, ax2 = plt.subplots(figsize=(8, 4.5))
     ax2.set_facecolor("#EEEEEE")
     fig2.patch.set_facecolor("#EEEEEE")
-    ax2.grid(True, linestyle='--', alpha=0.3)
+    
+    y_pos = np.arange(len(meses_m))
+    bar_height = 0.6
+    
+    ax2.barh(y_pos, [100]*len(meses_m), height=bar_height, color="#D0D0D0", alpha=0.3)
+    
+    porcentajes = [(c / total_anual * 100) if total_anual > 0 else 0 for c in cantidades_m]
+
+    for i, (p, c) in enumerate(zip(porcentajes, cantidades_m)):
+        color = colores_palette[i % len(colores_palette)]
+        ax2.barh(y_pos[i], p, height=bar_height, color=color)
+        
+        ax2.text(p - 1.5 if p > 8 else p + 1.5, y_pos[i], f"{int(p)}%", 
+                va='center', ha='right' if p > 8 else 'left', 
+                color='white' if p > 8 else 'black', fontsize=9, fontweight='bold')
+        
+        ax2.text(103, y_pos[i], meses_m[i], va='center', ha='left', color='black', fontsize=9)
+
+    ax2.set_title("Inforgrafía: Alquileres Mensuales (% Anual)", fontweight="bold", fontsize=12, pad=15)
+    ax2.set_xlim(0, 125)
+    ax2.set_yticks([])
+    ax2.axis('off')
     
     buf2 = io.BytesIO()
-    fig2.savefig(buf2, format='PNG', bbox_inches='tight')
+    fig2.savefig(buf2, format='PNG', bbox_inches='tight', facecolor=fig2.get_facecolor())
     buf2.seek(0)
     plt.close(fig2)
     
-    img_mensual = Image(buf2, width=420, height=210)
+    img_mensual = RLImage(buf2, width=440, height=220)
 
-    # --- Configuración del PDF ---
     doc = SimpleDocTemplate("PDF/Grafica.pdf", pagesize=letter)
     styles = getSampleStyleSheet()
     title_style = styles['Title']
@@ -110,7 +124,6 @@ def imprimir_grafica(usuario_tipo="Desconocido"):
         ahora = datetime.now()
         return ahora.strftime("%d/%m/%Y %I:%M %p")
 
-    # Tabla de Indicadores (KPIs) - Centrada
     datos_kpi = [
         [Paragraph("<para align=center><b>TOTAL ALQUILERES</b></para>", styles['Normal']), 
          Paragraph("<para align=center><b>ALQUILERES ESTE MES</b></para>", styles['Normal']), 
@@ -140,16 +153,15 @@ def imprimir_grafica(usuario_tipo="Desconocido"):
     p_title = Paragraph("<b>Reporte Estadístico de Alquileres</b>", title_style)
 
     imagen_path = "imagenes/membrete.jpg"
-    imagen = Image(imagen_path, width=570, height=70)
+    imagen = RLImage(imagen_path, width=570, height=70)
 
     imagen_2 = "imagenes/Reych_imp.png"
-    imagen_alq = Image(imagen_2, width=130, height=110)
+    imagen_alq = RLImage(imagen_2, width=130, height=110)
 
     def add_image(canvas, doc):
         imagen_alq.drawOn(canvas, 450, 610)
         imagen.drawOn(canvas, 20, 715)
 
-    # Contenedores para centrar las imágenes
     tabla_img_mensual = Table([[img_mensual]], colWidths=[540])
     tabla_img_mensual.setStyle(TableStyle([('ALIGN', (0,0), (-1,-1), 'CENTER')]))
     
@@ -180,19 +192,36 @@ def imprimir_todos(usuario_tipo="Desconocido"):
             database='control_alquiler_Reych'
         )
 
-        # Consulta a la base de datos
-        query = ("SELECT a.COD_Alquiler, c.RIF, c.Nombre, c.telefono, c.direccion, r.CI, r.nombre, r.apellido, v.Placa, v.Color,v.Año, m.Nombre, o.Nombre FROM contratista c INNER JOIN alquiler a ON c.RIF = a.RIF_Empresa INNER JOIN representante r ON c.Representante_CI = r.CI INNER JOIN vehiculo v ON a.Placa_Vehiculo = v.Placa INNER JOIN marca m ON v.ID_Marca = m.ID INNER JOIN modelo o ON v.ID_Modelo = o.ID;")
+        query = ("SELECT a.COD_Alquiler, a.Fecha, a.Fecha_Expiracion, c.RIF, c.Nombre AS Empresa, c.telefono, c.direccion, r.CI, r.nombre AS R_Nombre, r.apellido AS R_Apellido, v.Placa, v.Color, v.Año, m.Nombre AS Marca, o.Nombre AS Modelo FROM contratista c INNER JOIN alquiler a ON c.RIF = a.RIF_Empresa INNER JOIN representante r ON c.Representante_CI = r.CI INNER JOIN vehiculo v ON a.Placa_Vehiculo = v.Placa INNER JOIN marca m ON v.ID_Marca = m.ID INNER JOIN modelo o ON v.ID_Modelo = o.ID ORDER BY a.COD_Alquiler ASC;")
         df = pd.read_sql(query, conn)
         
-        # Crear el PDF
-        doc = SimpleDocTemplate("PDF/Todos los alquilados.pdf", pagesize=letter)
-        data = [df.columns[:,].tolist()] + df.values.tolist()
+        hoy = datetime.now().date()
+        def calculate_status(row):
+            exp_date = row['Fecha_Expiracion']
+            try:
+                if isinstance(exp_date, str):
+                    exp_date = datetime.strptime(exp_date, "%Y-%m-%d").date()
+                elif isinstance(exp_date, (datetime, pd.Timestamp)):
+                    exp_date = exp_date.date()
+                
+                return "● Finalizado" if exp_date < hoy else "● Activo"
+            except:
+                return "● Desconocido"
+
+        df['Estado'] = df.apply(calculate_status, axis=1)
+        
+        cols = ['Estado', 'COD_Alquiler', 'Fecha', 'RIF', 'Empresa', 'telefono', 'direccion', 'CI', 'R_Nombre', 'R_Apellido', 'Placa', 'Color', 'Año', 'Marca', 'Modelo']
+        df = df[cols]
+        
+        df.columns = ['Estado', 'COD', 'Fecha Inicial', 'RIF', 'Empresa', 'Teléfono', 'Dirección', 'C.I', 'R. Nombre', 'R. Apellido', 'Placa', 'Color', 'Año', 'Marca', 'Modelo']
+
+        doc = SimpleDocTemplate("PDF/Todos los alquilados.pdf", pagesize=landscape(letter), leftMargin=30, rightMargin=30)
+        data = [df.columns.tolist()] + df.values.tolist()
         
         def fecha_pdf():
             ahora = datetime.now()
             return ahora.strftime("%d/%m/%Y %I:%M %p")
 
-        # Crear los textos que funcionarán como etiquetas
         label0 = "<b>    <br/></b>"
         label3 = "<b>RIF:</b> J-080204204"
         label4 = "<b>Telefono:</b> 02832550911"
@@ -200,7 +229,6 @@ def imprimir_todos(usuario_tipo="Desconocido"):
         label9 = f"<b>Fecha:</b> {fecha_pdf()}"
         label10 = "<b>    <br/></b>"
 
-        # Crear los párrafos con los textos
         p_label0 = Paragraph(label0)
         p_label3 = Paragraph(label3)
         p_label4 = Paragraph(label4)
@@ -214,40 +242,45 @@ def imprimir_todos(usuario_tipo="Desconocido"):
         
         
         imagen_path = "imagenes/membrete.jpg"
-        imagen = Image(imagen_path, width=570, height=70)
+        imagen = RLImage(imagen_path, width=750, height=70) 
         
         pdx = 20
-        pdy = 715
+        pdy = 520 
         
         imagen_2 = "imagenes/Reych_imp.png"
-        imagen_alq = Image(imagen_2, width=130, height=110)
+        imagen_alq = RLImage(imagen_2, width=130, height=110)
         
-        x = 450
-        y = 610
+        x = 650 
+        y = 420
 
 
-        # Añadir la imagen al canvas en las coordenadas especificadas
         def add_image(canvas, doc):
             imagen_alq.drawOn(canvas, x, y)
             imagen.drawOn(canvas, pdx, pdy)
             
 
-        # Construir el documento PDF y añadir la función add_image al canvas
-
-
-        # Crear la tabla en el PDF
         table = Table(data)
-        style = TableStyle([('BACKGROUND', (0, 0), (-1, 0), colors.seagreen),
-                            ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
-                            ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
-                            ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
-                            ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
-                            ('BACKGROUND', (0, 1), (-1, -1), colors.beige),
-                            ('FONTSIZE', (0, 0), (-1, -1), 6.5),
-                            ])
-        table.setStyle(style)
+        
+        style_list = [
+            ('BACKGROUND', (0, 0), (-1, 0), colors.seagreen),
+            ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
+            ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+            ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+            ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
+            ('BACKGROUND', (0, 1), (-1, -1), colors.beige),
+            ('FONTSIZE', (0, 0), (-1, -1), 6.5), # Un poco más grande ahora que estamos en Landscape
+        ]
+        
+        for i, row in enumerate(data[1:], start=1):
+            if "Activo" in row[0]:
+                style_list.append(('BACKGROUND', (0, i), (0, i), colors.seagreen))
+                style_list.append(('TEXTCOLOR', (0, i), (0, i), colors.whitesmoke))
+            elif "Finalizado" in row[0]:
+                style_list.append(('BACKGROUND', (0, i), (0, i), colors.red))
+                style_list.append(('TEXTCOLOR', (0, i), (0, i), colors.whitesmoke))
+        
+        table.setStyle(TableStyle(style_list))
 
-        # Añadir las etiquetas al PDF
         elements = [p_label0, p_label3, p_label4, p_label_user, p_label9, p_label10, p_title, Spacer(1, 20), table]
         
         doc.build(elements, onFirstPage=add_image)
@@ -262,11 +295,9 @@ def imprimir_vehiculos(usuario_tipo="Desconocido"):
             database='control_alquiler_Reych'
         )
 
-        # Consulta a la base de datos
         query = ("SELECT v.Placa, m.Nombre, o.Nombre FROM vehiculo v LEFT JOIN alquiler a ON a.Placa_Vehiculo = v.Placa INNER JOIN marca m ON v.ID_Marca = m.ID INNER JOIN modelo o ON v.ID_Modelo = o.ID WHERE a.COD_Alquiler IS NULL ORDER BY v.Placa;")
         df = pd.read_sql(query, conn)
         
-        # Crear el PDF
         doc = SimpleDocTemplate("PDF/Vehiculos.pdf", pagesize=letter)
         data = [df.columns[:,].tolist()] + df.values.tolist()
         
@@ -274,7 +305,6 @@ def imprimir_vehiculos(usuario_tipo="Desconocido"):
             ahora = datetime.now()
             return ahora.strftime("%d/%m/%Y %I:%M %p")
 
-        # Crear los textos que funcionarán como etiquetas
         label0 = "<b>    <br/></b>"
         label3 = "<b>RIF:</b> J-080204204"
         label4 = "<b>Telefono:</b> 02832550911"
@@ -282,7 +312,6 @@ def imprimir_vehiculos(usuario_tipo="Desconocido"):
         label9 = f"<b>Fecha:</b> {fecha_pdf_2()}"
         label10 = "<b>    <br/></b>"
 
-        # Crear los párrafos con los textos
         p_label0 = Paragraph(label0)
         p_label3 = Paragraph(label3)
         p_label4 = Paragraph(label4)
@@ -290,27 +319,23 @@ def imprimir_vehiculos(usuario_tipo="Desconocido"):
         p_label9 = Paragraph(label9)
         p_label10 = Paragraph(label10)
 
-        # Crear el membrete con un título de alquitech
         styles = getSampleStyleSheet()
         title = "<b>Vehiculos Disponibles</b>"
         p_title = Paragraph(title, styles['Title'])
         
         
         imagen_path = "imagenes/membrete.jpg"
-        imagen = Image(imagen_path, width=570, height=70)
+        imagen = RLImage(imagen_path, width=570, height=70)
         
-        # Definir las coordenadas x y y para posicionar la imagen en el PDF
         pdx = 20
         pdy = 715
         
         imagen_2 = "imagenes/Reych_imp.png"
-        imagen_alq = Image(imagen_2, width=130, height=110)
+        imagen_alq = RLImage(imagen_2, width=130, height=110)
         
-        # Definir las coordenadas x y y para posicionar la imagen en el PDF
         x = 450
         y = 610
 
-        # Añadir la imagen al canvas en las coordenadas especificadas
         def add_image(canvas, doc):
             imagen_alq.drawOn(canvas, x, y)
             imagen.drawOn(canvas, pdx, pdy)
@@ -318,7 +343,6 @@ def imprimir_vehiculos(usuario_tipo="Desconocido"):
 
 
 
-        # Crear la tabla en el PDF
         table = Table(data)
         style = TableStyle([('BACKGROUND', (0, 0), (-1, 0), colors.seagreen),
                             ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
@@ -329,7 +353,6 @@ def imprimir_vehiculos(usuario_tipo="Desconocido"):
                             ])
         table.setStyle(style)
 
-        # Añadir las etiquetas al PDF
         elements = [p_label0, p_label3, p_label4, p_label_user, p_label9, p_label10, p_title, Spacer(1, 20), table]
         
         doc.build(elements, onFirstPage=add_image)
@@ -385,11 +408,11 @@ def imprimir_historial(usuario_tipo="Desconocido"):
     p_title = Paragraph(title, styles['Title'])
     
     imagen_path = "imagenes/membrete.jpg"
-    imagen = Image(imagen_path, width=570, height=70)
+    imagen = RLImage(imagen_path, width=570, height=70)
     pdx = 20
     pdy = 715
     imagen_2 = "imagenes/Reych_imp.png"
-    imagen_alq = Image(imagen_2, width=130, height=110)
+    imagen_alq = RLImage(imagen_2, width=130, height=110)
     x = 450
     y = 610
 
@@ -423,7 +446,6 @@ def imprimir_mantenimiento(usuario_tipo="Desconocido"):
     )
     cursor = conn.cursor()
 
-    # Obtener todos los vehículos con su última fecha de mantenimiento
     query = """
         SELECT v.Placa, m.Nombre AS Marca, o.Nombre AS Modelo, v.dias_mantenimiento,
                (SELECT MAX(Fecha) FROM mantenimiento WHERE Placa = v.Placa) AS UltimaFecha
@@ -454,7 +476,6 @@ def imprimir_mantenimiento(usuario_tipo="Desconocido"):
             else:
                 al_dia.append(row)
 
-    # Crear el PDF
     doc = SimpleDocTemplate("PDF/Mantenimiento.pdf", pagesize=letter)
     styles = getSampleStyleSheet()
     
@@ -463,7 +484,6 @@ def imprimir_mantenimiento(usuario_tipo="Desconocido"):
 
     elements = []
     
-    # Membrete y Datos Generales
     elements.extend([
         Paragraph("<b>    <br/></b>"),
         Paragraph("<b>RIF:</b> J-080204204"),
@@ -502,16 +522,14 @@ def imprimir_mantenimiento(usuario_tipo="Desconocido"):
         elements_sec.append(Spacer(1, 20))
         return elements_sec
 
-    # Agregar Secciones
     elements.extend(crear_seccion("MANTENIMIENTO NECESARIO", necesario, colors.red))
     elements.extend(crear_seccion("SIN REGISTRO DE MANTENIMIENTO", sin_registro, colors.dodgerblue))
     elements.extend(crear_seccion("ÓPTIMAS CONDICIONES", al_dia, colors.seagreen))
 
-    # Imágenes (Membrete)
     imagen_path = "imagenes/membrete.jpg"
-    imagen = Image(imagen_path, width=570, height=70)
+    imagen = RLImage(imagen_path, width=570, height=70)
     imagen_2 = "imagenes/Reych_imp.png"
-    imagen_alq = Image(imagen_2, width=130, height=110)
+    imagen_alq = RLImage(imagen_2, width=130, height=110)
 
     def add_image(canvas, doc):
         imagen_alq.drawOn(canvas, 450, 610)
